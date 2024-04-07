@@ -28,3 +28,6 @@ Install dependencies from requirements.txt:
 cd ./server/flaskr/
 flask run
 ```
+
+To run the linter, run from server:
+`pylint --rcfile=pylintrc . --recursive=true`
