@@ -6,11 +6,13 @@
 from flask import Flask, jsonify, request
 from db.dungeon import DungeonGatewaySingleton
 from db.trap import TrapGatewaySingleton
+from db.monster import MonsterGatewaySingleton
 
 app = Flask(__name__)
 
-trap_gateway = TrapGatewaySingleton()
 dungeon_gateway = DungeonGatewaySingleton()
+monster_gateway = MonsterGatewaySingleton()
+trap_gateway = TrapGatewaySingleton()
 
 
 @app.route("/dungeon")
@@ -28,7 +30,7 @@ def get_dungeon_by_id(dungeon_id):
         return jsonify({})
     return jsonify(dungeon)
 
-
+# Trap Endpoints
 @app.route('/trap')
 def get_trap():
     """Fetches all traps in the database"""
@@ -66,3 +68,42 @@ def delete_trap_by_id(trap_id):
     """Deletes trap from the database that matches trap_id"""
     trap = trap_gateway.delete_trap(trap_id)
     return jsonify(trap)
+
+# Monster Endpoints
+@app.route('/monster')
+def get_monster():
+    """Fetches all monsters in the database"""
+    monsters = monster_gateway.select_all_monsters()
+    return jsonify(monsters)
+
+
+@app.route('/monster/<int:monster_id>')
+def get_monster_by_id(monster_id):
+    """Fetches the monster that matches the monster_id from the database"""
+    monster = monster_gateway.select_monster_by_id(monster_id)
+    return jsonify(monster)
+
+
+@app.route('/monster', methods=['POST'])
+def create_monster():
+    """Creates a monster using monster_name and monster_xp"""
+    monster_name = request.form['monster_name']
+    monster_xp = request.form['monster_xp']
+    monster = monster_gateway.insert_monster(monster_name, monster_xp)
+    return jsonify(monster)
+
+
+@app.route('/monster/<int:monster_id>', methods=['PUT'])
+def edit_monster(monster_id):
+    """Updates the monster in the database that matches monster_id"""
+    monster_name = request.form['monster_name']
+    monster_xp = request.form['monster_xp']
+    edited_monster = monster_gateway.update_monster(monster_id, monster_name, monster_xp)
+    return jsonify(edited_monster)
+
+
+@app.route('/monster/<int:monster_id>', methods=['DELETE'])
+def delete_monster_by_id(monster_id):
+    """Deletes monster from the database that matches monster_id"""
+    monster = monster_gateway.delete_monster(monster_id)
+    return jsonify(monster)
