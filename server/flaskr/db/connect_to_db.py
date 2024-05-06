@@ -4,6 +4,7 @@ Contains utils for connecting to the postgreSQL database
 
 import os
 import psycopg2
+import psycopg2.extras
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -21,5 +22,5 @@ def connect_to_db():
         port=os.getenv('DB_PORT')
     )
     connection.autocommit = True
-    cursor = connection.cursor()
+    cursor = connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     return cursor

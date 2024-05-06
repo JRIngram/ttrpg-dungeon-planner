@@ -14,7 +14,7 @@ class MockConnection:
         """
         print({ database, host, user, password, port })
 
-    def cursor(self):
+    def cursor(self, cursor_factory):
         """
         Mock cursor
         """

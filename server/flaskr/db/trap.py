@@ -4,7 +4,6 @@
 from db.singleton_metaclass import SingletonMeta
 from db.connect_to_db import connect_to_db
 
-
 class TrapGatewaySingleton(metaclass=SingletonMeta):
     """
         A gateway class for the trap table in the postgreSQL database
