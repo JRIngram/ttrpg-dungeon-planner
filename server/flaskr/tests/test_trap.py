@@ -107,3 +107,69 @@ def test_select_trap_by_id_returns_a_trap_dict(mocker):
     assert db_response["id"] == 1
     assert db_response["name"] == "Test Trap 1"
     assert db_response["effect"] == "Shoots a ball of test! 1d4 test damage!"
+
+
+def test_insert_trap_returns_inserted_entry(mocker):
+    execute_spy = mocker.spy(MockTrapCursor, "execute")
+    close_spy = mocker.spy(MockTrapCursor, "close")
+    mocker.patch("psycopg2.connect", MockConnection)
+    trap_gateway = TrapGatewaySingleton()
+    db_response = trap_gateway.insert_trap(
+        "Test Trap 1", "Shoots a ball of test! 1d4 test damage!")
+
+    execute_spy.assert_called_once_with(
+        "INSERT INTO trap(name, effect) VALUES(%s, %s) RETURNING *", ("Test Trap 1",
+                                                                      "Shoots a ball of test! 1d4 test damage!")
+    )
+    close_spy.assert_called_once()
+
+    assert db_response["id"] == 1
+    assert db_response["name"] == "Test Trap 1"
+    assert db_response["effect"] == "Shoots a ball of test! 1d4 test damage!"
+
+
+def test_update_trap_returns_updated_entry(mocker):
+    execute_spy = mocker.spy(MockTrapCursor, "execute")
+    close_spy = mocker.spy(MockTrapCursor, "close")
+    mocker.patch("psycopg2.connect", MockConnection)
+    trap_gateway = TrapGatewaySingleton()
+    db_response = trap_gateway.update_trap(
+        "1", "Test Trap 1", "Shoots a ball of test! 1d4 test damage!"
+    )
+
+    execute_spy.assert_called_once_with(
+        "UPDATE trap SET name=%s, effect=%s WHERE id = %s RETURNING *",
+        ("Test Trap 1", "Shoots a ball of test! 1d4 test damage!", "1")
+    )
+    close_spy.assert_called_once()
+
+    assert db_response["id"] == 1
+    assert db_response["name"] == "Test Trap 1"
+    assert db_response["effect"] == "Shoots a ball of test! 1d4 test damage!"
+
+def test_update_trap_returns_updated_entry(mocker):
+    execute_spy = mocker.spy(MockTrapCursor, "execute")
+    close_spy = mocker.spy(MockTrapCursor, "close")
+    mocker.patch("psycopg2.connect", MockConnection)
+    trap_gateway = TrapGatewaySingleton()
+    db_response = trap_gateway.delete_trap(
+        "1",
+    )
+
+    assert execute_spy.call_count == 2
+    execute_spy.assert_any_call(
+        "DELETE FROM room_trap WHERE trap_id = %s RETURNING *;",
+        ("1",)
+    )
+    execute_spy.assert_any_call(
+        "DELETE FROM trap WHERE id = %s RETURNING *;",
+        ("1", )
+    )
+
+    close_spy.assert_called_once()
+
+    assert db_response["id"] == 1
+    assert db_response["name"] == "Test Trap 1"
+    assert db_response["effect"] == "Shoots a ball of test! 1d4 test damage!"
+
+# TODO Unhappy path tests
