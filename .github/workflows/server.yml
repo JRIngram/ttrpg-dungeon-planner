@@ -23,3 +23,22 @@ jobs:
       run: |
         cd server
         pylint --rcfile=pylintrc . --recursive=true
+  unit-test:
+    needs: [lint]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: |
+          cd server
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Unit Tests
+        run: |
+          cd server
+          pytest
+
