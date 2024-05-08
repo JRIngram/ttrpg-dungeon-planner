@@ -3,7 +3,6 @@
 """
 from db.trap import TrapGatewaySingleton
 
-
 class MockTrapCursorWithResults:
     def __init__(self):
         return
