@@ -14,7 +14,7 @@ class MockConnection:
         """
         print({ database, host, user, password, port })
 
-    def cursor(self, cursor_factory):
+    def cursor(self, cursor_factory): # pylint: disable=unused-argument
         """
         Mock cursor
         """
