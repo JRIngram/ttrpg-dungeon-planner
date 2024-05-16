@@ -1,3 +1,6 @@
+# Client
+client/src/app/tailwind-built.css
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -196,3 +199,4 @@ yarn-error.log*
 next-env.d.ts
 
 *storybook.log
+
