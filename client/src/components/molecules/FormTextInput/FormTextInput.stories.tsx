@@ -1,0 +1,22 @@
+import type { Meta, StoryObj } from '@storybook/react'
+import { FormTextInput } from "./FormTextInput"
+
+const meta = {
+    title: "Components/Molecules/FormTextInput",
+    component: FormTextInput,
+    parameters: {},
+    tags: ["autodocs"],
+  } satisfies Meta<typeof FormTextInput>;
+  
+  export default meta;
+  type Story = StoryObj<typeof meta>;
+  
+  export const Primary: Story = {
+    args: {
+      id: "test",
+      formLabelText: "Test input label",
+      ariaLabel: "Storybook input",
+      placeholder: "Some placerholder text",
+    },
+  };
+  

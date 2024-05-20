@@ -13,8 +13,8 @@ type Story = StoryObj<typeof meta>;
 
 export const Primary: Story = {
   args: {
-    id: "test",
-    ariaLabel: "Storybook input",
-    placeholder: "Some placerholder text",
+    id: "test-id",
+    ariaLabel: "A Test TextInput",
+    placeholder: "Some test placeholder text",
   },
 };

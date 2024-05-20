@@ -14,18 +14,18 @@ type Story = StoryObj<typeof meta>;
 export const Primary: Story = {
   args: {
     links: [
-        {
-            title: "Dungeons",
-            url: "http://www.example.com",
-        },
-        {
-            title: "Monsters",
-            url: "http://www.example.com"
-        },
-        {
-          title: "Traps",
-          url: "http://www.example.com"
+      {
+        title: "Dungeons",
+        url: "/dungeons",
       },
-    ]
+      {
+        title: "Monsters",
+        url: "/monsters",
+      },
+      {
+        title: "Traps",
+        url: "/trap",
+      },
+    ],
   },
 };

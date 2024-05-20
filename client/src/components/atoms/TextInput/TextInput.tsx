@@ -11,7 +11,7 @@ export const TextInput = ({ ariaLabel, id, placeholder }: Props) => {
     <div>
       <input
         id={id}
-        className="w-full rounded-lg p-4"
+        className="w-full rounded-lg p-4 border-2 border-secondary-500"
         type="text"
         aria-label={ariaLabel}
         placeholder={placeholder}
