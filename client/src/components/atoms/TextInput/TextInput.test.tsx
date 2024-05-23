@@ -16,6 +16,8 @@ describe("TextInput", () => {
       />
     );
 
-    expect(screen.getByRole("textbox")).toBeVisible()
+    const textInput = screen.getByRole("textbox", { name: "A Test TextInput"})
+
+    expect(textInput).toBeVisible();
   });
 });

@@ -6,11 +6,12 @@ type Variants =
   | "tertiaryFilled"
   | "tertiaryOutline";
 
-type Props = {
+export type ButtonProps = {
   text: string;
   onClick: () => void;
-  ariaLabel?: string;
   variant: Variants;
+  isSubmit?: boolean;
+  ariaLabel?: string;
 };
 
 const styles = {
@@ -34,7 +35,7 @@ const styles = {
   },
 };
 
-export const Button = ({ text, ariaLabel, onClick, variant }: Props) => {
+export const Button = ({ text, ariaLabel, onClick, variant, isSubmit = false }: ButtonProps) => {
   const getVariantStyle = () => {
     const { base, variants } = styles;
     const { primary, secondary, tertiary } = variants;
@@ -59,6 +60,7 @@ export const Button = ({ text, ariaLabel, onClick, variant }: Props) => {
       aria-label={ariaLabel}
       onClick={onClick}
       className={getVariantStyle()}
+      type={isSubmit ? "submit" : "button"}
     >
       {text}
     </button>

@@ -6,13 +6,22 @@ import { composeStory } from "@storybook/react";
 import Meta, { Primary } from "./Button.stories";
 
 describe("Button", () => {
-  it("renders Button with correct name", () => {
+  it("renders Button with correct name and type", () => {
     const Button = composeStory(Primary, Meta);
     render(
       <Button text={"Press me!"} ariaLabel={"Press me!"} onClick={() => {}} />
     );
 
     expect(screen.getByRole("button", { name: "Press me!" })).toBeVisible();
+    expect(screen.getByRole("button", { name: "Press me!" })).toHaveAttribute("type", "button")
+  });
+
+  it("renders button as submit when isSubmit passed", () => {
+    const Button = composeStory(Primary, Meta);
+    render(
+      <Button text={"Press me!"} ariaLabel={"Press me!"} onClick={() => {}} isSubmit={true}/>
+    );
+    expect(screen.getByRole("button", { name: "Press me!" })).toHaveAttribute("type", "submit")
   });
 
   it("calls onClick when clicked", async () => {
