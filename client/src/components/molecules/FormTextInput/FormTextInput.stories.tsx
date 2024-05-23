@@ -15,7 +15,7 @@ const meta = {
     args: {
       id: "test",
       formLabelText: "Test input label",
-      ariaLabel: "Storybook input",
+      ariaLabel: "Test input",
       placeholder: "Some placerholder text",
     },
   };

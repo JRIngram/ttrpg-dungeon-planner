@@ -12,12 +12,14 @@ export const MonsterForm = () => {
             ariaLabel="Monster name"
             formLabelText="Name"
             placeholder="e.g. Goblin"
+            isRequired
           />
           <FormTextInput
             id="monster-xp"
             ariaLabel="Monster XP value"
             formLabelText="XP Value"
             placeholder="e.g. 50"
+            isRequired
           />
           <ButtonRow
             buttons={[

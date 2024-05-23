@@ -4,9 +4,15 @@ type Props = {
   id: string;
   ariaLabel: string;
   placeholder: string;
+  isRequired?: boolean;
 };
 
-export const TextInput = ({ ariaLabel, id, placeholder }: Props) => {
+export const TextInput = ({
+  ariaLabel,
+  id,
+  placeholder,
+  isRequired = false,
+}: Props) => {
   return (
     <div>
       <input
@@ -15,6 +21,7 @@ export const TextInput = ({ ariaLabel, id, placeholder }: Props) => {
         type="text"
         aria-label={ariaLabel}
         placeholder={placeholder}
+        {...(isRequired ? { required: true } : {})}
       />
     </div>
   );

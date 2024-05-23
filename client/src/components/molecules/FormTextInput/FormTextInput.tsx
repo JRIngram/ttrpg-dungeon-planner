@@ -5,6 +5,7 @@ type Props = {
   ariaLabel: string;
   formLabelText: string;
   placeholder: string;
+  isRequired?: boolean;
 };
 
 export const FormTextInput = ({
@@ -12,13 +13,14 @@ export const FormTextInput = ({
   ariaLabel,
   formLabelText,
   placeholder,
+  isRequired = false
 }: Props) => {
   return (
     <>
       <label className="text-typograph-500 font-semibold" htmlFor={id}>
-        {formLabelText}
+        {isRequired ? `${formLabelText}*` : formLabelText}
       </label>
-      <TextInput id={id} ariaLabel={ariaLabel} placeholder={placeholder} />
+      <TextInput id={id} ariaLabel={ariaLabel} placeholder={placeholder} isRequired />
     </>
   );
 };

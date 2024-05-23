@@ -7,10 +7,12 @@ describe("MonsterForm", () => {
   it("renders MonsterForm", () => {
     const MonsterForm = composeStory(Default, Meta);
     render(<MonsterForm />);
-    expect(screen.getByRole("textbox", { name: "Monster name" })).toBeVisible();
-    expect(
-      screen.getByRole("textbox", { name: "Monster XP value" })
-    ).toBeVisible();
+    const nameInput = screen.getByRole("textbox", { name: "Monster name" });
+    const xpInput = screen.getByRole("textbox", { name: "Monster XP value" });
+    expect(nameInput).toBeVisible();
+    expect(nameInput).toBeRequired();
+    expect(xpInput).toBeVisible();
+    expect(xpInput).toBeRequired();
     expect(screen.getByRole("button", { name: "Save" })).toBeVisible();
     expect(screen.getByRole("button", { name: "Cancel" })).toBeVisible();
   });
