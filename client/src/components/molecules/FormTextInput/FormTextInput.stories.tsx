@@ -14,6 +14,7 @@ const meta = {
   export const Primary: Story = {
     args: {
       id: "test",
+      formInputName: "test-form-input",
       formLabelText: "Test input label",
       ariaLabel: "Test input",
       placeholder: "Some placerholder text",

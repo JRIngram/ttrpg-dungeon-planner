@@ -32,6 +32,8 @@ export class MonsterDataFetcher {
       }),
     });
 
-    return;
+    const responseJson = await response.json() as Monster;
+    
+    return responseJson;
   };
 }

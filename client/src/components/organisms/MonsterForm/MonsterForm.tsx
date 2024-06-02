@@ -5,10 +5,24 @@ import { MonsterDataFetcher } from "@/services/MonsterDataFetcher";
 import { useQuery } from "@tanstack/react-query";
 
 export const MonsterForm = () => {
-  const submitForm = async () => {
-    console.log("submitted");
-    const dataFetcher = new MonsterDataFetcher();
-    await dataFetcher.addMonster({ name: "vvewvw", xp: 10 });
+  const submitForm = async (formData: FormData) => {
+    try {
+      const monsterName = formData.get("monster-name")?.toString();
+      const monsterXpString = formData.get("monster-xp")?.toString();
+      if (monsterName && monsterXpString) {
+        try {
+          const dataFetcher = new MonsterDataFetcher();
+          const monsterXp = parseInt(monsterXpString);
+          await dataFetcher.addMonster({ name: monsterName, xp: monsterXp });
+        } catch (err) {
+          throw new Error("Error adding monster");
+        }
+      } else {
+        throw new Error("Invalid form values");
+      }
+    } catch (err) {
+      console.log("Error submitting form", err);
+    }
   };
 
   const { data, isPending } = useQuery({
@@ -26,6 +40,7 @@ export const MonsterForm = () => {
         <div className="flex flex-col gap-2">
           <FormTextInput
             id="monster-name"
+            formInputName="monster-name"
             ariaLabel="Monster name"
             formLabelText="Name"
             placeholder="e.g. Goblin"
@@ -33,6 +48,7 @@ export const MonsterForm = () => {
           />
           <FormTextInput
             id="monster-xp"
+            formInputName="monster-xp"
             ariaLabel="Monster XP value"
             formLabelText="XP Value"
             placeholder="e.g. 50"
@@ -42,17 +58,13 @@ export const MonsterForm = () => {
             buttons={[
               {
                 text: "Save",
-                onClick: async () => {
-                  console.log("submit clicked");
-                },
+                onClick: async () => {},
                 variant: "primaryFilled",
                 isSubmit: true,
               },
               {
                 text: "Cancel",
-                onClick: async () => {
-                  console.log("cancel clicked");
-                },
+                onClick: async () => {},
                 variant: "tertiaryOutline",
               },
             ]}
