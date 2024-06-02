@@ -17,13 +17,19 @@ export class MonsterDataFetcher {
   addMonster = async (
     monster: Pick<Monster, "name" | "xp">
   ): Promise<Monster> => {
-    const d = new FormData()
-    d.append('monster_xp', `${monster.xp}`);
-    d.append('monster_name', monster.name)
+    const d = new FormData();
+    d.append("monster_xp", `${monster.xp}`);
+    d.append("monster_name", monster.name);
 
     const response = await fetch(this.requestEndpoint, {
       method: "POST",
-      body: d
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        monster_xp: monster.xp,
+        monster_name: monster.name,
+      }),
     });
 
     return;
