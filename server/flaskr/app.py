@@ -4,11 +4,14 @@
 """
 
 from flask import Flask, jsonify, request
+from flask_cors import CORS
+
 from db.dungeon import DungeonGatewaySingleton
 from db.trap import TrapGatewaySingleton
 from db.monster import MonsterGatewaySingleton
 
 app = Flask(__name__)
+CORS(app)
 
 dungeon_gateway = DungeonGatewaySingleton()
 monster_gateway = MonsterGatewaySingleton()
