@@ -1,11 +1,16 @@
+"use client";
 import { ButtonRow } from "@/components/molecules/ButtonRow/ButtonRow";
 import { FormTextInput } from "@/components/molecules/FormTextInput/FormTextInput";
 
 export const MonsterForm = () => {
+  const submitForm = async () => {
+    console.log("submitted");
+  };
+
   return (
     <div className="flex flex-col gap-4">
       <p className="text-lg font-semibold">Monster</p>
-      <form action={() => console.log("submission!")}>
+      <form action={submitForm}>
         <div className="flex flex-col gap-2">
           <FormTextInput
             id="monster-name"
@@ -25,13 +30,17 @@ export const MonsterForm = () => {
             buttons={[
               {
                 text: "Save",
-                onClick: () => console.log("submit clicked"),
+                onClick: async () => {
+                  console.log("submit clicked");
+                },
                 variant: "primaryFilled",
                 isSubmit: true,
               },
               {
                 text: "Cancel",
-                onClick: () => console.log("cancel clicked"),
+                onClick: async () => {
+                  console.log("cancel clicked");
+                },
                 variant: "tertiaryOutline",
               },
             ]}
