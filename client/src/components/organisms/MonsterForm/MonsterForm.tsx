@@ -18,7 +18,7 @@ export const MonsterForm = () => {
           throw new Error("Error adding monster");
         }
       } else {
-        throw new Error("Invalid form values");
+        throw new Error("Invalid form values")
       }
     } catch (err) {
       console.log("Error submitting form", err);

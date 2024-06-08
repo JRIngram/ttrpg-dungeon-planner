@@ -2,11 +2,16 @@ import { describe, it, expect } from "vitest";
 import { composeStory } from "@storybook/react";
 import Meta, { Default } from "./MonsterForm.stories";
 import { render, screen } from "@testing-library/react";
+import Providers from "@/app/providers";
 
 describe("MonsterForm", () => {
   it("renders MonsterForm", () => {
     const MonsterForm = composeStory(Default, Meta);
-    render(<MonsterForm />);
+    render(
+      <Providers>
+        <MonsterForm />
+      </Providers>
+    );
     const nameInput = screen.getByRole("textbox", { name: "Monster name" });
     const xpInput = screen.getByRole("textbox", { name: "Monster XP value" });
     expect(nameInput).toBeVisible();
