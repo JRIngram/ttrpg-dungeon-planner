@@ -1,5 +1,5 @@
 "use client";
-
+import React from "react";
 /**
  * Code from tanstack's advanced-ssr documentation
  * https://tanstack.com/query/v5/docs/framework/react/guides/advanced-ssr

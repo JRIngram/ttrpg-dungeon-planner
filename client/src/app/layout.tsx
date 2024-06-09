@@ -1,7 +1,8 @@
+import React from "react";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { NavBar } from "@/components/molecules/NavBar/NavBar";
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 import "./globals.css";
 import "./tailwind-built.css";
