@@ -8,6 +8,9 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./server
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
@@ -16,16 +19,17 @@ jobs:
         python-version: '3.11'
     - name: Install dependencies
       run: |
-        cd server
         python -m pip install --upgrade pip
         pip install -r requirements.txt
     - name: Analysing the code with pylint
       run: |
-        cd server
         pylint --rcfile=pylintrc . --recursive=true
   unit-test:
     needs: [lint]
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./server
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
@@ -34,11 +38,9 @@ jobs:
           python-version: '3.11'
       - name: Install dependencies
         run: |
-          cd server
           python -m pip install --upgrade pip
           pip install -r requirements.txt
       - name: Unit Tests
         run: |
-          cd server
           pytest
 

@@ -4,11 +4,14 @@
 """
 
 from flask import Flask, jsonify, request
+from flask_cors import CORS
+
 from db.dungeon import DungeonGatewaySingleton
 from db.trap import TrapGatewaySingleton
 from db.monster import MonsterGatewaySingleton
 
 app = Flask(__name__)
+CORS(app)
 
 dungeon_gateway = DungeonGatewaySingleton()
 monster_gateway = MonsterGatewaySingleton()
@@ -87,8 +90,9 @@ def get_monster_by_id(monster_id):
 @app.route('/monster', methods=['POST'])
 def create_monster():
     """Creates a monster using monster_name and monster_xp"""
-    monster_name = request.form['monster_name']
-    monster_xp = request.form['monster_xp']
+    request_data = request.get_json()
+    monster_name = request_data['monster_name']
+    monster_xp = request_data['monster_xp']
     monster = monster_gateway.insert_monster(monster_name, monster_xp)
     return jsonify(monster)
 
