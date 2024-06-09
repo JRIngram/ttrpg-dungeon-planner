@@ -1,9 +1,3 @@
-import {
-  dehydrate,
-  HydrationBoundary,
-  QueryClient,
-} from "@tanstack/react-query";
-
 import { MonsterForm } from "@/components/organisms/MonsterForm/MonsterForm";
 
 export default async function Monster() {
