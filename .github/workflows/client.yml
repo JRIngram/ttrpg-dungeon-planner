@@ -31,6 +31,7 @@ jobs:
     - run: npm i
     - run: npm run test
   build:
+    needs: [lint, unit-test]
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -42,3 +43,4 @@ jobs:
         node-version: 18
     - run: npm i
     - run: npm run tailwind:build
+    - run: npm run build
