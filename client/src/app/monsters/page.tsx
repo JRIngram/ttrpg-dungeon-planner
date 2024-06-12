@@ -1,9 +1,25 @@
+import { NavDrawer } from "@/components/molecules/NavDrawer/NavDrawer";
 import { MonsterForm } from "@/components/organisms/MonsterForm/MonsterForm";
 
 export default async function Monster() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <MonsterForm />
-    </main>
+    <div className="flex">
+      <NavDrawer
+        items={[
+          {
+            label: "Item One",
+            id: "1",
+          },
+          {
+            label: "Item Two",
+            id: "2",
+          },
+        ]}
+        onSelect={() => {}}
+      />
+      <main className="mx-auto">
+        <MonsterForm />
+      </main>
+    </div>
   );
 }
