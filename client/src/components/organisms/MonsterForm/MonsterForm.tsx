@@ -2,7 +2,6 @@
 import { ButtonRow } from "@/components/molecules/ButtonRow/ButtonRow";
 import { FormTextInput } from "@/components/molecules/FormTextInput/FormTextInput";
 import { MonsterDataFetcher } from "@/services/MonsterDataFetcher";
-import { useQuery } from "@tanstack/react-query";
 
 export const MonsterForm = () => {
   const submitForm = async (formData: FormData) => {
@@ -24,14 +23,6 @@ export const MonsterForm = () => {
       console.log("Error submitting form", err);
     }
   };
-
-  const { data } = useQuery({
-    queryKey: ["monster-list"],
-    queryFn: async () => {
-      const dataFetcher = new MonsterDataFetcher();
-      return await dataFetcher.getMonsterList();
-    },
-  });
 
   return (
     <div className="flex flex-col gap-4">
@@ -71,11 +62,6 @@ export const MonsterForm = () => {
           />
         </div>
       </form>
-      {data?.map((e) => (
-        <p key={e.id}>
-          ({e.id}){e.name} - {e.xp}
-        </p>
-      ))}
     </div>
   );
 };

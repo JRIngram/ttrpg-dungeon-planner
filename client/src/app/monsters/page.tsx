@@ -1,22 +1,26 @@
+"use client";
 import { NavDrawer } from "@/components/molecules/NavDrawer/NavDrawer";
 import { MonsterForm } from "@/components/organisms/MonsterForm/MonsterForm";
+import { MonsterDataFetcher } from "@/services/MonsterDataFetcher";
+import { useQuery } from "@tanstack/react-query";
 
-export default async function Monster() {
+export default function Monster() {
+  const { data } = useQuery({
+    queryKey: ["monster-list"],
+    queryFn: () => {
+      const dataFetcher = new MonsterDataFetcher();
+      return dataFetcher.getMonsterList();
+    },
+  });
+
+  const monsters = data?.map((monster) => ({
+    label: monster.name,
+    id: monster.id,
+  }));
+
   return (
     <div className="flex">
-      <NavDrawer
-        items={[
-          {
-            label: "Item One",
-            id: "1",
-          },
-          {
-            label: "Item Two",
-            id: "2",
-          },
-        ]}
-        onSelect={() => {}}
-      />
+      <NavDrawer items={monsters ?? []} onSelect={() => {}} />
       <main className="mx-auto">
         <MonsterForm />
       </main>
