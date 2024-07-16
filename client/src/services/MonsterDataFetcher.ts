@@ -14,6 +14,12 @@ export class MonsterDataFetcher {
     return json;
   };
 
+  getMonsterById = async (id: string): Promise<Monster> => {
+    const response = await fetch(`${this.requestEndpoint}/${id}`);
+    const json = (await response.json()) as Promise<Monster>;
+    return json;
+  };
+
   addMonster = async (
     monster: Pick<Monster, "name" | "xp">
   ): Promise<Monster> => {
@@ -32,8 +38,30 @@ export class MonsterDataFetcher {
       }),
     });
 
-    const responseJson = await response.json() as Monster;
-    
+    const responseJson = (await response.json()) as Monster;
+
+    return responseJson;
+  };
+
+  editMonster = async (monster: Monster): Promise<Monster> => {
+    const d = new FormData();
+    d.append("monster_xp", `${monster.xp}`);
+    d.append("monster_name", monster.name);
+
+    console.log({ endpoint: `${this.requestEndpoint}/${monster.id}`, monster });
+    const response = await fetch(`${this.requestEndpoint}/${monster.id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        monster_xp: monster.xp,
+        monster_name: monster.name,
+      }),
+    });
+
+    const responseJson = (await response.json()) as Monster;
+
     return responseJson;
   };
 }

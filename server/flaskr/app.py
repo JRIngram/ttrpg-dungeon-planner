@@ -100,8 +100,9 @@ def create_monster():
 @app.route('/monster/<int:monster_id>', methods=['PUT'])
 def edit_monster(monster_id):
     """Updates the monster in the database that matches monster_id"""
-    monster_name = request.form['monster_name']
-    monster_xp = request.form['monster_xp']
+    request_data = request.get_json()
+    monster_name = request_data['monster_name']
+    monster_xp = request_data['monster_xp']
     edited_monster = monster_gateway.update_monster(monster_id, monster_name, monster_xp)
     return jsonify(edited_monster)
 

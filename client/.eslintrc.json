@@ -4,5 +4,10 @@
     "plugin:storybook/recommended",
     "eslint:recommended",
     "next"
-  ]
+  ],
+  "rules": {
+    // Temporary fix for Node must be provided when reporting error if location is not provided
+    // TODO look into proper fix for this
+    "no-unused-vars": "off"
+  }
 }

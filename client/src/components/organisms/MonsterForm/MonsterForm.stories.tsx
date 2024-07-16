@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { MonsterForm } from "./MonsterForm";
+import { InputMode, MonsterForm } from "./MonsterForm";
 
 const meta = {
   title: "Components/Organisms/MonsterForm",
@@ -12,5 +12,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  args: {},
+  args: {
+    inputMode: InputMode.NEW,
+  },
 };

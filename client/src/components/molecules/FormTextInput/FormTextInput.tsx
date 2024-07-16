@@ -15,14 +15,20 @@ export const FormTextInput = ({
   formLabelText,
   placeholder,
   formInputName,
-  isRequired = false
+  isRequired = false,
 }: Props) => {
   return (
     <>
       <label className="text-typograph-500 font-semibold" htmlFor={id}>
         {isRequired ? `${formLabelText}*` : formLabelText}
       </label>
-      <TextInput id={id} ariaLabel={ariaLabel} placeholder={placeholder} formInputName={formInputName} isRequired />
+      <TextInput
+        id={id}
+        ariaLabel={ariaLabel}
+        placeholder={placeholder}
+        formInputName={formInputName}
+        isRequired
+      />
     </>
   );
 };
