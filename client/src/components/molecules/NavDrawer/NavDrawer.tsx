@@ -16,7 +16,6 @@ export const NavDrawer = ({ items, onSelect }: Props) => {
           <button
             key={item.id}
             onClick={() => {
-              console.log("Selecting ", item.id);
               onSelect(item.id);
             }}
           >

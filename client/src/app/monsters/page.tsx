@@ -24,8 +24,6 @@ export default function Monster() {
     id: monster.id,
   }));
 
-  console.log(monsters);
-
   return (
     <div className="flex">
       <NavDrawer
