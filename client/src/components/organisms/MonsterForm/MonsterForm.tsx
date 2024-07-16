@@ -14,14 +14,6 @@ type Props = {
 };
 
 export const MonsterForm = ({ monsterId, inputMode }: Props) => {
-  // test code to remove
-  if (monsterId) {
-    const df = new MonsterDataFetcher();
-    const mon = df.getMonsterById(monsterId);
-    console.log(mon);
-  }
-  // end of test code
-
   const submitForm = async (formData: FormData) => {
     try {
       const monsterName = formData.get("monster-name")?.toString();
