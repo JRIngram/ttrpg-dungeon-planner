@@ -3,18 +3,52 @@ import { ButtonRow } from "@/components/molecules/ButtonRow/ButtonRow";
 import { FormTextInput } from "@/components/molecules/FormTextInput/FormTextInput";
 import { MonsterDataFetcher } from "@/services/MonsterDataFetcher";
 
-export const MonsterForm = () => {
+export enum InputMode {
+  "NEW",
+  "EDIT",
+}
+
+type Props = {
+  inputMode: InputMode;
+  monsterId?: string;
+};
+
+export const MonsterForm = ({ monsterId, inputMode }: Props) => {
+  // test code to remove
+  if (monsterId) {
+    const df = new MonsterDataFetcher();
+    const mon = df.getMonsterById(monsterId);
+    console.log(mon);
+  }
+  // end of test code
+
   const submitForm = async (formData: FormData) => {
     try {
       const monsterName = formData.get("monster-name")?.toString();
       const monsterXpString = formData.get("monster-xp")?.toString();
       if (monsterName && monsterXpString) {
-        try {
-          const dataFetcher = new MonsterDataFetcher();
-          const monsterXp = parseInt(monsterXpString);
-          await dataFetcher.addMonster({ name: monsterName, xp: monsterXp });
-        } catch (err) {
-          throw new Error("Error adding monster");
+        const dataFetcher = new MonsterDataFetcher();
+        const monsterXp = parseInt(monsterXpString);
+
+        if (inputMode === InputMode.NEW) {
+          try {
+            await dataFetcher.addMonster({ name: monsterName, xp: monsterXp });
+          } catch (err) {
+            throw new Error("Error adding monster");
+          }
+        } else if (inputMode === InputMode.EDIT) {
+          try {
+            if (!monsterId) {
+              throw new Error("No monster id value");
+            }
+            await dataFetcher.editMonster({
+              id: monsterId,
+              name: monsterName,
+              xp: monsterXp,
+            });
+          } catch (err) {
+            throw new Error("Error adding monster");
+          }
         }
       } else {
         throw new Error("Invalid form values");

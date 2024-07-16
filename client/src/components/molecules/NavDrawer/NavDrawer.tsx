@@ -5,7 +5,7 @@ export type DrawerItem = {
 
 type Props = {
   items: DrawerItem[];
-  onSelect: () => void;
+  onSelect: (id: string) => void;
 };
 
 export const NavDrawer = ({ items, onSelect }: Props) => {
@@ -13,7 +13,15 @@ export const NavDrawer = ({ items, onSelect }: Props) => {
     <nav className="h-lvh border-r-2 border-solid w-1/5 border-primary-50 overflow-scroll">
       <div className="flex flex-col items-center gap-1">
         {items.map((item) => (
-          <p key={item.id}>{item.label}</p>
+          <button
+            key={item.id}
+            onClick={() => {
+              console.log("Selecting ", item.id);
+              onSelect(item.id);
+            }}
+          >
+            {item.label}
+          </button>
         ))}
       </div>
     </nav>
