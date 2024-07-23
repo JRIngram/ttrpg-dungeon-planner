@@ -1,6 +1,6 @@
 type Props = {
   fieldName: string;
-  fieldValue: string;
+  fieldValue: string | number | boolean;
 };
 
 export const FieldTextDisplay = ({ fieldName, fieldValue }: Props) => (

@@ -2,7 +2,7 @@ import { FieldTextDisplay } from "@/components/atoms/FieldTextDisplay/FieldTextD
 
 type FieldKeyValuePair = {
   fieldName: string;
-  fieldValue: string;
+  fieldValue: string | number | boolean;
 };
 
 type Props = {
