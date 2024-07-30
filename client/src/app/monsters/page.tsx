@@ -7,9 +7,11 @@ import {
 } from "@/components/organisms/MonsterForm/MonsterForm";
 import { MonsterDataFetcher } from "@/services/MonsterDataFetcher";
 import { useQuery } from "@tanstack/react-query";
+import { Button } from "@/components/atoms/Button/Button";
+import { FieldTextDisplayGroup } from "@/components/molecules/FieldTextDisplayGroup/FieldTextDisplayGroup";
 
 export default function Monster() {
-  const [selectedMonsterId, setSelectedMonsterId] = useState<string>("");
+  const [selectedMonsterId, setSelectedMonsterId] = useState<string>();
 
   const { data } = useQuery({
     queryKey: ["monster-list"],
@@ -24,6 +26,30 @@ export default function Monster() {
     id: monster.id,
   }));
 
+  const renderMonsterDisplay = () => {
+    if (!selectedMonsterId) {
+      return (
+        <>
+          <p>Please selected a monster or create a new one below</p>
+          <MonsterForm inputMode={InputMode.NEW} />
+        </>
+      );
+    } else {
+      const selectedMonster = data?.find(
+        (monster) => monster.id === selectedMonsterId
+      );
+      if (selectedMonster) {
+        const monsterFields = Object.entries(selectedMonster).map((e) => {
+          return {
+            fieldName: e[0],
+            fieldValue: e[1],
+          };
+        });
+        return <FieldTextDisplayGroup fields={monsterFields} />;
+      }
+    }
+  };
+
   return (
     <div className="flex">
       <NavDrawer
@@ -31,8 +57,8 @@ export default function Monster() {
         onSelect={(id) => setSelectedMonsterId(id)}
       />
       <main className="mx-auto">
-        <MonsterForm inputMode={InputMode.NEW} />
-        <p>{selectedMonsterId}</p>
+        <p className="text-lg font-semibold">Monster</p>
+        {renderMonsterDisplay()}
       </main>
     </div>
   );
