@@ -3,24 +3,50 @@ export type DrawerItem = {
   label: string;
 };
 
-type Props = {
-  items: DrawerItem[];
-  onSelect: (id: string) => void;
+type OnSelect = (id: string) => void;
+
+type NavDrawerItemProps = {
+  item: DrawerItem;
+  onSelect: OnSelect;
 };
 
-export const NavDrawer = ({ items, onSelect }: Props) => {
+const NavDrawerButton = ({ item, onSelect }: NavDrawerItemProps) => {
+  return (
+    <button
+      key={item.id}
+      onClick={() => {
+        onSelect(item.id);
+      }}
+    >
+      {item.label}
+    </button>
+  );
+};
+
+type DefaultItem = {
+  label: string;
+  onDefaultSelected: () => void;
+};
+
+type Props = {
+  items: DrawerItem[];
+  onSelect: OnSelect;
+  defaultItem?: DefaultItem;
+};
+
+export const NavDrawer = ({ items, onSelect, defaultItem }: Props) => {
   return (
     <nav className="h-lvh border-r-2 border-solid w-1/5 border-primary-50 overflow-scroll">
       <div className="flex flex-col items-center gap-1">
+        {defaultItem && (
+          <NavDrawerButton
+            key={"default"}
+            item={{ id: "default", label: defaultItem.label }}
+            onSelect={defaultItem.onDefaultSelected}
+          />
+        )}
         {items.map((item) => (
-          <button
-            key={item.id}
-            onClick={() => {
-              onSelect(item.id);
-            }}
-          >
-            {item.label}
-          </button>
+          <NavDrawerButton key={item.id} item={item} onSelect={onSelect} />
         ))}
       </div>
     </nav>
