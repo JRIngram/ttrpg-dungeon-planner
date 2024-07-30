@@ -7,8 +7,8 @@ import {
 } from "@/components/organisms/MonsterForm/MonsterForm";
 import { MonsterDataFetcher } from "@/services/MonsterDataFetcher";
 import { useQuery } from "@tanstack/react-query";
-import { Button } from "@/components/atoms/Button/Button";
 import { FieldTextDisplayGroup } from "@/components/molecules/FieldTextDisplayGroup/FieldTextDisplayGroup";
+import { ButtonRow } from "@/components/molecules/ButtonRow/ButtonRow";
 
 export default function Monster() {
   const [selectedMonsterId, setSelectedMonsterId] = useState<string>();
@@ -45,7 +45,27 @@ export default function Monster() {
             fieldValue: e[1],
           };
         });
-        return <FieldTextDisplayGroup fields={monsterFields} />;
+
+        return (
+          <>
+            <FieldTextDisplayGroup fields={monsterFields} />
+            <ButtonRow
+              buttons={[
+                {
+                  text: "Edit",
+                  onClick: () => {},
+                  variant: "secondaryOutline",
+                },
+                {
+                  // TODO only display if deltable
+                  text: "Delete",
+                  onClick: () => {},
+                  variant: "tertiaryOutline",
+                },
+              ]}
+            />
+          </>
+        );
       }
     }
   };
@@ -56,7 +76,7 @@ export default function Monster() {
         items={monsters ?? []}
         onSelect={(id) => setSelectedMonsterId(id)}
       />
-      <main className="mx-auto">
+      <main className="mx-auto w-3/6">
         <p className="text-lg font-semibold">Monster</p>
         {renderMonsterDisplay()}
       </main>
