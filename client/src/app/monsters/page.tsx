@@ -13,7 +13,11 @@ import { ButtonRow } from "@/components/molecules/ButtonRow/ButtonRow";
 export default function Monster() {
   const [selectedMonsterId, setSelectedMonsterId] = useState<string>();
 
-  const { data } = useQuery({
+  const {
+    data,
+    isLoading: isLoadingMonsters,
+    isError: errorLoadingMonsters,
+  } = useQuery({
     queryKey: ["monster-list"],
     queryFn: () => {
       const dataFetcher = new MonsterDataFetcher();
@@ -70,11 +74,21 @@ export default function Monster() {
     }
   };
 
+  const defaultNavDrawerLabel = isLoadingMonsters
+    ? "Loading"
+    : errorLoadingMonsters
+      ? "Error"
+      : "+ Create a new monster";
+
   return (
     <div className="flex">
       <NavDrawer
         items={monsters ?? []}
         onSelect={(id) => setSelectedMonsterId(id)}
+        defaultItem={{
+          label: defaultNavDrawerLabel,
+          onDefaultSelected: () => setSelectedMonsterId(""),
+        }}
       />
       <main className="mx-auto w-3/6">
         <p className="text-lg font-semibold">Monster</p>
