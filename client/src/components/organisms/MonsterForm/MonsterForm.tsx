@@ -52,7 +52,6 @@ export const MonsterForm = ({ monsterId, inputMode }: Props) => {
 
   return (
     <div className="flex flex-col gap-4">
-      <p className="text-lg font-semibold">Monster</p>
       <form action={submitForm}>
         <div className="flex flex-col gap-2">
           <FormTextInput
