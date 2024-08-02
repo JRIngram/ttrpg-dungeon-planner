@@ -11,10 +11,17 @@ export enum InputMode {
 
 type Props = {
   inputMode: InputMode;
+  onSubmit: (message: string, monster?: Monster) => void;
+  onCancel: () => void;
   monster?: Monster;
 };
 
-export const MonsterForm = ({ monster, inputMode }: Props) => {
+export const MonsterForm = ({
+  monster,
+  inputMode,
+  onSubmit,
+  onCancel,
+}: Props) => {
   const submitForm = async (formData: FormData) => {
     try {
       const monsterName = formData.get("monster-name")?.toString();
@@ -25,7 +32,11 @@ export const MonsterForm = ({ monster, inputMode }: Props) => {
 
         if (inputMode === InputMode.NEW) {
           try {
-            await dataFetcher.addMonster({ name: monsterName, xp: monsterXp });
+            const addedMonster = await dataFetcher.addMonster({
+              name: monsterName,
+              xp: monsterXp,
+            });
+            onSubmit("Successfully added monster", addedMonster);
           } catch (err) {
             throw new Error("Error adding monster");
           }
@@ -34,11 +45,12 @@ export const MonsterForm = ({ monster, inputMode }: Props) => {
             if (!monster) {
               throw new Error("No monster id value");
             }
-            await dataFetcher.editMonster({
+            const editedMonster = await dataFetcher.editMonster({
               id: monster.id,
               name: monsterName,
               xp: monsterXp,
             });
+            onSubmit("Successfully edited monster", editedMonster);
           } catch (err) {
             throw new Error("Error adding monster");
           }
@@ -48,6 +60,7 @@ export const MonsterForm = ({ monster, inputMode }: Props) => {
       }
     } catch (err) {
       console.log("Error submitting form", err);
+      onSubmit(`Error submitting form: ${err}`);
     }
   };
 
@@ -91,7 +104,7 @@ export const MonsterForm = ({ monster, inputMode }: Props) => {
               },
               {
                 text: "Cancel",
-                onClick: async () => {},
+                onClick: onCancel,
                 variant: "tertiaryOutline",
               },
             ]}

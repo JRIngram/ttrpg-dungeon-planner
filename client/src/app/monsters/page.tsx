@@ -9,14 +9,18 @@ import { MonsterDataFetcher } from "@/services/MonsterDataFetcher";
 import { useQuery } from "@tanstack/react-query";
 import { FieldTextDisplayGroup } from "@/components/molecules/FieldTextDisplayGroup/FieldTextDisplayGroup";
 import { ButtonRow } from "@/components/molecules/ButtonRow/ButtonRow";
+import { type Monster as MonsterType } from "@/types/monster";
 
 export default function Monster() {
   const [selectedMonsterId, setSelectedMonsterId] = useState<string>();
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [inputFeedbackMessage, setInputFeedbackMessage] = useState<string>("");
 
   const {
     data,
     isLoading: isLoadingMonsters,
     isError: errorLoadingMonsters,
+    refetch,
   } = useQuery({
     queryKey: ["monster-list"],
     queryFn: () => {
@@ -30,20 +34,44 @@ export default function Monster() {
     id: monster.id,
   }));
 
+  const getSelectedMonster = (monsterList: MonsterType[], selectedId: string) =>
+    monsterList?.find((monster) => monster.id === selectedId);
+
   const renderMonsterDisplay = () => {
     if (!selectedMonsterId) {
       return (
         <>
           <p>Please selected a monster or create a new one below</p>
-          <MonsterForm inputMode={InputMode.NEW} />
+          <MonsterForm
+            inputMode={InputMode.NEW}
+            onSubmit={async (message, monster) => {
+              await refetch();
+              setInputFeedbackMessage(message);
+              setSelectedMonsterId(monster?.id);
+            }}
+            onCancel={() => {}}
+          />
         </>
       );
     } else {
-      const selectedMonster = data?.find(
-        (monster) => monster.id === selectedMonsterId
-      );
+      const selectedMonster = getSelectedMonster(data ?? [], selectedMonsterId);
 
       if (selectedMonster) {
+        if (isEditing) {
+          return (
+            <MonsterForm
+              inputMode={InputMode.EDIT}
+              monster={selectedMonster}
+              onSubmit={async (message, monster) => {
+                await refetch();
+                setIsEditing(false);
+                setInputFeedbackMessage(message);
+                setSelectedMonsterId(monster?.id);
+              }}
+              onCancel={() => setIsEditing(false)}
+            />
+          );
+        }
         const monsterFields = Object.entries(selectedMonster).map((e) => {
           return {
             fieldName: e[0],
@@ -58,7 +86,7 @@ export default function Monster() {
               buttons={[
                 {
                   text: "Edit",
-                  onClick: () => {},
+                  onClick: () => setIsEditing(true),
                   variant: "secondaryOutline",
                 },
                 {
@@ -85,15 +113,23 @@ export default function Monster() {
     <div className="flex">
       <NavDrawer
         items={monsters ?? []}
-        onSelect={(id) => setSelectedMonsterId(id)}
+        onSelect={(id) => {
+          setSelectedMonsterId(id);
+          setInputFeedbackMessage("");
+        }}
         defaultItem={{
           label: defaultNavDrawerLabel,
           onDefaultSelected: () => setSelectedMonsterId(""),
         }}
       />
       <main className="mx-auto w-3/6">
-        <p className="text-lg font-semibold">Monster</p>
+        <p className="text-lg font-semibold">
+          {selectedMonsterId
+            ? getSelectedMonster(data ?? [], selectedMonsterId)?.name
+            : "Monster"}
+        </p>
         {renderMonsterDisplay()}
+        {inputFeedbackMessage ?? <p>{inputFeedbackMessage}</p>}
       </main>
     </div>
   );
