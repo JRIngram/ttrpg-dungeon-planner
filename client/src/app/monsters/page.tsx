@@ -42,6 +42,7 @@ export default function Monster() {
       const selectedMonster = data?.find(
         (monster) => monster.id === selectedMonsterId
       );
+
       if (selectedMonster) {
         const monsterFields = Object.entries(selectedMonster).map((e) => {
           return {

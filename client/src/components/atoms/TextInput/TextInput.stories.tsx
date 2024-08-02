@@ -19,3 +19,13 @@ export const Primary: Story = {
     placeholder: "Some test placeholder text",
   },
 };
+
+export const WithInitialValue: Story = {
+  args: {
+    id: "test-id",
+    formInputName: "test-input",
+    ariaLabel: "A Test TextInput",
+    placeholder: "Some test placeholder text",
+    initialValue: "I am an initial value",
+  },
+};

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 type Props = {
   id: string;
@@ -6,6 +6,7 @@ type Props = {
   ariaLabel: string;
   placeholder: string;
   isRequired?: boolean;
+  initialValue?: string;
 };
 
 export const TextInput = ({
@@ -14,7 +15,10 @@ export const TextInput = ({
   placeholder,
   formInputName,
   isRequired = false,
+  initialValue = "",
 }: Props) => {
+  const [value, setValue] = useState<string>(initialValue);
+
   return (
     <div>
       <input
@@ -24,6 +28,8 @@ export const TextInput = ({
         type="text"
         aria-label={ariaLabel}
         placeholder={placeholder}
+        value={value}
+        onChange={(event) => setValue(event.target.value)}
         {...(isRequired ? { required: true } : {})}
       />
     </div>

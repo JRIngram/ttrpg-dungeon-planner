@@ -7,6 +7,7 @@ type Props = {
   formLabelText: string;
   placeholder: string;
   isRequired?: boolean;
+  initialValue?: string;
 };
 
 export const FormTextInput = ({
@@ -16,6 +17,7 @@ export const FormTextInput = ({
   placeholder,
   formInputName,
   isRequired = false,
+  initialValue = "",
 }: Props) => {
   return (
     <>
@@ -27,6 +29,7 @@ export const FormTextInput = ({
         ariaLabel={ariaLabel}
         placeholder={placeholder}
         formInputName={formInputName}
+        initialValue={initialValue}
         isRequired
       />
     </>

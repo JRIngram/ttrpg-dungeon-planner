@@ -2,6 +2,7 @@
 import { ButtonRow } from "@/components/molecules/ButtonRow/ButtonRow";
 import { FormTextInput } from "@/components/molecules/FormTextInput/FormTextInput";
 import { MonsterDataFetcher } from "@/services/MonsterDataFetcher";
+import { Monster } from "@/types/monster";
 
 export enum InputMode {
   "NEW",
@@ -10,10 +11,10 @@ export enum InputMode {
 
 type Props = {
   inputMode: InputMode;
-  monsterId?: string;
+  monster?: Monster;
 };
 
-export const MonsterForm = ({ monsterId, inputMode }: Props) => {
+export const MonsterForm = ({ monster, inputMode }: Props) => {
   const submitForm = async (formData: FormData) => {
     try {
       const monsterName = formData.get("monster-name")?.toString();
@@ -30,11 +31,11 @@ export const MonsterForm = ({ monsterId, inputMode }: Props) => {
           }
         } else if (inputMode === InputMode.EDIT) {
           try {
-            if (!monsterId) {
+            if (!monster) {
               throw new Error("No monster id value");
             }
             await dataFetcher.editMonster({
-              id: monsterId,
+              id: monster.id,
               name: monsterName,
               xp: monsterXp,
             });
@@ -60,6 +61,11 @@ export const MonsterForm = ({ monsterId, inputMode }: Props) => {
             ariaLabel="Monster name"
             formLabelText="Name"
             placeholder="e.g. Goblin"
+            initialValue={
+              inputMode === InputMode.EDIT && monster?.name
+                ? monster.name
+                : undefined
+            }
             isRequired
           />
           <FormTextInput
@@ -68,6 +74,11 @@ export const MonsterForm = ({ monsterId, inputMode }: Props) => {
             ariaLabel="Monster XP value"
             formLabelText="XP Value"
             placeholder="e.g. 50"
+            initialValue={
+              inputMode === InputMode.EDIT && monster?.xp
+                ? monster?.xp.toString()
+                : undefined
+            }
             isRequired
           />
           <ButtonRow
