@@ -1,8 +1,9 @@
 import { describe, it, expect } from "vitest";
 import { composeStory } from "@storybook/react";
-import Meta, { Default } from "./MonsterForm.stories";
+import Meta, { Default, WithInitialMonster } from "./MonsterForm.stories";
 import { render, screen } from "@testing-library/react";
 import Providers from "@/app/providers";
+import { monsterFixture } from "@/fixtures/Monster";
 import { InputMode } from "./MonsterForm";
 
 describe("MonsterForm", () => {
@@ -23,18 +24,18 @@ describe("MonsterForm", () => {
     expect(screen.getByRole("button", { name: "Cancel" })).toBeVisible();
   });
 
-  describe("Initial value", () => {
+  describe("With initial value", () => {
     it("displays monster values if monster passed and InputMode is EDIT", () => {
       const monsterFixture = {
         id: "1",
         name: "Test Monster",
-        xp: 10,
+        xp: 25,
       };
 
-      const MonsterForm = composeStory(Default, Meta);
+      const MonsterForm = composeStory(WithInitialMonster, Meta);
       render(
         <Providers>
-          <MonsterForm inputMode={InputMode.EDIT} monster={monsterFixture} />
+          <MonsterForm />
         </Providers>
       );
       const nameInput = screen.getByDisplayValue(monsterFixture.name);
@@ -48,16 +49,10 @@ describe("MonsterForm", () => {
     });
 
     it("does not display monster values if monster passed and InputMode is NEW", () => {
-      const monsterFixture = {
-        id: "1",
-        name: "Test Monster",
-        xp: 10,
-      };
-
-      const MonsterForm = composeStory(Default, Meta);
+      const MonsterForm = composeStory(WithInitialMonster, Meta);
       render(
         <Providers>
-          <MonsterForm inputMode={InputMode.NEW} monster={monsterFixture} />
+          <MonsterForm inputMode={InputMode.NEW} />
         </Providers>
       );
       const nameInput = screen.queryByDisplayValue(monsterFixture.name);
