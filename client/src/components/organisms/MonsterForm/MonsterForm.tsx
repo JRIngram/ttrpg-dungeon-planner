@@ -2,6 +2,7 @@
 import { ButtonRow } from "@/components/molecules/ButtonRow/ButtonRow";
 import { FormTextInput } from "@/components/molecules/FormTextInput/FormTextInput";
 import { MonsterDataFetcher } from "@/services/MonsterDataFetcher";
+import { Monster } from "@/types/monster";
 
 export enum InputMode {
   "NEW",
@@ -10,10 +11,17 @@ export enum InputMode {
 
 type Props = {
   inputMode: InputMode;
-  monsterId?: string;
+  onSubmit: (message: string, monster?: Monster) => void;
+  onCancel: () => void;
+  monster?: Monster;
 };
 
-export const MonsterForm = ({ monsterId, inputMode }: Props) => {
+export const MonsterForm = ({
+  monster,
+  inputMode,
+  onSubmit,
+  onCancel,
+}: Props) => {
   const submitForm = async (formData: FormData) => {
     try {
       const monsterName = formData.get("monster-name")?.toString();
@@ -24,20 +32,25 @@ export const MonsterForm = ({ monsterId, inputMode }: Props) => {
 
         if (inputMode === InputMode.NEW) {
           try {
-            await dataFetcher.addMonster({ name: monsterName, xp: monsterXp });
+            const addedMonster = await dataFetcher.addMonster({
+              name: monsterName,
+              xp: monsterXp,
+            });
+            onSubmit("Successfully added monster", addedMonster);
           } catch (err) {
             throw new Error("Error adding monster");
           }
         } else if (inputMode === InputMode.EDIT) {
           try {
-            if (!monsterId) {
+            if (!monster) {
               throw new Error("No monster id value");
             }
-            await dataFetcher.editMonster({
-              id: monsterId,
+            const editedMonster = await dataFetcher.editMonster({
+              id: monster.id,
               name: monsterName,
               xp: monsterXp,
             });
+            onSubmit("Successfully edited monster", editedMonster);
           } catch (err) {
             throw new Error("Error adding monster");
           }
@@ -47,6 +60,7 @@ export const MonsterForm = ({ monsterId, inputMode }: Props) => {
       }
     } catch (err) {
       console.log("Error submitting form", err);
+      onSubmit(`Error submitting form: ${err}`);
     }
   };
 
@@ -60,6 +74,11 @@ export const MonsterForm = ({ monsterId, inputMode }: Props) => {
             ariaLabel="Monster name"
             formLabelText="Name"
             placeholder="e.g. Goblin"
+            initialValue={
+              inputMode === InputMode.EDIT && monster?.name
+                ? monster.name
+                : undefined
+            }
             isRequired
           />
           <FormTextInput
@@ -68,6 +87,11 @@ export const MonsterForm = ({ monsterId, inputMode }: Props) => {
             ariaLabel="Monster XP value"
             formLabelText="XP Value"
             placeholder="e.g. 50"
+            initialValue={
+              inputMode === InputMode.EDIT && monster?.xp
+                ? monster?.xp.toString()
+                : undefined
+            }
             isRequired
           />
           <ButtonRow
@@ -80,7 +104,7 @@ export const MonsterForm = ({ monsterId, inputMode }: Props) => {
               },
               {
                 text: "Cancel",
-                onClick: async () => {},
+                onClick: onCancel,
                 variant: "tertiaryOutline",
               },
             ]}

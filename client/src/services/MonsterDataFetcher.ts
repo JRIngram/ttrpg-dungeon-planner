@@ -10,7 +10,6 @@ export class MonsterDataFetcher {
   getMonsterList = async (): Promise<Monster[]> => {
     const response = await fetch(this.requestEndpoint);
     const json = (await response.json()) as Promise<Monster[]>;
-    console.log(json);
     return json;
   };
 
@@ -48,7 +47,6 @@ export class MonsterDataFetcher {
     d.append("monster_xp", `${monster.xp}`);
     d.append("monster_name", monster.name);
 
-    console.log({ endpoint: `${this.requestEndpoint}/${monster.id}`, monster });
     const response = await fetch(`${this.requestEndpoint}/${monster.id}`, {
       method: "PUT",
       headers: {

@@ -1,7 +1,7 @@
 import { it, describe, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { composeStory } from "@storybook/react";
-import Meta, { Primary } from "./TextInput.stories"
+import Meta, { Primary } from "./TextInput.stories";
 
 describe("TextInput", () => {
   it("renders TextInput with correct aria-label and placeholder text", () => {
@@ -16,10 +16,29 @@ describe("TextInput", () => {
       />
     );
 
-    const textInput = screen.getByRole("textbox", { name: "A Test TextInput"})
+    const textInput = screen.getByRole("textbox", { name: "A Test TextInput" });
 
     expect(textInput).toBeVisible();
-    expect(screen.getByRole("textbox")).not.toBeRequired()
+    expect(screen.getByRole("textbox")).not.toBeRequired();
+  });
+
+  it("renders TextInput with initial value with correct aria-label and placeholder text", () => {
+    const TextInput = composeStory(Primary, Meta);
+    const ariaLabel = "A Test TextInput";
+    const placeholderText = "Some test placeholder text";
+    render(
+      <TextInput
+        id="test-id"
+        ariaLabel={ariaLabel}
+        placeholder={placeholderText}
+        initialValue="Test Iniital Value"
+      />
+    );
+
+    const textInput = screen.getByRole("textbox", { name: "A Test TextInput" });
+
+    expect(textInput).toBeVisible();
+    expect(screen.getByRole("textbox")).not.toBeRequired();
   });
 
   it("makes TextInput required if passed isRequired", () => {
@@ -35,6 +54,6 @@ describe("TextInput", () => {
       />
     );
 
-    expect(screen.getByRole("textbox")).toBeRequired()
-  })
+    expect(screen.getByRole("textbox")).toBeRequired();
+  });
 });
