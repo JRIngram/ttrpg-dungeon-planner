@@ -110,5 +110,10 @@ def edit_monster(monster_id):
 @app.route('/monster/<int:monster_id>', methods=['DELETE'])
 def delete_monster_by_id(monster_id):
     """Deletes monster from the database that matches monster_id"""
-    monster = monster_gateway.delete_monster(monster_id)
-    return jsonify(monster)
+    can_delete_monster = monster_gateway.can_delete_monster(monster_id)
+    if(can_delete_monster):
+        monster = monster_gateway.delete_monster(monster_id)
+        if(monster is None):
+            return jsonify({ "message": "Monster does not exist", "monster_id": monster_id})
+        return jsonify(monster)
+    return jsonify({"message": "Unable to delete. Monster in use"})
