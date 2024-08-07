@@ -61,12 +61,15 @@ class MonsterGatewaySingleton(metaclass=SingletonMeta):
         deleted_monster = cursor.fetchone()
         cursor.close()
         return deleted_monster
-    
+
     def can_delete_monster(self, monster_id: str) -> bool:
-        """Returns True if monster not in any Room entries; Returns False if monster in room entries"""
+        """
+            Returns True if monster not in any Room entries
+            Returns False if monster in room entries
+        """
         cursor = connect_to_db()
         cursor.execute("SELECT * FROM room_monster WHERE monster_id = %s;", (monster_id, ))
         room_monster_entry = cursor.fetchone()
-        if(room_monster_entry is None):
+        if room_monster_entry is None:
             return True
         return False

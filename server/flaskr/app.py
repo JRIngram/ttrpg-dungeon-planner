@@ -111,9 +111,9 @@ def edit_monster(monster_id):
 def delete_monster_by_id(monster_id):
     """Deletes monster from the database that matches monster_id"""
     can_delete_monster = monster_gateway.can_delete_monster(monster_id)
-    if(can_delete_monster):
+    if can_delete_monster:
         monster = monster_gateway.delete_monster(monster_id)
-        if(monster is None):
+        if monster is None:
             return jsonify({ "message": "Monster does not exist", "monster_id": monster_id}), 404
         return jsonify(monster)
     return jsonify({"message": "Unable to delete. Monster in use"}), 400
