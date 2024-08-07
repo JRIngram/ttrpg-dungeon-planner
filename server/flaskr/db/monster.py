@@ -26,6 +26,9 @@ class MonsterGatewaySingleton(metaclass=SingletonMeta):
         cursor = connect_to_db()
         cursor.execute("SELECT * FROM monster WHERE id = %s", (monster_id, ))
         monster = cursor.fetchone()
+        if monster is None:
+            cursor.close()
+            return monster
         monster["is_deletable"] = self.can_delete_monster(monster.get("id"))
         cursor.close()
         return monster
