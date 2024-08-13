@@ -33,6 +33,7 @@ const renderButtonRow = () => {
         buttonThreeSpy();
       },
       variant: "tertiaryOutline",
+      disabled: true,
     },
   ];
   return render(<ButtonRow buttons={buttons} />);
@@ -48,18 +49,29 @@ describe("ButtonRow", () => {
     expect(screen.getByRole("button", { name: "Button One" })).toBeVisible();
     expect(screen.getByRole("button", { name: "Button Two" })).toBeVisible();
     expect(screen.getByRole("button", { name: "Button Three" })).toBeVisible();
+    expect(
+      screen.getByRole("button", { name: "Button One" })
+    ).not.toBeDisabled();
+    expect(
+      screen.getByRole("button", { name: "Button Two" })
+    ).not.toBeDisabled();
+    expect(screen.getByRole("button", { name: "Button Three" })).toBeDisabled();
   });
 
   it("calls respective onClick functions when each button is pressed", async () => {
     renderButtonRow();
-    expect(buttonOneSpy).toBeCalledTimes(0)
-    expect(buttonTwoSpy).toBeCalledTimes(0)
-    expect(buttonThreeSpy).toBeCalledTimes(0)
-    await userEvent.click(screen.getByRole("button", { name: "Button One" }))
-    expect(buttonOneSpy).toBeCalledTimes(1)
-    await userEvent.click(screen.getByRole("button", { name: "Button Two" }))
-    expect(buttonTwoSpy).toBeCalledTimes(1)
-    await userEvent.click(screen.getByRole("button", { name: "Button Three" }))
-    expect(buttonThreeSpy).toBeCalledTimes(1)
+    expect(buttonOneSpy).toBeCalledTimes(0);
+    expect(buttonTwoSpy).toBeCalledTimes(0);
+    await userEvent.click(screen.getByRole("button", { name: "Button One" }));
+    expect(buttonOneSpy).toBeCalledTimes(1);
+    await userEvent.click(screen.getByRole("button", { name: "Button Two" }));
+    expect(buttonTwoSpy).toBeCalledTimes(1);
+  });
+
+  it("does not call onClick functions on disabled buttons", async () => {
+    renderButtonRow();
+    expect(buttonThreeSpy).toBeCalledTimes(0);
+    await userEvent.click(screen.getByRole("button", { name: "Button Three" }));
+    expect(buttonThreeSpy).toBeCalledTimes(0);
   });
 });
