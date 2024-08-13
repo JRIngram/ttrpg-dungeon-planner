@@ -75,7 +75,7 @@ export default function Monster() {
         const monsterFields = Object.entries(selectedMonster).map((e) => {
           return {
             fieldName: e[0],
-            fieldValue: e[1],
+            fieldValue: `${e[1]}`,
           };
         });
 
@@ -94,6 +94,7 @@ export default function Monster() {
                   text: "Delete",
                   onClick: () => {},
                   variant: "tertiaryOutline",
+                  disabled: !selectedMonster.isDeletable,
                 },
               ]}
             />

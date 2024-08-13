@@ -1,4 +1,4 @@
-import type { Monster } from "@/types/monster";
+import type { Monster, ServerMonster } from "@/types/monster";
 
 export class MonsterDataFetcher {
   readonly requestEndpoint: string;
@@ -7,16 +7,28 @@ export class MonsterDataFetcher {
     this.requestEndpoint = `${process.env.NEXT_PUBLIC_SERVER_HOST}:${process.env.NEXT_PUBLIC_SERVER_PORT}/monster`;
   }
 
+  mapServerMonsterToMonster = (monster: ServerMonster): Monster => {
+    const { id, name, xp } = monster;
+    return {
+      id,
+      name,
+      xp,
+      isDeletable: monster.is_deletable,
+    };
+  };
+
   getMonsterList = async (): Promise<Monster[]> => {
     const response = await fetch(this.requestEndpoint);
-    const json = (await response.json()) as Promise<Monster[]>;
-    return json;
+    const json = (await response.json()) as ServerMonster[];
+
+    return json.map((monster) => this.mapServerMonsterToMonster(monster));
   };
 
   getMonsterById = async (id: string): Promise<Monster> => {
     const response = await fetch(`${this.requestEndpoint}/${id}`);
-    const json = (await response.json()) as Promise<Monster>;
-    return json;
+    const json = (await response.json()) as ServerMonster;
+
+    return this.mapServerMonsterToMonster(json);
   };
 
   addMonster = async (
@@ -37,9 +49,9 @@ export class MonsterDataFetcher {
       }),
     });
 
-    const responseJson = (await response.json()) as Monster;
+    const responseJson = (await response.json()) as ServerMonster;
 
-    return responseJson;
+    return this.mapServerMonsterToMonster(responseJson);
   };
 
   editMonster = async (monster: Monster): Promise<Monster> => {
@@ -58,8 +70,8 @@ export class MonsterDataFetcher {
       }),
     });
 
-    const responseJson = (await response.json()) as Monster;
+    const responseJson = (await response.json()) as ServerMonster;
 
-    return responseJson;
+    return this.mapServerMonsterToMonster(responseJson);
   };
 }
