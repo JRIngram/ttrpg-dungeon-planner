@@ -41,7 +41,7 @@ export default function Monster() {
     if (!selectedMonsterId) {
       return (
         <>
-          <p>Please selected a monster or create a new one below</p>
+          <p>Please select a monster or create a new one below</p>
           <MonsterForm
             inputMode={InputMode.NEW}
             onSubmit={async (message, monster) => {
