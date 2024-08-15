@@ -1,4 +1,5 @@
-import type { Monster, ServerMonster } from "@/types/monster";
+import type { Monster, MonsterId, ServerMonster } from "@/types/monster";
+import { ServerError } from "@/types/ServerError";
 
 export class MonsterDataFetcher {
   readonly requestEndpoint: string;
@@ -24,8 +25,8 @@ export class MonsterDataFetcher {
     return json.map((monster) => this.mapServerMonsterToMonster(monster));
   };
 
-  getMonsterById = async (id: string): Promise<Monster> => {
-    const response = await fetch(`${this.requestEndpoint}/${id}`);
+  getMonsterById = async (monsterId: MonsterId): Promise<Monster> => {
+    const response = await fetch(`${this.requestEndpoint}/${monsterId}`);
     const json = (await response.json()) as ServerMonster;
 
     return this.mapServerMonsterToMonster(json);
@@ -71,6 +72,25 @@ export class MonsterDataFetcher {
     });
 
     const responseJson = (await response.json()) as ServerMonster;
+
+    return this.mapServerMonsterToMonster(responseJson);
+  };
+
+  deleteMonster = async (
+    monsterId: MonsterId
+  ): Promise<Monster | ServerError> => {
+    const response = await fetch(`${this.requestEndpoint}/${monsterId}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const responseJson = await response.json();
+
+    if (responseJson.message) {
+      return responseJson;
+    }
 
     return this.mapServerMonsterToMonster(responseJson);
   };

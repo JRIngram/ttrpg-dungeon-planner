@@ -10,11 +10,14 @@ import { useQuery } from "@tanstack/react-query";
 import { FieldTextDisplayGroup } from "@/components/molecules/FieldTextDisplayGroup/FieldTextDisplayGroup";
 import { ButtonRow } from "@/components/molecules/ButtonRow/ButtonRow";
 import { type Monster as MonsterType } from "@/types/monster";
+import { type ServerError } from "@/types/ServerError";
 
 export default function Monster() {
   const [selectedMonsterId, setSelectedMonsterId] = useState<string>();
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [inputFeedbackMessage, setInputFeedbackMessage] = useState<string>("");
+
+  const dataFetcher = new MonsterDataFetcher();
 
   const {
     data,
@@ -24,7 +27,6 @@ export default function Monster() {
   } = useQuery({
     queryKey: ["monster-list"],
     queryFn: () => {
-      const dataFetcher = new MonsterDataFetcher();
       return dataFetcher.getMonsterList();
     },
   });
@@ -80,8 +82,13 @@ export default function Monster() {
         });
 
         return (
-          <>
+          <div className="flex flex-col gap-4">
             <FieldTextDisplayGroup fields={monsterFields} />
+            {!selectedMonster.isDeletable && (
+              <p>
+                This monster is in use in a dungeon and so cannot be deleted.
+              </p>
+            )}
             <ButtonRow
               buttons={[
                 {
@@ -90,15 +97,27 @@ export default function Monster() {
                   variant: "secondaryOutline",
                 },
                 {
-                  // TODO only display if deltable
                   text: "Delete",
-                  onClick: () => {},
+                  onClick: async () => {
+                    const response =
+                      await dataFetcher.deleteMonster(selectedMonsterId);
+                    const serverMessage = (response as ServerError).message;
+                    console.log(serverMessage);
+                    if (serverMessage !== undefined) {
+                      console.log("in error state");
+                      setInputFeedbackMessage(serverMessage);
+                    } else {
+                      await refetch();
+                      setSelectedMonsterId(undefined);
+                      setInputFeedbackMessage("Successfully deleted monster");
+                    }
+                  },
                   variant: "tertiaryOutline",
                   disabled: !selectedMonster.isDeletable,
                 },
               ]}
             />
-          </>
+          </div>
         );
       }
     }

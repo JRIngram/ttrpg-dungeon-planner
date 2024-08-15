@@ -1,5 +1,7 @@
+export type MonsterId = string;
+
 export type Monster = {
-  id: string;
+  id: MonsterId;
   name: string;
   xp: number;
   isDeletable?: boolean;
