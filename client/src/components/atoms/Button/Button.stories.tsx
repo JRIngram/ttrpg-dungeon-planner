@@ -16,6 +16,6 @@ export const Primary: Story = {
     text: "Press me!",
     ariaLabel: "Press me!",
     onClick: () => console.log("clicked"),
-    variant: "primaryFilled"
+    variant: "primaryFilled",
   },
 };

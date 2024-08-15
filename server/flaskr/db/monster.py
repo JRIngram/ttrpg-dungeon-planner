@@ -13,9 +13,11 @@ class MonsterGatewaySingleton(metaclass=SingletonMeta):
         """Returns the results of a `SELECT * monster` from the DB"""
         cursor = connect_to_db()
         cursor.execute("SELECT * FROM monster")
-        monster = cursor.fetchall()
+        monsters = cursor.fetchall()
         cursor.close()
-        return monster
+        for monster in monsters:
+            monster["is_deletable"] = self.can_delete_monster(monster.get("id"))
+        return monsters
 
     def select_monster_by_id(self, monster_id: str):
         """
@@ -24,6 +26,10 @@ class MonsterGatewaySingleton(metaclass=SingletonMeta):
         cursor = connect_to_db()
         cursor.execute("SELECT * FROM monster WHERE id = %s", (monster_id, ))
         monster = cursor.fetchone()
+        if monster is None:
+            cursor.close()
+            return monster
+        monster["is_deletable"] = self.can_delete_monster(monster.get("id"))
         cursor.close()
         return monster
 
@@ -55,3 +61,15 @@ class MonsterGatewaySingleton(metaclass=SingletonMeta):
         deleted_monster = cursor.fetchone()
         cursor.close()
         return deleted_monster
+
+    def can_delete_monster(self, monster_id: str) -> bool:
+        """
+            Returns True if monster not in any Room entries
+            Returns False if monster in room entries
+        """
+        cursor = connect_to_db()
+        cursor.execute("SELECT * FROM room_monster WHERE monster_id = %s;", (monster_id, ))
+        room_monster_entry = cursor.fetchone()
+        if room_monster_entry is None:
+            return True
+        return False
