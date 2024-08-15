@@ -10,6 +10,7 @@ export type ButtonProps = {
   text: string;
   onClick: () => void;
   variant: Variants;
+  disabled?: boolean;
   isSubmit?: boolean;
   ariaLabel?: string;
 };
@@ -32,13 +33,28 @@ const styles = {
       outline: `text-tertiary-700 `,
       filled: `text-typography-50 bg-tertiary-700`,
     },
+    disabled: {
+      base: `border-gray-300 active:bg-gray-200 active:bg-gray-200 active:border-gray-200`,
+      filled: `text-gray-500 bg-gray-200`,
+    },
   },
 };
 
-export const Button = ({ text, ariaLabel, onClick, variant, isSubmit = false }: ButtonProps) => {
-  const getVariantStyle = () => {
+export const Button = ({
+  text,
+  ariaLabel,
+  onClick,
+  variant,
+  disabled = false,
+  isSubmit = false,
+}: ButtonProps) => {
+  const getVariantStyle = (isDisabled: boolean) => {
     const { base, variants } = styles;
-    const { primary, secondary, tertiary } = variants;
+    const { primary, secondary, tertiary, disabled } = variants;
+    if (isDisabled) {
+      return `${base} ${disabled.base} ${disabled.filled}`;
+    }
+
     switch (variant) {
       case "primaryFilled":
         return `${base} ${primary.base} ${primary.filled}`;
@@ -59,7 +75,8 @@ export const Button = ({ text, ariaLabel, onClick, variant, isSubmit = false }: 
     <button
       aria-label={ariaLabel}
       onClick={onClick}
-      className={getVariantStyle()}
+      className={`${getVariantStyle(disabled)} gray-400`}
+      disabled={disabled}
       type={isSubmit ? "submit" : "button"}
     >
       {text}

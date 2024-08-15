@@ -26,12 +26,14 @@ class MockMonsterCursorWithResults:
             {
                 "id": 1,
                 "name": "Test Monster 1",
-                "xp": 25
+                "xp": 25,
+                "is_deletable": False
             },
             {
                 "id": 2,
                 "name": "Test Monster 2",
-                "xp": 100
+                "xp": 100,
+                "is_deletable": True
             }
         ]
         return mock_monster_table
@@ -40,7 +42,8 @@ class MockMonsterCursorWithResults:
         return {
             "id": 1,
             "name": "Test Monster 1",
-            "xp": 25
+            "xp": 25,
+            "is_deletable": False
         }
 
 class MockMonsterCursorWithoutResults:
@@ -111,7 +114,8 @@ def test_select_all_monsters_returns_a_list_of_monsters(mocker):
     monster_gateway = MonsterGatewaySingleton()
     db_response = monster_gateway.select_all_monsters()
 
-    execute_spy.assert_called_once_with("SELECT * FROM monster",)
+    execute_spy.assert_any_call("SELECT * FROM monster",)
+    execute_spy.assert_any_call("SELECT * FROM room_monster WHERE monster_id = %s;", (1,),)
     close_spy.assert_called_once()
     assert len(db_response) == 2
     for monster in db_response:
@@ -148,9 +152,10 @@ def test_select_monster_by_id_returns_a_monster_dict(mocker):
     monster_gateway = MonsterGatewaySingleton()
     db_response = monster_gateway.select_monster_by_id("1")
 
-    execute_spy.assert_called_once_with(
+    execute_spy.assert_any_call(
         "SELECT * FROM monster WHERE id = %s", ("1", )
     )
+    execute_spy.assert_any_call("SELECT * FROM room_monster WHERE monster_id = %s;", (1,),)
     close_spy.assert_called_once()
 
     assert db_response["id"] == 1
@@ -167,7 +172,7 @@ def test_select_monster_by_id_returns_none_if_no_result(mocker):
     monster_gateway = MonsterGatewaySingleton()
     db_response = monster_gateway.select_monster_by_id("1")
 
-    execute_spy.assert_called_once_with(
+    execute_spy.assert_any_call(
         "SELECT * FROM monster WHERE id = %s", ("1", )
     )
     close_spy.assert_called_once()
