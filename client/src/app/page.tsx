@@ -1,5 +1,5 @@
 "use client";
-import { Toast } from "@/components/molecules/Toast/Toast";
+import { Toast, ToastType } from "@/components/molecules/Toast/Toast";
 import { useState } from "react";
 
 export default function Home() {
@@ -9,11 +9,7 @@ export default function Home() {
       <p>Hello world {isVisible}!</p>
       <p>{isVisible}</p>
       <button onClick={() => setIsVisible(!isVisible)}>Set visi</button>
-      {isVisible && (
-        <div className="animate-toastFadeIn w-6/12">
-          <Toast message="Oi ello there" />
-        </div>
-      )}
+      {isVisible && <Toast message="Oi ello there" type={ToastType.SUCCESS} />}
     </main>
   );
 }

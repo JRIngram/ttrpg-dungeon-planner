@@ -26,6 +26,9 @@ const config: Config = {
     colors: {
       white: "#FFFFFF",
       black: "#000000",
+      success: "#2e7d32",
+      error: "#d32f2f",
+      warning: "#ed6c02",
       gray: {
         200: "#e5e7eb",
         300: "#d1d5db",
