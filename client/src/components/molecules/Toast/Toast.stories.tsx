@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { ToastConfig, ToastType } from "./Toast";
+import { Toast } from "./Toast";
+import { ToastType } from "@/types/toast";
 
 const meta = {
   title: "Components/Molecules/Toast",
@@ -13,17 +14,19 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Success: Story = {
-  args: {
-    message: "Hello I am a successful toast",
-    type: ToastType.SUCCESS,
-  },
-};
-
 export const Error: Story = {
   args: {
     message: "Hello I am a erronous toast",
     type: ToastType.ERROR,
+    onClose: () => {},
+  },
+};
+
+export const Success: Story = {
+  args: {
+    message: "Hello I am a successful toast",
+    type: ToastType.SUCCESS,
+    onClose: () => {},
   },
 };
 
@@ -31,5 +34,6 @@ export const Warning: Story = {
   args: {
     message: "Hello I am a warningful toast",
     type: ToastType.WARNING,
+    onClose: () => {},
   },
 };

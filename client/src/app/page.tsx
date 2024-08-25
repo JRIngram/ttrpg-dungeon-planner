@@ -26,7 +26,7 @@ export default function Home() {
       {toasts.map(({ message, type }) => {
         return (
           <>
-            <Toast message={message} type={type} />
+            <Toast message={message} type={type} onClose={() => {}} />
           </>
         );
       })}

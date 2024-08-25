@@ -4,7 +4,7 @@ export enum ToastType {
   ERROR,
 }
 
-export type ToastConfig = {
+export interface ToastConfig {
   message: string;
   type: ToastType;
-};
+}
