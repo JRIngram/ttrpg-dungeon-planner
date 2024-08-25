@@ -1,15 +1,7 @@
-export enum ToastType {
-  SUCCESS,
-  WARNING,
-  ERROR,
-}
+import { type ToastConfig, ToastType } from "@/types/toast";
+import { useContext } from "react";
 
-type Props = {
-  message: string;
-  type: ToastType;
-};
-
-export const Toast = ({ message, type }: Props) => {
+export const Toast = ({ message, type }: ToastConfig) => {
   const getBackgroundColor = (type: ToastType) => {
     switch (type) {
       case ToastType.SUCCESS:
@@ -19,7 +11,6 @@ export const Toast = ({ message, type }: Props) => {
       case ToastType.ERROR:
         return "bg-error";
       default:
-        console.log("hit the default");
         return "bg-white";
     }
   };
