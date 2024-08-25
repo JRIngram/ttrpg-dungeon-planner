@@ -1,18 +1,15 @@
 "use client";
+import { Toast } from "@/components/molecules/Toast/Toast";
 import { useToasts, useToastsDispatch } from "@/context/ToastContext";
 import { ToastType } from "@/types/toast";
-// import { ToastConfig, ToastType } from "@/components/molecules/Toast/Toast";
-import { useState } from "react";
 
 export default function Home() {
-  const [isVisible, setIsVisible] = useState<boolean>(false);
   const dispatch = useToastsDispatch();
   const toasts = useToasts();
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <p>Hello world {isVisible}!</p>
-      <p>{isVisible}</p>
+      <p>Hello world!</p>
       <button
         onClick={() => {
           dispatch({
@@ -26,11 +23,11 @@ export default function Home() {
       >
         Make some toast!
       </button>
-      {toasts.map((t) => {
+      {toasts.map(({ message, type }) => {
         return (
-          <p key={t.message}>
-            Yummy toast {t.type} {t.message}
-          </p>
+          <>
+            <Toast message={message} type={type} />
+          </>
         );
       })}
     </main>
