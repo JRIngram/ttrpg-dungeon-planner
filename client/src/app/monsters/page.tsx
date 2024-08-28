@@ -154,15 +154,17 @@ export default function Monster() {
         }}
       />
       <main className="mx-auto w-3/6">
-        <div>
-          <p className="text-lg font-semibold">
-            {selectedMonsterId
-              ? getSelectedMonster(data ?? [], selectedMonsterId)?.name
-              : "Monster"}
-          </p>
-          {renderMonsterDisplay()}
+        <div className="flex flex-col gap-4">
+          <div>
+            <p className="text-lg font-semibold">
+              {selectedMonsterId
+                ? getSelectedMonster(data ?? [], selectedMonsterId)?.name
+                : "Monster"}
+            </p>
+            {renderMonsterDisplay()}
+          </div>
+          <ToastList toastList={toasts} />
         </div>
-        <ToastList toastList={toasts} />
       </main>
     </div>
   );
