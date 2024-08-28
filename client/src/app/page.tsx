@@ -11,20 +11,6 @@ export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <p>Hello world!</p>
-      <button
-        onClick={() => {
-          dispatch({
-            type: "add",
-            toast: {
-              type: ToastType.SUCCESS,
-              message: "Hi Lucy",
-            },
-          });
-        }}
-      >
-        Make some toast!
-      </button>
-      <ToastList toastList={toasts} />
     </main>
   );
 }
