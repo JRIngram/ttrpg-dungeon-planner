@@ -6,6 +6,7 @@ import React from "react";
  */
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ToastContext, ToastProvider } from "@/context/ToastContext";
 
 const makeQueryClient = () => {
   return new QueryClient({
@@ -47,7 +48,13 @@ const Providers = ({
   const queryClient = getQueryClient();
 
   return (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    <>
+      <ToastProvider>
+        <QueryClientProvider client={queryClient}>
+          {children}
+        </QueryClientProvider>
+      </ToastProvider>
+    </>
   );
 };
 

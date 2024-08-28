@@ -13,10 +13,22 @@ const config: Config = {
         "gradient-conic":
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
+      keyframes: {
+        fadeIn: {
+          "0%": { opacity: "0", width: "25%" },
+          "100%": { opacity: "1", width: "50%" },
+        },
+      },
+      animation: {
+        toastFadeIn: "fadeIn .25s ease-in-out",
+      },
     },
     colors: {
       white: "#FFFFFF",
       black: "#000000",
+      success: "#2e7d32",
+      error: "#d32f2f",
+      warning: "#ed6c02",
       gray: {
         200: "#e5e7eb",
         300: "#d1d5db",

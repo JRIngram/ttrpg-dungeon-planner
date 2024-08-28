@@ -1,8 +1,10 @@
 "use client";
 import { ButtonRow } from "@/components/molecules/ButtonRow/ButtonRow";
 import { FormTextInput } from "@/components/molecules/FormTextInput/FormTextInput";
+import { useToastsDispatch } from "@/context/ToastContext";
 import { MonsterDataFetcher } from "@/services/MonsterDataFetcher";
 import { Monster } from "@/types/monster";
+import { ToastType } from "@/types/toast";
 
 export enum InputMode {
   "NEW",
@@ -11,7 +13,7 @@ export enum InputMode {
 
 type Props = {
   inputMode: InputMode;
-  onSubmit: (message: string, monster?: Monster) => void;
+  onSubmit: (monster?: Monster) => void;
   onCancel: () => void;
   monster?: Monster;
 };
@@ -22,6 +24,7 @@ export const MonsterForm = ({
   onSubmit,
   onCancel,
 }: Props) => {
+  const dispatch = useToastsDispatch();
   const submitForm = async (formData: FormData) => {
     try {
       const monsterName = formData.get("monster-name")?.toString();
@@ -36,7 +39,14 @@ export const MonsterForm = ({
               name: monsterName,
               xp: monsterXp,
             });
-            onSubmit("Successfully added monster", addedMonster);
+            onSubmit(addedMonster);
+            dispatch({
+              type: "add",
+              toast: {
+                message: `Added monster: ${monsterName}`,
+                type: ToastType.SUCCESS,
+              },
+            });
           } catch (err) {
             throw new Error("Error adding monster");
           }
@@ -50,7 +60,14 @@ export const MonsterForm = ({
               name: monsterName,
               xp: monsterXp,
             });
-            onSubmit("Successfully edited monster", editedMonster);
+            onSubmit(editedMonster);
+            dispatch({
+              type: "add",
+              toast: {
+                message: `Edited monster: ${editedMonster.name}`,
+                type: ToastType.SUCCESS,
+              },
+            });
           } catch (err) {
             throw new Error("Error adding monster");
           }
@@ -59,8 +76,13 @@ export const MonsterForm = ({
         throw new Error("Invalid form values");
       }
     } catch (err) {
-      console.log("Error submitting form", err);
-      onSubmit(`Error submitting form: ${err}`);
+      dispatch({
+        type: "add",
+        toast: {
+          message: `Error submitting form: ${err}`,
+          type: ToastType.ERROR,
+        },
+      });
     }
   };
 
