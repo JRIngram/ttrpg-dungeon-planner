@@ -1,5 +1,6 @@
 "use client";
 import { Toast } from "@/components/molecules/Toast/Toast";
+import { ToastList } from "@/components/organisms/ToastList/ToastList";
 import { useToasts, useToastsDispatch } from "@/context/ToastContext";
 import { ToastType } from "@/types/toast";
 
@@ -16,20 +17,14 @@ export default function Home() {
             type: "add",
             toast: {
               type: ToastType.SUCCESS,
-              message: "Hi there",
+              message: "Hi Lucy",
             },
           });
         }}
       >
         Make some toast!
       </button>
-      {toasts.map(({ message, type }) => {
-        return (
-          <>
-            <Toast message={message} type={type} onClose={() => {}} />
-          </>
-        );
-      })}
+      <ToastList toastList={toasts} />
     </main>
   );
 }

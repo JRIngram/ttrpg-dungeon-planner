@@ -26,14 +26,16 @@ describe("Toast", () => {
   ])(
     "Displays the passed text and correct prefix",
     (message, type, expected) => {
-      render(<Toast message={message} type={type} onClose={() => {}} />);
+      render(<Toast id="1" message={message} type={type} onClose={() => {}} />);
       expect(screen.getByText(expected)).toBeVisible();
     }
   );
 
   it("calls onClose when close is pressed", async () => {
+    const message = "Hello I am a erronous toast";
     render(
       <Toast
+        id={message.replace(" ", "-")}
         message={"Hello I am a erronous toast"}
         type={ToastType.ERROR}
         onClose={onCloseSpy}

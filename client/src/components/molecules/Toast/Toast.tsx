@@ -1,11 +1,11 @@
 import { type ToastConfig, ToastType } from "@/types/toast";
 import { useContext } from "react";
 
-interface Props extends ToastConfig {
+export interface ToastProps extends ToastConfig {
   onClose: () => void;
 }
 
-export const Toast = ({ message, type, onClose }: Props) => {
+export const Toast = ({ message, type, onClose }: ToastProps) => {
   const getBackgroundColor = (type: ToastType): string => {
     switch (type) {
       case ToastType.SUCCESS:

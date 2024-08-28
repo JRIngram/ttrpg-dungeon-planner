@@ -11,9 +11,16 @@ export const ToastContext = createContext<ToastConfig[]>([]);
 
 const ToastDispatchContext = createContext<Dispatch<Action>>(() => {});
 
-type Action = {
-  type: "add" | "remove";
-  toast: ToastConfig;
+type Action = AddAction | RemoveAction;
+
+type AddAction = {
+  type: "add";
+  toast: Omit<ToastConfig, "id">;
+};
+
+type RemoveAction = {
+  type: "remove";
+  toast: Pick<ToastConfig, "id">;
 };
 
 const initialToasts: ToastConfig[] = [];
@@ -21,9 +28,15 @@ const initialToasts: ToastConfig[] = [];
 const toastReducer = (toasts: ToastConfig[], action: Action) => {
   switch (action.type) {
     case "add":
-      return [...toasts, { ...action.toast }];
+      return [
+        ...toasts,
+        {
+          ...action.toast,
+          id: `${action.toast.message.replaceAll(" ", "-")}-${new Date().getTime()} }`,
+        },
+      ];
     case "remove":
-      return toasts.slice(1);
+      return toasts.filter((toast) => toast.id !== action.toast.id);
     default:
       return toasts;
   }

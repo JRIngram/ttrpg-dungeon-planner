@@ -16,6 +16,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Error: Story = {
   args: {
+    id: "1",
     message: "Hello I am a erronous toast",
     type: ToastType.ERROR,
     onClose: () => {},
@@ -24,6 +25,7 @@ export const Error: Story = {
 
 export const Success: Story = {
   args: {
+    id: "1",
     message: "Hello I am a successful toast",
     type: ToastType.SUCCESS,
     onClose: () => {},
@@ -32,6 +34,7 @@ export const Success: Story = {
 
 export const Warning: Story = {
   args: {
+    id: "1",
     message: "Hello I am a warningful toast",
     type: ToastType.WARNING,
     onClose: () => {},

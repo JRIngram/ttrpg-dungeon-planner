@@ -5,6 +5,7 @@ export enum ToastType {
 }
 
 export interface ToastConfig {
+  id: string;
   message: string;
   type: ToastType;
 }
