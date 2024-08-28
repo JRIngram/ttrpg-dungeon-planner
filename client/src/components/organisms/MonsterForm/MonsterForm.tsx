@@ -96,7 +96,7 @@ export const MonsterForm = ({
             ariaLabel="Monster name"
             formLabelText="Name"
             placeholder="e.g. Goblin"
-            pattern="\w{1,}"
+            pattern="(\w|\s){1,}"
             patternMessage="Alphanumeric characters"
             initialValue={
               inputMode === InputMode.EDIT && monster?.name

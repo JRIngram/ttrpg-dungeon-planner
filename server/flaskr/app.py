@@ -119,8 +119,9 @@ def edit_monster(
 
 
 @app.route('/monster/<int:monster_id>', methods=['DELETE'])
-@ValidateParameters()
-def delete_monster_by_id(monster_id: str = Route()):
+def delete_monster_by_id(
+    monster_id: str
+):
     """Deletes monster from the database that matches monster_id"""
     can_delete_monster = monster_gateway.can_delete_monster(monster_id)
     if can_delete_monster:
