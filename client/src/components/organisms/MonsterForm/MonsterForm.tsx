@@ -43,7 +43,7 @@ export const MonsterForm = ({
             dispatch({
               type: "add",
               toast: {
-                message: "Successfully added monster",
+                message: `Added monster: ${monsterName}`,
                 type: ToastType.SUCCESS,
               },
             });
@@ -64,7 +64,7 @@ export const MonsterForm = ({
             dispatch({
               type: "add",
               toast: {
-                message: "Successfully edited monster",
+                message: `Edited monster: ${editedMonster.name}`,
                 type: ToastType.SUCCESS,
               },
             });
