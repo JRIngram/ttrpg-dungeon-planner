@@ -5,6 +5,8 @@ type Props = {
   formInputName: string;
   ariaLabel: string;
   placeholder: string;
+  pattern: string;
+  patternMessage?: string;
   isRequired?: boolean;
   initialValue?: string;
 };
@@ -14,6 +16,8 @@ export const TextInput = ({
   id,
   placeholder,
   formInputName,
+  pattern,
+  patternMessage,
   isRequired = false,
   initialValue = "",
 }: Props) => {
@@ -30,6 +34,8 @@ export const TextInput = ({
         placeholder={placeholder}
         value={value}
         onChange={(event) => setValue(event.target.value)}
+        pattern={pattern}
+        title={patternMessage}
         {...(isRequired ? { required: true } : {})}
       />
     </div>
