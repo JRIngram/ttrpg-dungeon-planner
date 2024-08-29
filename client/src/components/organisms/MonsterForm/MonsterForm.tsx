@@ -35,45 +35,66 @@ export const MonsterForm = ({
 
         if (inputMode === InputMode.NEW) {
           try {
-            const addedMonster = await dataFetcher.addMonster({
+            const { monster, httpCode } = await dataFetcher.addMonster({
               name: monsterName,
               xp: monsterXp,
             });
-            onSubmit(addedMonster);
-            dispatch({
-              type: "add",
-              toast: {
-                message: `Added monster: ${monsterName}`,
-                type: ToastType.SUCCESS,
-              },
-            });
+            if (monster) {
+              onSubmit(monster);
+              dispatch({
+                type: "add",
+                toast: {
+                  message: `Added monster: ${monsterName}`,
+                  type: ToastType.SUCCESS,
+                },
+              });
+            } else {
+              dispatch({
+                type: "add",
+                toast: {
+                  message: `Could not add monster. HTTP ${httpCode}`,
+                  type: ToastType.WARNING,
+                },
+              });
+            }
           } catch (err) {
-            throw new Error("Error adding monster");
+            throw new Error("could not add monster");
           }
         } else if (inputMode === InputMode.EDIT) {
           try {
             if (!monster) {
-              throw new Error("No monster id value");
+              throw new Error("no monster id value");
             }
-            const editedMonster = await dataFetcher.editMonster({
-              id: monster.id,
-              name: monsterName,
-              xp: monsterXp,
-            });
-            onSubmit(editedMonster);
-            dispatch({
-              type: "add",
-              toast: {
-                message: `Edited monster: ${editedMonster.name}`,
-                type: ToastType.SUCCESS,
-              },
-            });
+            const { monster: editedMonster, httpCode } =
+              await dataFetcher.editMonster({
+                id: monster.id,
+                name: monsterName,
+                xp: monsterXp,
+              });
+            if (editedMonster) {
+              onSubmit(editedMonster);
+              dispatch({
+                type: "add",
+                toast: {
+                  message: `Edited monster: ${editedMonster.name}`,
+                  type: ToastType.SUCCESS,
+                },
+              });
+            } else {
+              dispatch({
+                type: "add",
+                toast: {
+                  message: `Could not edit monster. HTTP ${httpCode}`,
+                  type: ToastType.WARNING,
+                },
+              });
+            }
           } catch (err) {
-            throw new Error("Error adding monster");
+            throw new Error("failed to add monster");
           }
         }
       } else {
-        throw new Error("Invalid form values");
+        throw new Error("invalid form values");
       }
     } catch (err) {
       dispatch({
