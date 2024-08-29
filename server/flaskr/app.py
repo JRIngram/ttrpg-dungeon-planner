@@ -92,7 +92,7 @@ def get_monster_by_id(monster_id: str = Route()):
 @app.route('/monster', methods=['POST'])
 @ValidateParameters()
 def create_monster(
-    monster_name: str = Json(min_str_length = 1, pattern="(\w|\s){1,}"),
+    monster_name: str = Json(min_str_length = 1, pattern="(\\w|\\s){1,}"),
     monster_xp: int = Json(min_int = 1)
 ):
     """Creates a monster using monster_name and monster_xp"""
@@ -107,7 +107,7 @@ def create_monster(
 @ValidateParameters()
 def edit_monster(
     monster_id: str = Route(),
-    monster_name: str = Json(min_str_length = 1, pattern="\w{1,}"),
+    monster_name: str = Json(min_str_length = 1, pattern="\\w{1,}"),
     monster_xp: int = Json(min_int = 1)
     ):
     """Updates the monster in the database that matches monster_id"""
