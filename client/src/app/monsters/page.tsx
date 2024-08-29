@@ -101,15 +101,15 @@ export default function Monster() {
                 {
                   text: "Delete",
                   onClick: async () => {
-                    const response =
+                    const { message, httpCode } =
                       await dataFetcher.deleteMonster(selectedMonsterId);
-                    const serverMessage = (response as ServerError).message;
+                    const serverMessage = message;
                     if (serverMessage !== undefined) {
                       dispatch({
                         type: "add",
                         toast: {
                           type: ToastType.ERROR,
-                          message: serverMessage,
+                          message: `${serverMessage}; HTTP ${httpCode}`,
                         },
                       });
                     } else {
