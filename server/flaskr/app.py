@@ -5,6 +5,7 @@
 
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+from flask_parameter_validation import ValidateParameters, Route, Json
 
 from db.dungeon import DungeonGatewaySingleton
 from db.trap import TrapGatewaySingleton
@@ -81,14 +82,19 @@ def get_monster():
 
 
 @app.route('/monster/<int:monster_id>')
-def get_monster_by_id(monster_id):
+@ValidateParameters()
+def get_monster_by_id(monster_id: str = Route()):
     """Fetches the monster that matches the monster_id from the database"""
     monster = monster_gateway.select_monster_by_id(monster_id)
     return jsonify(monster)
 
 
 @app.route('/monster', methods=['POST'])
-def create_monster():
+@ValidateParameters()
+def create_monster(
+    monster_name: str = Json(min_str_length = 1, pattern="(\\w|\\s){1,}", blacklist="<>;"),
+    monster_xp: int = Json(min_int = 1)
+):
     """Creates a monster using monster_name and monster_xp"""
     request_data = request.get_json()
     monster_name = request_data['monster_name']
@@ -98,7 +104,12 @@ def create_monster():
 
 
 @app.route('/monster/<int:monster_id>', methods=['PUT'])
-def edit_monster(monster_id):
+@ValidateParameters()
+def edit_monster(
+    monster_id: str = Route(),
+    monster_name: str = Json(min_str_length = 1, pattern="\\w{1,}", blacklist="<>;"),
+    monster_xp: int = Json(min_int = 1)
+    ):
     """Updates the monster in the database that matches monster_id"""
     request_data = request.get_json()
     monster_name = request_data['monster_name']
@@ -108,7 +119,10 @@ def edit_monster(monster_id):
 
 
 @app.route('/monster/<int:monster_id>', methods=['DELETE'])
-def delete_monster_by_id(monster_id):
+@ValidateParameters()
+def delete_monster_by_id(
+    monster_id: int = Route(blacklist="<>;")
+):
     """Deletes monster from the database that matches monster_id"""
     can_delete_monster = monster_gateway.can_delete_monster(monster_id)
     if can_delete_monster:

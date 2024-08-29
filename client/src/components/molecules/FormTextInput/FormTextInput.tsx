@@ -6,6 +6,8 @@ type Props = {
   ariaLabel: string;
   formLabelText: string;
   placeholder: string;
+  pattern: string;
+  patternMessage?: string;
   isRequired?: boolean;
   initialValue?: string;
 };
@@ -16,6 +18,8 @@ export const FormTextInput = ({
   formLabelText,
   placeholder,
   formInputName,
+  pattern,
+  patternMessage,
   isRequired = false,
   initialValue = "",
 }: Props) => {
@@ -30,6 +34,8 @@ export const FormTextInput = ({
         placeholder={placeholder}
         formInputName={formInputName}
         initialValue={initialValue}
+        pattern={pattern}
+        patternMessage={patternMessage}
         isRequired
       />
     </>

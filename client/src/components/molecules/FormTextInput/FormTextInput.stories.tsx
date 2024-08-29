@@ -18,5 +18,7 @@ export const Primary: Story = {
     formLabelText: "Test input label",
     ariaLabel: "Test input",
     placeholder: "Some placeholder text",
+    pattern: "[a-zA-Z]{1,}",
+    patternMessage: "Alphabetical characters only",
   },
 };

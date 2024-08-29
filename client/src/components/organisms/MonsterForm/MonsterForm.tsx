@@ -96,6 +96,8 @@ export const MonsterForm = ({
             ariaLabel="Monster name"
             formLabelText="Name"
             placeholder="e.g. Goblin"
+            pattern="(\w|\s){1,}"
+            patternMessage="Alphanumeric characters"
             initialValue={
               inputMode === InputMode.EDIT && monster?.name
                 ? monster.name
@@ -109,6 +111,8 @@ export const MonsterForm = ({
             ariaLabel="Monster XP value"
             formLabelText="XP Value"
             placeholder="e.g. 50"
+            pattern="[0-9]{1,}"
+            patternMessage="Numeric values"
             initialValue={
               inputMode === InputMode.EDIT && monster?.xp
                 ? monster?.xp.toString()

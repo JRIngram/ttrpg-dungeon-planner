@@ -17,6 +17,8 @@ export const Primary: Story = {
     formInputName: "test-input",
     ariaLabel: "A Test TextInput",
     placeholder: "Some test placeholder text",
+    pattern: "[a-zA-Z]{1,}",
+    patternMessage: "Alphabetical characters only",
   },
 };
 
@@ -27,5 +29,7 @@ export const WithInitialValue: Story = {
     ariaLabel: "A Test TextInput",
     placeholder: "Some test placeholder text",
     initialValue: "I am an initial value",
+    pattern: "[a-zA-Z]{1,}",
+    patternMessage: "Alphabetical characters only",
   },
 };
