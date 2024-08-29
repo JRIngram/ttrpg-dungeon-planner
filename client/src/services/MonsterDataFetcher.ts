@@ -81,9 +81,6 @@ export class MonsterDataFetcher {
   ): Promise<Monster | ServerError> => {
     const response = await fetch(`${this.requestEndpoint}/${monsterId}`, {
       method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
     });
 
     const responseJson = await response.json();
