@@ -9,7 +9,7 @@ Tech Stack:
 
 ## Set-up
 
-- Set up a postgreSQL database
+- Set up a postgreSQL database. This can be done manually or by running `docker compose up -d`
 - Create a .env file in `server/`. Copy the fields from `.env.example` and fill out the variables for your postgreSQL instance. This will allow the server to connect to the database.
 
 ### Server
