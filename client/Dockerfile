@@ -32,24 +32,12 @@ RUN npm run build
 
 EXPOSE 3000
 
-# # Run the application.
-# # CMD npm run build && npm start
-CMD npm run dev
+# # --- PRODUCTION ---
+FROM node:${NODE_VERSION}-alpine AS prod 
+WORKDIR /usr
+ENV NODE_ENV production
 
-
-    
-# # Copy the rest of the source files into the image.
-# COPY . .
-    
-# # RUN npm run tailwind:build
-# # RUN npm run build
-
-# # # Run the application as a non-root user.
-# # # USER node
-    
-# # # Expose the port that the application listens on.
-# EXPOSE 3000
-
-# # # Run the application.
-# # # CMD npm run build && npm start
-# CMD npm run dev
+COPY --from=build /usr/package*.json ./
+COPY --from=build /usr/.next ./
+RUN npm ci --omit=dev
+CMD npm start
