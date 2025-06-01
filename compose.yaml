@@ -1,4 +1,10 @@
 services:
+  client:
+    build:
+      context: ./client
+    ports:
+      - 3000:3000
+    env_file: "./client/.env"
   dungeon-planner-server:
     build:
       context: ./server
