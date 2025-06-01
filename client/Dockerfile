@@ -16,6 +16,8 @@ FROM node:${NODE_VERSION}-alpine AS build
 WORKDIR /usr
 
 COPY . .
+RUN ls -la /usr
+CMD cat /usr/package.json
 
 # Download dependencies as a separate step to take advantage of Docker's caching.
 # Leverage a cache mount to /root/.npm to speed up subsequent builds.
@@ -37,7 +39,10 @@ FROM node:${NODE_VERSION}-alpine AS prod
 WORKDIR /usr
 ENV NODE_ENV production
 
-COPY --from=build /usr/package*.json ./
-COPY --from=build /usr/.next ./
+COPY --from=build /usr/package*json ./
+COPY --from=build /usr/.next ./.next
 RUN npm ci --omit=dev
+CMD ls -la
+CMD cat package.json
+EXPOSE 3000
 CMD npm start
