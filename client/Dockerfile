@@ -8,14 +8,14 @@
 
 ARG NODE_VERSION=22.12.0
 
-FROM node:${NODE_VERSION}-alpine
-
+# --- BUILD ---
+FROM node:${NODE_VERSION}-alpine AS build
 # Use production node environment by default.
-ENV NODE_ENV development
+# ENV NODE_ENV production
 
 WORKDIR /usr
 
-COPY package.json package-lock.json ./
+COPY . .
 
 # Download dependencies as a separate step to take advantage of Docker's caching.
 # Leverage a cache mount to /root/.npm to speed up subsequent builds.
@@ -24,22 +24,32 @@ COPY package.json package-lock.json ./
 RUN --mount=type=bind,source=package.json,target=package.json \
     --mount=type=bind,source=package-lock.json,target=package-lock.json \
     --mount=type=cache,target=/root/.npm \
-    npm ci 
+    npm ci
 # THE ABOVE ISNT USING A DEV BUILD!!!!
 
-    
-# Copy the rest of the source files into the image.
-COPY . .
-    
-# RUN npm run tailwind:build
-# RUN npm run build
+RUN npm run tailwind:build
+RUN npm run build
 
-# # Run the application as a non-root user.
-# # USER node
-    
-# # Expose the port that the application listens on.
 EXPOSE 3000
 
 # # Run the application.
 # # CMD npm run build && npm start
 CMD npm run dev
+
+
+    
+# # Copy the rest of the source files into the image.
+# COPY . .
+    
+# # RUN npm run tailwind:build
+# # RUN npm run build
+
+# # # Run the application as a non-root user.
+# # # USER node
+    
+# # # Expose the port that the application listens on.
+# EXPOSE 3000
+
+# # # Run the application.
+# # # CMD npm run build && npm start
+# CMD npm run dev
