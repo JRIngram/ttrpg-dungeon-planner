@@ -1,10 +1,11 @@
+# TODO - Add production builds. Currently only dev builds are created!
 services:
   client:
     build:
       context: ./client
     ports:
       - 3000:3000
-    env_file: "./client/.env"
+    env_file: "./client/.env.local"
     environment:
       - NODE_ENV=development
   dungeon-planner-server:

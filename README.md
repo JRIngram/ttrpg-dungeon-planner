@@ -11,7 +11,7 @@ Tech Stack:
 
 - Set up a postgreSQL database. This can be done manually or by running `docker compose up -d`. When running in Docker create a `.env` file in `server/`. Copy the fields from `.env.example` and fill out the variables for your postgreSQL instance.
 - Create a `.env` file in `server/`. Copy the fields from `.env.example` and fill out the variables for your postgreSQL instance. This will allow the server to connect to the database. **Note:** When running in docker, the host should be the name of the container, i.e. dungeon-planner-db.
-- - Create a `.env` file in `client/`. Copy the fields from `.env.example` and fill out the variables to allow for a connection from the client to the server.
+- Create a `.env.local` file in `client/`. Copy the fields from `.env.example` and fill out the variables to allow for a connection from the client to the server.
 
 ### Server
 
