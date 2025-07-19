@@ -1,0 +1,26 @@
+# TODO - Add production builds. Currently only dev builds are created!
+services:
+  client:
+    build:
+      context: ./client
+    ports:
+      - 3000:3000
+    env_file: "./client/.env.local"
+    environment:
+      - NODE_ENV=development
+  dungeon-planner-server:
+    build:
+      context: ./server
+    ports:
+      - 5000:5000
+    env_file: "./server/.env"
+  dungeon-planner-db:
+    image: postgres:17.4
+    restart: always
+    env_file: "./db/.env"
+    ports:
+      - 5432:5432
+    volumes:
+      - ./db/:/docker-entrypoint-initdb.d
+volumes:
+  pgdata:
