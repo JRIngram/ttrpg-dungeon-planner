@@ -1,0 +1,18 @@
+<h1>{{ room.name }}</h1>
+<p>{{room.description}}</p>
+<p>Traps:</p>
+{% if room.traps %}
+    <ul>
+        {% for trap in room.traps.all %}
+            <li>{{trap.name}}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+<p>Monsters:</p>
+{% if room.monsters %}
+    <ul>
+        {% for monster in room.monsters.all %}
+            <li>{{monster.name}} - {{monster.xp}}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
