@@ -1,0 +1,18 @@
+meta {
+  name: Create Monster
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://localhost:8000/dungeonPlanner/monster
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "name": "Goblin Archer",
+    "xp": 50
+  }
+}

@@ -56,6 +56,9 @@ cd ./server/flaskr/
 pytest
 ```
 
+#### Bruno
+Bruno is being used as a tool to test our HTTP end points. The bruno collection can be seen at `TTRPG-Planner-Bruno`.
+
 ### Client
 
 Unit tests:

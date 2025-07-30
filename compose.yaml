@@ -12,8 +12,10 @@ services:
     build:
       context: ./server
     ports:
-      - 5000:5000
-    env_file: "./server/.env"
+      - 8000:8000
+    depends_on:
+      dungeon-planner-db:
+        condition: service_healthy
   dungeon-planner-db:
     image: postgres:17.4
     restart: always
@@ -22,5 +24,11 @@ services:
       - 5432:5432
     volumes:
       - ./db/:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
 volumes:
   pgdata:

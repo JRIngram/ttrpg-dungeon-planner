@@ -38,9 +38,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'corsheaders'
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -74,9 +78,14 @@ WSGI_APPLICATION = 'ttrpgPlanner.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
+    # WARNING - Change these to match your actual DB
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'dungeon-planner',
+        'HOST': 'dungeon-planner-db', # localhost if running locally; db container name if not
+        'PORT': '5432',
+        'USER': 'postgres',
+        'PASSWORD': 'example',
     }
 }
 
@@ -121,3 +130,7 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Obviously change this when you move to production...
+# CORS_ALLOWED_ORIGINS = []
+CORS_ALLOW_ALL_ORIGINS = True

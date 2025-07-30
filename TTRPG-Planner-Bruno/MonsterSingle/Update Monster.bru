@@ -1,0 +1,18 @@
+meta {
+  name: Update Monster
+  type: http
+  seq: 3
+}
+
+put {
+  url: http://localhost:8000/dungeonPlanner/monster/2
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "name": "Mecha Demon",
+    "xp": 9001
+  }
+}
