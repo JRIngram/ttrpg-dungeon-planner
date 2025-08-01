@@ -1,11 +1,11 @@
 # dnd5e-dungeon-planner
 
-An application for planning dungeons in Dungeons & Dragons 5e.
+An application for planning dungeons in TTRPGs.
 
 Tech Stack:
-
+- Client: Next.js
+- Server: Python + Django
 - Database: PostgreSQL
-- Server: Python + Flask
 
 ## Set-up
 
@@ -17,31 +17,32 @@ Tech Stack:
 
 #### .venv
 
-Create a .venv folder:
+Change directory to the server: `cd server/`
 
+Create a .venv folder:
 - On macOS / Linux: `python3 -m venv .venv`
 - On Windows: `py -3 -m venv .venv`
 
 Activate the environment:
-
 - On macOS / Linux: `. .venv/bin/activate`
 - On Windows: `.venv\Scripts\activate`
 
 Install dependencies from requirements.txt:
-
 - `pip install -r requirements.txt`
 
+#### Migrations
+If running locally, run the database migrations: `python3 manage.py migrate`.
+
+**Note:** This happens automatically if you are running the app using docker compose.
+
 ## Running
+If you are running this application using docker, simply run `docker compose up`.
 
 ### Server
-
 ```bash
-cd ./server/flaskr/
-flask run
+cd ./server
+python3 manage.py runserver
 ```
-
-To run the linter, run from server:
-`pylint --rcfile=pylintrc . --recursive=true`
 
 ### Client
 1. Run `npm run tailwind:build`
@@ -50,11 +51,6 @@ To run the linter, run from server:
 ## Tests
 
 ### Server
-
-```bash
-cd ./server/flaskr/
-pytest
-```
 
 #### Bruno
 Bruno is being used as a tool to test our HTTP end points. The bruno collection can be seen at `TTRPG-Planner-Bruno`.
@@ -67,3 +63,12 @@ Unit tests:
 cd client/
 npm run test
 ```
+
+## Database Migrations
+If you want to create additional database migrations within the server, perform the following actions.
+
+Firstly, you will want to update the models within the django application. [See the documentation here](https://docs.djangoproject.com/en/5.2/topics/db/models/).
+
+Once the models have been updated, create the migrations. [See the documentation here](https://docs.djangoproject.com/en/5.2/ref/django-admin/#django-admin-makemigrations). Ultimately the command you will want to run is: `python3 manage.py makemigrations dungeonPlanner -n <MIGRATION_NAME>`
+
+Finally, run the new migrations: `python3 manage.py migrate`

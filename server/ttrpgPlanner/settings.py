@@ -11,9 +11,29 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import os
+import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+env = environ.Env(
+    # set casting, default value
+    DB_NAME=(str, "dungeon-planner"),
+    DB_HOST=(str, "localhost"),
+    DB_PORT=(str, '5432'),
+    DB_USER=(str, 'postgres'),
+    DB_PASSWORD=(str, 'CHANGEME')
+)
+
+# # Take environment variables from .env file
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+
+DB_NAME = env('DB_NAME')
+DB_HOST = env('DB_HOST')
+DB_PORT = env('DB_PORT')
+DB_USER = env('DB_USER')
+DB_PASSWORD = env('DB_PASSWORD')
 
 
 # Quick-start development settings - unsuitable for production
@@ -81,11 +101,11 @@ DATABASES = {
     # WARNING - Change these to match your actual DB
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'dungeon-planner',
-        'HOST': 'dungeon-planner-db', # localhost if running locally; db container name if not
-        'PORT': '5432',
-        'USER': 'postgres',
-        'PASSWORD': 'example',
+        'NAME': DB_NAME,
+        'HOST': DB_HOST,
+        'PORT': DB_PORT,
+        'USER': DB_USER,
+        'PASSWORD': DB_PASSWORD,
     }
 }
 
