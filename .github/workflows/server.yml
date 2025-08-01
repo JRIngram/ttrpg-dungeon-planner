@@ -23,7 +23,7 @@ jobs:
         pip install -r requirements.txt
     - name: Analysing the code with pylint
       run: |
-        pylint --rcfile=pylintrc . --recursive=true
+        pylint --rcfile=pylintrc . --recursive=true --load-plugins pylint_django --django-settings-module=ttrpgPlanner.settings dungeonPlanner
   unit-test:
     needs: [lint]
     runs-on: ubuntu-latest
@@ -42,5 +42,5 @@ jobs:
           pip install -r requirements.txt
       - name: Unit Tests
         run: |
-          pytest
+          python manage.py test
 

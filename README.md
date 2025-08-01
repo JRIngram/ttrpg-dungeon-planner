@@ -53,7 +53,21 @@ python3 manage.py runserver
 ### Server
 
 #### Bruno
+
 Bruno is being used as a tool to test our HTTP end points. The bruno collection can be seen at `TTRPG-Planner-Bruno`.
+
+#### Linter
+To run the linter for the server run the following:
+```bash
+cd server # if not already in the server directory
+pylint --rcfile=pylintrc . --recursive=true --load-plugins pylint_django dungeonPlanner
+```
+
+#### Unit tests
+
+To run unit tests against the server, run the following command: `python manage.py test`
+
+Note that this will create a test database that will be torn down at the end of the test run. This creates and destroys test tables in the database defined in your .env files. This means that when running locally the env file should have the host as `localhost` and when running in a container the host name should be the container that runs the database, e.g. `dungeon-planner-db`. The credentials to log into the database should also be those used to log in to the database on the host.
 
 ### Client
 

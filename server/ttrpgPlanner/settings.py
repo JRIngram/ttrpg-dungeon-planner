@@ -106,6 +106,9 @@ DATABASES = {
         'PORT': DB_PORT,
         'USER': DB_USER,
         'PASSWORD': DB_PASSWORD,
+        "TEST": {
+            "NAME": "test_dungeonplanner_db",
+        },
     }
 }
 

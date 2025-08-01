@@ -1,3 +1,6 @@
+"""
+Register models for the Django admin site
+"""
 from django.contrib import admin
 
 # Register your models here.
