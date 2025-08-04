@@ -5,7 +5,7 @@ services:
       context: ./client
     ports:
       - 3000:3000
-    env_file: "./client/.env.local"
+    env_file: "./client/.env.development"
     environment:
       - NODE_ENV=development
   dungeon-planner-server:
@@ -13,6 +13,7 @@ services:
       context: ./server
     ports:
       - 8000:8000
+    env_file: ./server/.env
     depends_on:
       dungeon-planner-db:
         condition: service_healthy
