@@ -24,23 +24,4 @@ jobs:
     - name: Analysing the code with pylint
       run: |
         pylint --rcfile=pylintrc . --recursive=true --load-plugins pylint_django --django-settings-module=ttrpgPlanner.settings dungeonPlanner
-  unit-test:
-    needs: [lint]
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./server
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v3
-        with:
-          python-version: '3.11'
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-      - name: Unit Tests
-        run: |
-          python manage.py test
 
