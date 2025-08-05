@@ -30,6 +30,13 @@ RUN adduser \
     --uid "${UID}" \
     appuser
 
+# Install OS dependencies for psycopg
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libpq-dev \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
+
 # Download dependencies as a separate step to take advantage of Docker's caching.
 # Leverage a cache mount to /root/.cache/pip to speed up subsequent builds.
 # Leverage a bind mount to requirements.txt to avoid having to copy them into
@@ -48,5 +55,4 @@ COPY . .
 EXPOSE 8000
 
 # Run the application.
-CMD ls -la
-CMD cd ./flaskr/ && flask run --host="0.0.0.0" -p 5000
+CMD sh -c "python3 manage.py migrate && python3 manage.py runserver 0.0.0.0:8000"
