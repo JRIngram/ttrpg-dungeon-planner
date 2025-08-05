@@ -11,7 +11,7 @@ export class MonsterDataFetcher {
   readonly requestEndpoint: string;
 
   constructor() {
-    this.requestEndpoint = `${process.env.NEXT_PUBLIC_SERVER_HOST}:${process.env.NEXT_PUBLIC_SERVER_PORT}/monster`;
+    this.requestEndpoint = `${process.env.NEXT_PUBLIC_SERVER_HOST}:${process.env.NEXT_PUBLIC_SERVER_PORT}/dungeonPlanner/monster`;
   }
 
   isSuccessfulHTTPCode = (responseCode: number) => {
@@ -50,8 +50,8 @@ export class MonsterDataFetcher {
     monster: Pick<Monster, "name" | "xp">
   ): Promise<{ monster: Monster | undefined; httpCode: number }> => {
     const d = new FormData();
-    d.append("monster_xp", `${monster.xp}`);
-    d.append("monster_name", monster.name);
+    d.append("xp", `${monster.xp}`);
+    d.append("name", monster.name);
 
     const response = await fetch(this.requestEndpoint, {
       method: "POST",
@@ -59,8 +59,8 @@ export class MonsterDataFetcher {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        monster_xp: monster.xp,
-        monster_name: monster.name,
+        xp: monster.xp,
+        name: monster.name,
       }),
     });
 
@@ -82,8 +82,8 @@ export class MonsterDataFetcher {
     monster: Monster
   ): Promise<{ monster: Monster | undefined; httpCode: number }> => {
     const d = new FormData();
-    d.append("monster_xp", `${monster.xp}`);
-    d.append("monster_name", monster.name);
+    d.append("xp", `${monster.xp}`);
+    d.append("name", monster.name);
 
     const response = await fetch(`${this.requestEndpoint}/${monster.id}`, {
       method: "PUT",
@@ -91,8 +91,8 @@ export class MonsterDataFetcher {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        monster_xp: monster.xp,
-        monster_name: monster.name,
+        xp: monster.xp,
+        name: monster.name,
       }),
     });
 
