@@ -16,7 +16,7 @@ describe("MonsterDataFetcher", () => {
           id: "1",
           name: "Test Monster",
           xp: 25,
-          isDeletable: false,
+          isDeletable: true, // temporary whilst being hardecoded
         },
       ],
       [

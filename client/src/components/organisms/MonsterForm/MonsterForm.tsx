@@ -2,7 +2,7 @@
 import { ButtonRow } from "@/components/molecules/ButtonRow/ButtonRow";
 import { FormTextInput } from "@/components/molecules/FormTextInput/FormTextInput";
 import { useToastsDispatch } from "@/context/ToastContext";
-import { MonsterDataFetcher } from "@/services/MonsterDataFetcher";
+import { MonsterDataFetcher } from "@/services/MonsterDataFetcher/MonsterDataFetcher";
 import { Monster } from "@/types/monster";
 import { ToastType } from "@/types/toast";
 
@@ -25,6 +25,7 @@ export const MonsterForm = ({
   onCancel,
 }: Props) => {
   const dispatch = useToastsDispatch();
+  
   const submitForm = async (formData: FormData) => {
     try {
       const monsterName = formData.get("monster-name")?.toString();
@@ -35,12 +36,12 @@ export const MonsterForm = ({
 
         if (inputMode === InputMode.NEW) {
           try {
-            const { monster, httpCode } = await dataFetcher.addMonster({
+            const { entity, httpCode } = await dataFetcher.addSingle({
               name: monsterName,
               xp: monsterXp,
             });
-            if (monster) {
-              onSubmit(monster);
+            if (entity) {
+              onSubmit(entity);
               dispatch({
                 type: "add",
                 toast: {
@@ -65,8 +66,8 @@ export const MonsterForm = ({
             if (!monster) {
               throw new Error("no monster id value");
             }
-            const { monster: editedMonster, httpCode } =
-              await dataFetcher.editMonster({
+            const { entity: editedMonster, httpCode } =
+              await dataFetcher.editSingle({
                 id: monster.id,
                 name: monsterName,
                 xp: monsterXp,

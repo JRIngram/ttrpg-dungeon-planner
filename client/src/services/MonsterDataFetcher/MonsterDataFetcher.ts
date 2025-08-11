@@ -1,54 +1,33 @@
 import type { Monster, MonsterId, ServerMonster } from "@/types/monster";
-import { ServerError } from "@/types/ServerError";
+import { DataFetcher } from "../DataFetcher/DataFetcher";
 
-type MonsterDataFetcherResponse = {
-  httpCode: number;
-  monster?: Monster;
-  message?: string;
-};
-
-export class MonsterDataFetcher {
+export class MonsterDataFetcher extends DataFetcher<Monster> {
   readonly requestEndpoint: string;
 
   constructor() {
+    super()
     this.requestEndpoint = `${process.env.NEXT_PUBLIC_SERVER_HOST}:${process.env.NEXT_PUBLIC_SERVER_PORT}/dungeonPlanner/monster`;
   }
 
-  isSuccessfulHTTPCode = (responseCode: number) => {
-    const stringifiedResponseCode = `${responseCode}`;
-    return (
-      !stringifiedResponseCode.startsWith("4") &&
-      !stringifiedResponseCode.startsWith("5")
-    );
-  };
-
   mapServerMonsterToMonster = (monster: ServerMonster): Monster => {
     const { id, name, xp } = monster;
+    const IS_DELETABLE = true; // hardcoded for now :-)
     return {
       id,
       name,
       xp,
-      isDeletable: monster.is_deletable,
+      isDeletable: IS_DELETABLE,
     };
   };
 
-  getMonsterList = async (): Promise<Monster[]> => {
+  getList = async (): Promise<Monster[]> => {
     const response = await fetch(this.requestEndpoint);
     const json = (await response.json()) as ServerMonster[];
 
     return json.map((monster) => this.mapServerMonsterToMonster(monster));
   };
 
-  getMonsterById = async (monsterId: MonsterId): Promise<Monster> => {
-    const response = await fetch(`${this.requestEndpoint}/${monsterId}`);
-    const json = (await response.json()) as ServerMonster;
-
-    return this.mapServerMonsterToMonster(json);
-  };
-
-  addMonster = async (
-    monster: Pick<Monster, "name" | "xp">
-  ): Promise<{ monster: Monster | undefined; httpCode: number }> => {
+  addSingle = async (monster: Pick<Monster, "xp" | "name">): Promise<{ entity: Monster | undefined; httpCode: number; }> => {
     const d = new FormData();
     d.append("xp", `${monster.xp}`);
     d.append("name", monster.name);
@@ -66,21 +45,21 @@ export class MonsterDataFetcher {
 
     if (!this.isSuccessfulHTTPCode(response.status)) {
       return {
-        monster: undefined,
+        entity: undefined,
         httpCode: response.status,
       };
     } else {
       const responseJson = (await response.json()) as ServerMonster;
       return {
-        monster: this.mapServerMonsterToMonster(responseJson),
+        entity: this.mapServerMonsterToMonster(responseJson),
         httpCode: response.status,
       };
     }
-  };
+  }
 
-  editMonster = async (
+  editSingle = async (
     monster: Monster
-  ): Promise<{ monster: Monster | undefined; httpCode: number }> => {
+  ): Promise<{ entity: Monster | undefined, httpCode: number }> => {
     const d = new FormData();
     d.append("xp", `${monster.xp}`);
     d.append("name", monster.name);
@@ -98,41 +77,26 @@ export class MonsterDataFetcher {
 
     if (!this.isSuccessfulHTTPCode(response.status)) {
       return {
-        monster: undefined,
+        entity: undefined,
         httpCode: response.status,
       };
     } else {
       const responseJson = (await response.json()) as ServerMonster;
 
       return {
-        monster: this.mapServerMonsterToMonster(responseJson),
+        entity: this.mapServerMonsterToMonster(responseJson),
         httpCode: response.status,
       };
     }
   };
 
-  deleteMonster = async (
-    monsterId: MonsterId
-  ): Promise<MonsterDataFetcherResponse> => {
-    const response = await fetch(`${this.requestEndpoint}/${monsterId}`, {
+  async deleteSingle(id: string): Promise<{ httpCode: number; }> {
+    const response = await fetch(`${this.requestEndpoint}/${id}`, {
       method: "DELETE",
     });
 
-    const responseJson = await response.json();
-
-    if (!this.isSuccessfulHTTPCode(response.status)) {
-      return {
-        monster: undefined,
-        httpCode: response.status,
-        message: responseJson?.message,
-      };
-    } else {
-      const serverMonsterJson = responseJson as ServerMonster;
-
-      return {
-        monster: this.mapServerMonsterToMonster(serverMonsterJson),
-        httpCode: response.status,
-      };
-    }
-  };
+    return {
+      httpCode: response.status,
+    };
+  }
 }
