@@ -1,0 +1,18 @@
+meta {
+  name: Create Trap
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://localhost:8000/dungeonPlanner/trap
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "name": "Pit Trap",
+    "effect": "1d4 falling damage"
+  }
+}
