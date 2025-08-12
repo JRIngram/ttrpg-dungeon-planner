@@ -5,7 +5,7 @@ export class MonsterDataFetcher extends DataFetcher<Monster> {
   readonly requestEndpoint: string;
 
   constructor() {
-    super()
+    super();
     this.requestEndpoint = `${process.env.NEXT_PUBLIC_SERVER_HOST}:${process.env.NEXT_PUBLIC_SERVER_PORT}/dungeonPlanner/monster`;
   }
 
@@ -21,17 +21,13 @@ export class MonsterDataFetcher extends DataFetcher<Monster> {
   };
 
   getList = async (): Promise<Monster[]> => {
-    const response = await fetch(this.requestEndpoint);
-    const json = (await response.json()) as ServerMonster[];
+    const responseJson = await fetch(this.requestEndpoint);
+    const json = (await responseJson.json()) as ServerMonster[];
 
     return json.map((monster) => this.mapServerMonsterToMonster(monster));
   };
 
   addSingle = async (monster: Pick<Monster, "xp" | "name">): Promise<{ entity: Monster | undefined; httpCode: number; }> => {
-    const d = new FormData();
-    d.append("xp", `${monster.xp}`);
-    d.append("name", monster.name);
-
     const response = await fetch(this.requestEndpoint, {
       method: "POST",
       headers: {
@@ -60,10 +56,6 @@ export class MonsterDataFetcher extends DataFetcher<Monster> {
   editSingle = async (
     monster: Monster
   ): Promise<{ entity: Monster | undefined, httpCode: number }> => {
-    const d = new FormData();
-    d.append("xp", `${monster.xp}`);
-    d.append("name", monster.name);
-
     const response = await fetch(`${this.requestEndpoint}/${monster.id}`, {
       method: "PUT",
       headers: {

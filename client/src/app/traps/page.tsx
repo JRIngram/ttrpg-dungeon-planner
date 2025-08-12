@@ -3,17 +3,16 @@ import { useState } from "react";
 import { NavDrawer } from "@/components/molecules/NavDrawer/NavDrawer";
 import {
   InputMode,
-  MonsterForm,
 } from "@/components/organisms/MonsterForm/MonsterForm";
 import { TrapDataFetcher } from "@/services/TrapDataFetcher/TrapDataFetcher";
 import { useQuery } from "@tanstack/react-query";
 import { FieldTextDisplayGroup } from "@/components/molecules/FieldTextDisplayGroup/FieldTextDisplayGroup";
 import { ButtonRow } from "@/components/molecules/ButtonRow/ButtonRow";
-import { type Monster as MonsterType } from "@/types/monster";
 import { ToastList } from "@/components/organisms/ToastList/ToastList";
 import { useToasts, useToastsDispatch } from "@/context/ToastContext";
 import { ToastType } from "@/types/toast";
 import { Trap } from "@/types/trap";
+import { FormBuilder } from "@/components/organisms/FormBuilder/FormBuilder";
 
 export default function Monster() {
   const [selectedTrapId, setSelectedTrapId] = useState<string>();
@@ -21,7 +20,7 @@ export default function Monster() {
   const toasts = useToasts();
   const dispatch = useToastsDispatch();
 
-  const dataFetcher = new TrapDataFetcher();
+  const trapDataFetcher = new TrapDataFetcher();
 
   const {
     data,
@@ -31,7 +30,7 @@ export default function Monster() {
   } = useQuery({
     queryKey: ["trap-list"],
     queryFn: () => {
-      return dataFetcher.getTrapList();
+      return trapDataFetcher.getList();
     },
   });
 
@@ -44,94 +43,122 @@ export default function Monster() {
     trapList?.find((trap) => trap.id === selectedId);
 
   const renderTrapDisplay = () => {
+    const TrapForm = FormBuilder<Trap>
+    const formFields = [
+      {
+        id: "trap-name",
+        formInputName: "name",
+        ariaLabel: "Trap name",
+        formLabelText: "Name",
+        placeholder: "e.g. Hidden Pit",
+        pattern: `(\\w|\\s){1,}`,
+        patternMessage: "Alphanumeric characters",
+        initialValue: undefined,
+        isRequired: true,
+      },
+      {
+        id: "trap-effect",
+        formInputName: "effect",
+        ariaLabel: "Trap effect",
+        formLabelText: "Trap Effect",
+        placeholder: "e.g. 1d4 falling damage",
+        pattern: `(\\w|\\s){1,}`,
+        patternMessage: "Alphanumeric characters",
+        initialValue: undefined,
+        isRequired: true,
+      },
+    ]
+
     if (!selectedTrapId) {
       return (
         <>
           <p>Please select a trap or create a new one below</p>
-          {/* <MonsterForm
+          <TrapForm
+            dataFetcher={trapDataFetcher}
             inputMode={InputMode.NEW}
-            onSubmit={async (monster) => {
+            onCancelCallback={() => { return }}
+            onSubmitCallback={async (monster) => {
               await refetch();
               setSelectedTrapId(monster?.id);
             }}
-            onCancel={() => {}}
-          /> */}
+            fields={formFields}
+          />
         </>
       );
     } else {
-      const selectedMonster = getSelectedTrap(data ?? [], selectedTrapId);
-      return <p>To implement!</p>
-      // if (selectedMonster) {
-      //   if (isEditing) {
-      //     return (
-      //       <MonsterForm
-      //         inputMode={InputMode.EDIT}
-      //         monster={selectedMonster}
-      //         onSubmit={async (monster) => {
-      //           await refetch();
-      //           setIsEditing(false);
-      //           setSelectedTrapId(monster?.id);
-      //         }}
-      //         onCancel={() => setIsEditing(false)}
-      //       />
-      //     );
-      //   }
-      //   const monsterFields = Object.entries(selectedMonster).map((e) => {
-      //     return {
-      //       fieldName: e[0],
-      //       fieldValue: `${e[1]}`,
-      //     };
-      //   });
+      const selectedTrap = getSelectedTrap(data ?? [], selectedTrapId);
+      if (selectedTrap) {
+        if (isEditing) {
+          return (
+            <TrapForm
+              dataFetcher={trapDataFetcher}
+              inputMode={InputMode.EDIT}
+              existingEntity={selectedTrap}
+              onSubmitCallback={async (trap) => {
+                await refetch();
+                setIsEditing(false);
+                setSelectedTrapId(trap?.id);
+              }}
+              onCancelCallback={() => setIsEditing(false)}
+              fields={formFields}
+            />
+          );
+        }
+        const monsterFields = Object.entries(selectedTrap).map((e) => {
+          return {
+            fieldName: e[0],
+            fieldValue: `${e[1]}`,
+          };
+        });
 
-      //   return (
-      //     <div className="flex flex-col gap-4">
-      //       <FieldTextDisplayGroup fields={monsterFields} />
-      //       {!selectedMonster.isDeletable && (
-      //         <p>
-      //           This monster is in use in a dungeon and so cannot be deleted.
-      //         </p>
-      //       )}
-      //       <ButtonRow
-      //         buttons={[
-      //           {
-      //             text: "Edit",
-      //             onClick: () => setIsEditing(true),
-      //             variant: "secondaryOutline",
-      //           },
-      //           {
-      //             text: "Delete",
-      //             onClick: async () => {
-      //               const { message, httpCode } =
-      //                 await dataFetcher.deleteMonster(selectedTrapId);
-      //               const serverMessage = message;
-      //               if (serverMessage !== undefined) {
-      //                 dispatch({
-      //                   type: "add",
-      //                   toast: {
-      //                     type: ToastType.ERROR,
-      //                     message: `${serverMessage}; HTTP ${httpCode}`,
-      //                   },
-      //                 });
-      //               } else {
-      //                 await refetch();
-      //                 setSelectedTrapId(undefined);
-      //                 dispatch({
-      //                   type: "add",
-      //                   toast: {
-      //                     type: ToastType.SUCCESS,
-      //                     message: "Successfully deleted monster",
-      //                   },
-      //                 });
-      //               }
-      //             },
-      //             variant: "tertiaryOutline",
-      //             disabled: !selectedMonster.isDeletable,
-      //           },
-      //         ]}
-      //       />
-      //     </div>
-      //   );
-      // }
+        return (
+          <div className="flex flex-col gap-4">
+            <FieldTextDisplayGroup fields={monsterFields} />
+            {!selectedTrap.isDeletable && (
+              <p>
+                This monster is in use in a dungeon and so cannot be deleted.
+              </p>
+            )}
+            <ButtonRow
+              buttons={[
+                {
+                  text: "Edit",
+                  onClick: () => setIsEditing(true),
+                  variant: "secondaryOutline",
+                },
+                {
+                  text: "Delete",
+                  onClick: async () => {
+                    const { httpCode } =
+                      await trapDataFetcher.deleteSingle(selectedTrapId);
+                    if (!trapDataFetcher.isSuccessfulHTTPCode(httpCode)) {
+                      dispatch({
+                        type: "add",
+                        toast: {
+                          type: ToastType.WARNING,
+                          message: `Could not delete monster ${selectedTrap.name}. HTTP ${httpCode}`,
+                        },
+                      });
+                    } else {
+                      await refetch();
+                      setSelectedTrapId(undefined);
+                      dispatch({
+                        type: "add",
+                        toast: {
+                          type: ToastType.SUCCESS,
+                          message: "Successfully deleted monster",
+                        },
+                      });
+                    }
+                  },
+                  variant: "tertiaryOutline",
+                  disabled: !selectedTrap.isDeletable,
+                },
+              ]}
+            />
+          </div>
+        );
+      }
     }
   };
 
@@ -140,6 +167,10 @@ export default function Monster() {
     : errorLoadingTraps
       ? "Error"
       : "+ Create a new trap";
+
+  const pageTitle = selectedTrapId
+    ? getSelectedTrap(data ?? [], selectedTrapId)?.name
+    : "Trap"
 
   return (
     <div className="flex">
@@ -157,9 +188,7 @@ export default function Monster() {
         <div className="flex flex-col gap-4">
           <div>
             <p className="text-lg font-semibold">
-              {selectedTrapId
-                ? getSelectedTrap(data ?? [], selectedTrapId)?.name
-                : "Monster"}
+              {pageTitle}
             </p>
             {renderTrapDisplay()}
           </div>

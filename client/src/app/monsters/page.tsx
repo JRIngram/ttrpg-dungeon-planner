@@ -18,7 +18,7 @@ export default function Monster() {
   const toasts = useToasts();
   const dispatch = useToastsDispatch();
 
-  const dataFetcher = new MonsterDataFetcher();
+  const monsterDataFetcher = new MonsterDataFetcher();
 
   const {
     data,
@@ -28,7 +28,7 @@ export default function Monster() {
   } = useQuery({
     queryKey: ["monster-list"],
     queryFn: () => {
-      return dataFetcher.getList();
+      return monsterDataFetcher.getList();
     },
   });
 
@@ -72,7 +72,7 @@ export default function Monster() {
         <>
           <p>Please select a monster or create a new one below</p>
           <MonsterForm
-            dataFetcher={new MonsterDataFetcher()}
+            dataFetcher={monsterDataFetcher}
             inputMode={InputMode.NEW}
             onCancelCallback={() => { return }}
             onSubmitCallback={async (monster) => {
@@ -129,8 +129,8 @@ export default function Monster() {
                   text: "Delete",
                   onClick: async () => {
                     const { httpCode } =
-                      await dataFetcher.deleteSingle(selectedMonsterId);
-                    if (!dataFetcher.isSuccessfulHTTPCode(httpCode)) {
+                      await monsterDataFetcher.deleteSingle(selectedMonsterId);
+                    if (!monsterDataFetcher.isSuccessfulHTTPCode(httpCode)) {
                       dispatch({
                         type: "add",
                         toast: {
@@ -167,6 +167,10 @@ export default function Monster() {
       ? "Error"
       : "+ Create a new monster";
 
+  const pageTitle = selectedMonsterId
+    ? getSelectedMonster(data ?? [], selectedMonsterId)?.name
+    : "Monster"
+
   return (
     <div className="flex">
       <NavDrawer
@@ -183,9 +187,7 @@ export default function Monster() {
         <div className="flex flex-col gap-4">
           <div>
             <p className="text-lg font-semibold">
-              {selectedMonsterId
-                ? getSelectedMonster(data ?? [], selectedMonsterId)?.name
-                : "Monster"}
+              {pageTitle}
             </p>
             {renderMonsterDisplay()}
           </div>
