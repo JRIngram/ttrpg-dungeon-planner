@@ -1,9 +1,7 @@
 "use client";
 import { useState } from "react";
 import { NavDrawer } from "@/components/molecules/NavDrawer/NavDrawer";
-import {
-  InputMode,
-} from "@/components/organisms/MonsterForm/MonsterForm";
+import { InputMode } from "@/components/organisms/FormBuilder/FormBuilder";
 import { TrapDataFetcher } from "@/services/TrapDataFetcher/TrapDataFetcher";
 import { useQuery } from "@tanstack/react-query";
 import { FieldTextDisplayGroup } from "@/components/molecules/FieldTextDisplayGroup/FieldTextDisplayGroup";
@@ -11,10 +9,10 @@ import { ButtonRow } from "@/components/molecules/ButtonRow/ButtonRow";
 import { ToastList } from "@/components/organisms/ToastList/ToastList";
 import { useToasts, useToastsDispatch } from "@/context/ToastContext";
 import { ToastType } from "@/types/toast";
-import { Trap } from "@/types/trap";
+import { Trap as TrapType } from "@/types/trap";
 import { FormBuilder } from "@/components/organisms/FormBuilder/FormBuilder";
 
-export default function Monster() {
+export default function Trap() {
   const [selectedTrapId, setSelectedTrapId] = useState<string>();
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const toasts = useToasts();
@@ -34,16 +32,16 @@ export default function Monster() {
     },
   });
 
-  const monsters = data?.map((monster) => ({
-    label: monster.name,
-    id: monster.id,
+  const traps = data?.map((trap) => ({
+    label: trap.name,
+    id: trap.id,
   }));
 
-  const getSelectedTrap = (trapList: Trap[], selectedId: string) =>
+  const getSelectedTrap = (trapList: TrapType[], selectedId: string) =>
     trapList?.find((trap) => trap.id === selectedId);
 
   const renderTrapDisplay = () => {
-    const TrapForm = FormBuilder<Trap>
+    const TrapForm = FormBuilder<TrapType>
     const formFields = [
       {
         id: "trap-name",
@@ -77,9 +75,9 @@ export default function Monster() {
             dataFetcher={trapDataFetcher}
             inputMode={InputMode.NEW}
             onCancelCallback={() => { return }}
-            onSubmitCallback={async (monster) => {
+            onSubmitCallback={async (trap) => {
               await refetch();
-              setSelectedTrapId(monster?.id);
+              setSelectedTrapId(trap?.id);
             }}
             fields={formFields}
           />
@@ -104,7 +102,7 @@ export default function Monster() {
             />
           );
         }
-        const monsterFields = Object.entries(selectedTrap).map((e) => {
+        const trapFields = Object.entries(selectedTrap).map((e) => {
           return {
             fieldName: e[0],
             fieldValue: `${e[1]}`,
@@ -113,10 +111,10 @@ export default function Monster() {
 
         return (
           <div className="flex flex-col gap-4">
-            <FieldTextDisplayGroup fields={monsterFields} />
+            <FieldTextDisplayGroup fields={trapFields} />
             {!selectedTrap.isDeletable && (
               <p>
-                This monster is in use in a dungeon and so cannot be deleted.
+                This trap is in use in a dungeon and so cannot be deleted.
               </p>
             )}
             <ButtonRow
@@ -136,7 +134,7 @@ export default function Monster() {
                         type: "add",
                         toast: {
                           type: ToastType.WARNING,
-                          message: `Could not delete monster ${selectedTrap.name}. HTTP ${httpCode}`,
+                          message: `Could not delete trap ${selectedTrap.name}. HTTP ${httpCode}`,
                         },
                       });
                     } else {
@@ -146,7 +144,7 @@ export default function Monster() {
                         type: "add",
                         toast: {
                           type: ToastType.SUCCESS,
-                          message: "Successfully deleted monster",
+                          message: "Successfully deleted trap",
                         },
                       });
                     }
@@ -175,7 +173,7 @@ export default function Monster() {
   return (
     <div className="flex">
       <NavDrawer
-        items={monsters ?? []}
+        items={traps ?? []}
         onSelect={(id) => {
           setSelectedTrapId(id);
         }}
