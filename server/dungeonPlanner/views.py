@@ -5,7 +5,7 @@ from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
 from rest_framework import generics
 
-from dungeonPlanner.serializers import MonsterSerializer
+from dungeonPlanner.serializers import MonsterSerializer, TrapSerializer
 from .models import Monster, Trap, Room, Dungeon
 
 
@@ -34,13 +34,24 @@ class MonsterSingle(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = MonsterSerializer
     lookup_field = "id"
 
-def trap_single(request, trap_id):
+class TrapList(generics.ListCreateAPIView):
     """
-    Defines interactions for traps
-    """
+    Lists all traps, or allows the creation of a new traps
 
-    trap = get_object_or_404(Trap, pk=trap_id)
-    return render(request, "dungeonPlanner/trap.html", {"trap": trap})
+    Uses generic ListCreateAPIView to handle get and post requests
+    """
+    queryset = Trap.objects.all()
+    serializer_class = TrapSerializer
+
+class TrapSingle(generics.RetrieveUpdateDestroyAPIView):
+    """
+    Defines interactions on singular traps
+
+    Allows for retrieving, updating and destroying
+    """
+    queryset = Trap.objects.all()
+    serializer_class = TrapSerializer
+    lookup_field = "id"
 
 def room_single(request, room_id):
     """

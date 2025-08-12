@@ -3,7 +3,7 @@ Defines serializers for the dungeonPlanner app
 """
 
 from rest_framework import serializers
-from dungeonPlanner.models import Monster
+from dungeonPlanner.models import Monster, Trap
 
 class MonsterSerializer(serializers.ModelSerializer):
     """
@@ -26,3 +26,26 @@ class MonsterSerializer(serializers.ModelSerializer):
         """
 
         return Monster.objects.create(**validated_data)
+
+class TrapSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the Trap model
+    """
+
+    name = serializers.CharField(required=True)
+    effect = serializers.CharField(required=True)
+
+    class Meta:
+        """
+        Define serializer fields
+        """
+
+        model = Trap
+        fields = ['id', 'name', 'effect']
+
+    def create(self, validated_data):
+        """
+        Creates a trap from validated data
+        """
+
+        return Trap.objects.create(**validated_data)
