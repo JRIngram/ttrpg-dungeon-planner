@@ -42,10 +42,10 @@ class TrapSerializer(serializers.ModelSerializer):
 
         model = Trap
         fields = ['id', 'name', 'effect']
-    
-    def create(self, validate_data):
+
+    def create(self, validated_data):
         """
         Creates a trap from validated data
         """
 
-        return Trap.objects.create(**validate_data)
+        return Trap.objects.create(**validated_data)
