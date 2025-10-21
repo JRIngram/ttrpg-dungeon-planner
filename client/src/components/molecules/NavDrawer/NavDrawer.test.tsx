@@ -34,7 +34,7 @@ const renderButtonRow = (withDefault = false) => {
         items={items}
         onSelect={(id) => onSelectSpy(id)}
         defaultItem={defaultItem}
-      />
+      />,
     );
   }
 
@@ -69,7 +69,7 @@ describe("ButtonRow", () => {
     it("renders all buttons passed and default option", () => {
       renderButtonRow(true);
       expect(
-        screen.getByRole("button", { name: "Default Item" })
+        screen.getByRole("button", { name: "Default Item" }),
       ).toBeVisible();
       expect(screen.getByRole("button", { name: "Item One" })).toBeVisible();
       expect(screen.getByRole("button", { name: "Item Two" })).toBeVisible();
@@ -89,7 +89,7 @@ describe("ButtonRow", () => {
 
       expect(onDefaultSelectedSpy).toBeCalledTimes(0);
       await userEvent.click(
-        screen.getByRole("button", { name: "Default Item" })
+        screen.getByRole("button", { name: "Default Item" }),
       );
       expect(onDefaultSelectedSpy).toHaveBeenCalledOnce();
     });
