@@ -16,12 +16,19 @@ def index(request):
     return HttpResponse("Hello world!")
 
 class DungeonList(generics.ListCreateAPIView):
+    """
+    Lists all dungeons, or allows the creation of a new dungeons
+
+    Uses generic ListCreateAPIView to handle get and post requests
+    """
     queryset = Dungeon.objects.all()
     serializer_class = DungeonSerializer
- 
+
 class DungeonSingle(generics.RetrieveUpdateDestroyAPIView):
     """
-    Defines interactions for dungeons
+    Defines interactions on singular dungeons
+
+    Allows for retrieving, updating and destroying
     """
     queryset = Dungeon.objects.all()
     serializer_class = DungeonSerializer

@@ -6,6 +6,9 @@ from rest_framework import serializers
 from dungeonPlanner.models import Dungeon, Monster, Trap
 
 class DungeonSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the Dungeon model
+    """
     class Meta:
         """
         Define serializer fields
