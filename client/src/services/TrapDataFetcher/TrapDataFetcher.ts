@@ -1,4 +1,4 @@
-import { ServerTrap, Trap } from "@/types/trap";
+import type { AddTrap, ServerTrap, Trap } from "@/types/trap";
 import { DataFetcher } from "../DataFetcher/DataFetcher";
 
 export class TrapDataFetcher extends DataFetcher<Trap> {
@@ -27,9 +27,7 @@ export class TrapDataFetcher extends DataFetcher<Trap> {
     return responseJson.map((trap) => this.mapServerTrapToTrap(trap));
   };
 
-  addSingle = async (
-    trap: Pick<Trap, "name" | "effect">,
-  ): Promise<{ entity: Trap | undefined; httpCode: number }> => {
+  addSingle = async (trap: AddTrap): Promise<{ entity: Trap | undefined; httpCode: number; }> => {
     const response = await fetch(this.requestEndpoint, {
       method: "POST",
       headers: {

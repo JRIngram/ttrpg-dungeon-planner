@@ -5,7 +5,7 @@ from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
 from rest_framework import generics
 
-from dungeonPlanner.serializers import MonsterSerializer, TrapSerializer
+from dungeonPlanner.serializers import DungeonSerializer, MonsterSerializer, TrapSerializer
 from .models import Monster, Trap, Room, Dungeon
 
 
@@ -14,6 +14,25 @@ def index(request):
     Defines the index for the dungeon app
     """
     return HttpResponse("Hello world!")
+
+class DungeonList(generics.ListCreateAPIView):
+    """
+    Lists all dungeons, or allows the creation of a new dungeons
+
+    Uses generic ListCreateAPIView to handle get and post requests
+    """
+    queryset = Dungeon.objects.all()
+    serializer_class = DungeonSerializer
+
+class DungeonSingle(generics.RetrieveUpdateDestroyAPIView):
+    """
+    Defines interactions on singular dungeons
+
+    Allows for retrieving, updating and destroying
+    """
+    queryset = Dungeon.objects.all()
+    serializer_class = DungeonSerializer
+    lookup_field = "id"
 
 class MonsterList(generics.ListCreateAPIView):
     """
@@ -59,12 +78,4 @@ def room_single(request, room_id):
     """
 
     room = get_object_or_404(Room, pk=room_id)
-    return render(request, "dungeonPlanner/room.html", {"room": room})
-
-def dungeon_single(request, dungeon_id):
-    """
-    Defines interactions for dungeons
-    """
-    dungeon = get_object_or_404(Dungeon, pk=dungeon_id)
-    print(dungeon.rooms)
-    return render(request, "dungeonPlanner/dungeon.html", {"dungeon": dungeon})
+    return render(request, "dungeonPlanner/room.html", {"room": room })

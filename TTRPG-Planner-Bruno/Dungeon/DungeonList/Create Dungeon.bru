@@ -1,0 +1,25 @@
+meta {
+  name: Create Dungeon
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:8000/dungeonPlanner/dungeon
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "name": "The Temple of Dave",
+    "summary": "Explore the hidden ruins of the Temple of Dave, and find the hidden crystal of Daveth ",
+    "level_min": 1,
+    "level_max": 3,
+    "player_count": 4
+  }
+}
+
+settings {
+  encodeUrl: true
+}
