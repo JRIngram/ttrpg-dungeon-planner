@@ -7,6 +7,8 @@ export type Monster = {
   isDeletable?: boolean;
 };
 
+export type AddMonster = Exclude<Monster, 'id' | 'isDeletable'>
+
 export type ServerMonster = {
   id: string;
   name: string;
