@@ -6,7 +6,7 @@ import { FormBuilder } from "@/components/organisms/FormBuilder/FormBuilder";
 import { InputMode } from "@/components/organisms/FormBuilder/FormBuilder";
 import { NavDrawer } from "@/components/molecules/NavDrawer/NavDrawer";
 import { ToastList } from "@/components/organisms/ToastList/ToastList";
-import type { ToastType } from "@/types/toast";
+import { ToastType } from "@/types/toast";
 import type { Dungeon as DungeonType } from "@/types/dungeon";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
