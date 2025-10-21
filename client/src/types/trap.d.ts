@@ -7,7 +7,7 @@ export type Trap = {
   isDeletable?: boolean;
 };
 
-export type AddTrap = Exclude<Trap, 'id' | 'isDeletable'>
+export type AddTrap = Exclude<Trap, "id" | "isDeletable">;
 
 export type ServerTrap = {
   id: string;

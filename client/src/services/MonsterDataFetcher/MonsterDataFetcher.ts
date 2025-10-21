@@ -1,4 +1,9 @@
-import type { AddMonster, Monster, MonsterId, ServerMonster } from "@/types/monster";
+import type {
+  AddMonster,
+  Monster,
+  MonsterId,
+  ServerMonster,
+} from "@/types/monster";
 import { DataFetcher } from "../DataFetcher/DataFetcher";
 
 export class MonsterDataFetcher extends DataFetcher<Monster> {
@@ -27,7 +32,9 @@ export class MonsterDataFetcher extends DataFetcher<Monster> {
     return json.map((monster) => this.mapServerMonsterToMonster(monster));
   };
 
-  addSingle = async (monster: AddMonster): Promise<{ entity: Monster | undefined; httpCode: number; }> => {
+  addSingle = async (
+    monster: AddMonster,
+  ): Promise<{ entity: Monster | undefined; httpCode: number }> => {
     const response = await fetch(this.requestEndpoint, {
       method: "POST",
       headers: {

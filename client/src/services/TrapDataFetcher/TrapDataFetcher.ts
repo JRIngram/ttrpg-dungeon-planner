@@ -27,7 +27,9 @@ export class TrapDataFetcher extends DataFetcher<Trap> {
     return responseJson.map((trap) => this.mapServerTrapToTrap(trap));
   };
 
-  addSingle = async (trap: AddTrap): Promise<{ entity: Trap | undefined; httpCode: number; }> => {
+  addSingle = async (
+    trap: AddTrap,
+  ): Promise<{ entity: Trap | undefined; httpCode: number }> => {
     const response = await fetch(this.requestEndpoint, {
       method: "POST",
       headers: {
