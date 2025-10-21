@@ -27,7 +27,9 @@ export class MonsterDataFetcher extends DataFetcher<Monster> {
     return json.map((monster) => this.mapServerMonsterToMonster(monster));
   };
 
-  addSingle = async (monster: Pick<Monster, "xp" | "name">): Promise<{ entity: Monster | undefined; httpCode: number; }> => {
+  addSingle = async (
+    monster: Pick<Monster, "xp" | "name">,
+  ): Promise<{ entity: Monster | undefined; httpCode: number }> => {
     const response = await fetch(this.requestEndpoint, {
       method: "POST",
       headers: {
@@ -51,11 +53,11 @@ export class MonsterDataFetcher extends DataFetcher<Monster> {
         httpCode: response.status,
       };
     }
-  }
+  };
 
   editSingle = async (
-    monster: Monster
-  ): Promise<{ entity: Monster | undefined, httpCode: number }> => {
+    monster: Monster,
+  ): Promise<{ entity: Monster | undefined; httpCode: number }> => {
     const response = await fetch(`${this.requestEndpoint}/${monster.id}`, {
       method: "PUT",
       headers: {
@@ -82,7 +84,7 @@ export class MonsterDataFetcher extends DataFetcher<Monster> {
     }
   };
 
-  async deleteSingle(id: string): Promise<{ httpCode: number; }> {
+  async deleteSingle(id: string): Promise<{ httpCode: number }> {
     const response = await fetch(`${this.requestEndpoint}/${id}`, {
       method: "DELETE",
     });

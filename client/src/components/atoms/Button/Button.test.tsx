@@ -9,7 +9,7 @@ describe("Button", () => {
   it("renders Button with correct name and type", () => {
     const Button = composeStory(Primary, Meta);
     render(
-      <Button text={"Press me!"} ariaLabel={"Press me!"} onClick={() => {}} />
+      <Button text={"Press me!"} ariaLabel={"Press me!"} onClick={() => {}} />,
     );
 
     const button = screen.getByRole("button", { name: "Press me!" });
@@ -27,11 +27,11 @@ describe("Button", () => {
         ariaLabel={"Press me!"}
         onClick={() => {}}
         isSubmit={true}
-      />
+      />,
     );
     expect(screen.getByRole("button", { name: "Press me!" })).toHaveAttribute(
       "type",
-      "submit"
+      "submit",
     );
   });
 
@@ -53,7 +53,7 @@ describe("Button", () => {
         ariaLabel={"Press me!"}
         onClick={() => {}}
         disabled={true}
-      />
+      />,
     );
 
     const button = screen.getByRole("button", { name: "Press me!" });

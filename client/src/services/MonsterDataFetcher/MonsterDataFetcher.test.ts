@@ -36,7 +36,7 @@ describe("MonsterDataFetcher", () => {
     ])("maps %o correctly to %o", (serverMonster, expectedMapping) => {
       const monsterDataFetcher = new MonsterDataFetcher();
       expect(
-        monsterDataFetcher.mapServerMonsterToMonster(serverMonster)
+        monsterDataFetcher.mapServerMonsterToMonster(serverMonster),
       ).toEqual(expectedMapping);
     });
   });
