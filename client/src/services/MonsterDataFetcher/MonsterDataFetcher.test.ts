@@ -1,6 +1,5 @@
 import { vi, it, describe, expect } from "vitest";
 import { MonsterDataFetcher } from "./MonsterDataFetcher";
-import { ServerMonster } from "@/types/monster";
 
 describe("MonsterDataFetcher", () => {
   describe("mapServerMonsterToMonster", () => {
