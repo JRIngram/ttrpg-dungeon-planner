@@ -1,20 +1,19 @@
 "use client";
-import { useState } from "react";
-import { NavDrawer } from "@/components/molecules/NavDrawer/NavDrawer";
-import { InputMode } from "@/components/organisms/FormBuilder/FormBuilder";
-import { MonsterDataFetcher } from "@/services/MonsterDataFetcher/MonsterDataFetcher";
-import { useQuery } from "@tanstack/react-query";
-import { FieldTextDisplayGroup } from "@/components/molecules/FieldTextDisplayGroup/FieldTextDisplayGroup";
 import { ButtonRow } from "@/components/molecules/ButtonRow/ButtonRow";
-import { type Dungeon as DungeonType } from "@/types/dungeon";
-import { ToastList } from "@/components/organisms/ToastList/ToastList";
-import { useToasts, useToastsDispatch } from "@/context/ToastContext";
-import { ToastType } from "@/types/toast";
-import { FormBuilder } from "@/components/organisms/FormBuilder/FormBuilder";
 import { DungeonDataFetcher } from "@/services/DungeonDataFetcher/DungeonDataFetcher";
+import { FieldTextDisplayGroup } from "@/components/molecules/FieldTextDisplayGroup/FieldTextDisplayGroup";
+import { FormBuilder } from "@/components/organisms/FormBuilder/FormBuilder";
+import { InputMode } from "@/components/organisms/FormBuilder/FormBuilder";
+import { NavDrawer } from "@/components/molecules/NavDrawer/NavDrawer";
+import { ToastList } from "@/components/organisms/ToastList/ToastList";
+import type { ToastType } from "@/types/toast";
+import type { Dungeon as DungeonType } from "@/types/dungeon";
+import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { useToasts, useToastsDispatch } from "@/context/ToastContext";
 
 export default function Dungeon() {
-    const [selectedMonsterId, setSelectedMonsterId] = useState<string>();
+    const [selectedDungeonId, setSelectedDungeonId] = useState<string>();
     const [isEditing, setIsEditing] = useState<boolean>(false);
     const toasts = useToasts();
     const dispatch = useToastsDispatch();
@@ -23,25 +22,25 @@ export default function Dungeon() {
 
     const {
         data,
-        isLoading: isLoadingMonsters,
-        isError: errorLoadingMonsters,
+        isLoading: isLoadingDungeons,
+        isError: errorLoadingDungeons,
         refetch,
     } = useQuery({
-        queryKey: ["monster-list"],
+        queryKey: ["dungeon-list"],
         queryFn: () => {
             return dungeonDataFetcher.getList();
         },
     });
 
-    const monsters = data?.map((monster) => ({
-        label: monster.name,
-        id: monster.id,
+    const dungeons = data?.map((dungeon) => ({
+        label: dungeon.name,
+        id: dungeon.id,
     }));
 
-    const getSelectedMonster = (monsterList: DungeonType[], selectedId: string) =>
-        monsterList?.find((monster) => monster.id === selectedId);
+    const getSelectedDungeon = (dungeonList: DungeonType[], selectedId: string) =>
+        dungeonList?.find((dungeon) => dungeon.id === selectedId);
 
-    const renderMonsterDisplay = () => {
+    const renderDungeonDisplay = () => {
         const DungeonForm = FormBuilder<DungeonType>
         const formFields = [
             {
@@ -82,7 +81,7 @@ export default function Dungeon() {
                 formInputName: "levelMax",
                 ariaLabel: "Dungeon Maximum Level",
                 formLabelText: "Maximum Level",
-                placeholder: "1",
+                placeholder: "3",
                 pattern: `(\\d){1,}`,
                 patternMessage: "Numerical characters",
                 initialValue: undefined,
@@ -93,7 +92,7 @@ export default function Dungeon() {
                 formInputName: "playerCount",
                 ariaLabel: "Dungeon Player Count",
                 formLabelText: "Intended Player Count",
-                placeholder: "1",
+                placeholder: "4",
                 pattern: `(\\d){1,}`,
                 patternMessage: "Numerical characters",
                 initialValue: undefined,
@@ -101,36 +100,36 @@ export default function Dungeon() {
             },
         ]
 
-        if (!selectedMonsterId) {
+        if (!selectedDungeonId) {
             return (
                 <>
-                    <p>Please select a monster or create a new one below</p>
+                    <p>Please select a dungeon or create a new one below</p>
                     <DungeonForm
                         dataFetcher={dungeonDataFetcher}
                         inputMode={InputMode.NEW}
                         onCancelCallback={() => { return }}
-                        onSubmitCallback={async (monster) => {
+                        onSubmitCallback={async (dungeon) => {
                             await refetch();
-                            setSelectedMonsterId(monster?.id);
+                            setSelectedDungeonId(dungeon?.id);
                         }}
                         fields={formFields}
                     />
                 </>
             );
         } else {
-            const selectedMonster = getSelectedMonster(data ?? [], selectedMonsterId);
+            const selectedDungeon = getSelectedDungeon(data ?? [], selectedDungeonId);
 
-            if (selectedMonster) {
+            if (selectedDungeon) {
                 if (isEditing) {
                     return (
                         <DungeonForm
                             dataFetcher={new DungeonDataFetcher}
                             inputMode={InputMode.EDIT}
-                            existingEntity={selectedMonster}
-                            onSubmitCallback={async (monster) => {
+                            existingEntity={selectedDungeon}
+                            onSubmitCallback={async (dungeon) => {
                                 await refetch();
                                 setIsEditing(false);
-                                setSelectedMonsterId(monster?.id);
+                                setSelectedDungeonId(dungeon?.id);
                             }}
                             onCancelCallback={() => setIsEditing(false)}
                             fields={formFields}
@@ -138,7 +137,7 @@ export default function Dungeon() {
                     );
                 }
 
-                const monsterFields = Object.entries(selectedMonster).map((e) => {
+                const dungeonFields = Object.entries(selectedDungeon).map((e) => {
                     return {
                         fieldName: e[0],
                         fieldValue: `${e[1]}`,
@@ -146,7 +145,7 @@ export default function Dungeon() {
                 });
                 return (
                     <div className="flex flex-col gap-4">
-                        <FieldTextDisplayGroup fields={monsterFields} />
+                        <FieldTextDisplayGroup fields={dungeonFields} />
                         <ButtonRow
                             buttons={[
                                 {
@@ -158,23 +157,23 @@ export default function Dungeon() {
                                     text: "Delete",
                                     onClick: async () => {
                                         const { httpCode } =
-                                            await dungeonDataFetcher.deleteSingle(selectedMonsterId);
+                                            await dungeonDataFetcher.deleteSingle(selectedDungeonId);
                                         if (!dungeonDataFetcher.isSuccessfulHTTPCode(httpCode)) {
                                             dispatch({
                                                 type: "add",
                                                 toast: {
                                                     type: ToastType.WARNING,
-                                                    message: `Could not delete monster ${selectedMonster.name}. HTTP ${httpCode}`,
+                                                    message: `Could not delete dungeon ${selectedDungeon.name}. HTTP ${httpCode}`,
                                                 },
                                             });
                                         } else {
                                             await refetch();
-                                            setSelectedMonsterId(undefined);
+                                            setSelectedDungeonId(undefined);
                                             dispatch({
                                                 type: "add",
                                                 toast: {
                                                     type: ToastType.SUCCESS,
-                                                    message: "Successfully deleted monster",
+                                                    message: "Successfully deleted dungeon",
                                                 },
                                             });
                                         }
@@ -191,26 +190,26 @@ export default function Dungeon() {
         }
     };
 
-    const defaultNavDrawerLabel = isLoadingMonsters
+    const defaultNavDrawerLabel = isLoadingDungeons
         ? "Loading"
-        : errorLoadingMonsters
+        : errorLoadingDungeons
             ? "Error"
-            : "+ Create a new monster";
+            : "+ Create a new dungeon";
 
-    const pageTitle = selectedMonsterId
-        ? getSelectedMonster(data ?? [], selectedMonsterId)?.name
+    const pageTitle = selectedDungeonId
+        ? getSelectedDungeon(data ?? [], selectedDungeonId)?.name
         : "Dungeon"
 
     return (
         <div className="flex">
             <NavDrawer
-                items={monsters ?? []}
+                items={dungeons ?? []}
                 onSelect={(id) => {
-                    setSelectedMonsterId(id);
+                    setSelectedDungeonId(id);
                 }}
                 defaultItem={{
                     label: defaultNavDrawerLabel,
-                    onDefaultSelected: () => setSelectedMonsterId(""),
+                    onDefaultSelected: () => setSelectedDungeonId(""),
                 }}
             />
             <main className="mx-auto w-3/6">
@@ -219,7 +218,7 @@ export default function Dungeon() {
                         <p className="text-lg font-semibold">
                             {pageTitle}
                         </p>
-                        {renderMonsterDisplay()}
+                        {renderDungeonDisplay()}
                     </div>
                     <ToastList toastList={toasts} />
                 </div>
