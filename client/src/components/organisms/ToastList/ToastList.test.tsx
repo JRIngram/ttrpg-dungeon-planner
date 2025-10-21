@@ -20,7 +20,7 @@ describe("ToastList", () => {
             type: ToastType.WARNING,
           },
         ]}
-      />
+      />,
     );
 
     expect(screen.getAllByRole("button", { name: "Close" })).toHaveLength(2);

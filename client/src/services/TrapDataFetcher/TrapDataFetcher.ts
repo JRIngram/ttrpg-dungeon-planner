@@ -18,16 +18,18 @@ export class TrapDataFetcher extends DataFetcher<Trap> {
       effect,
       isDeletable: IS_DELETABLE,
     };
-  }
+  };
 
   getList = async (): Promise<Trap[]> => {
-    const response = await fetch(this.requestEndpoint)
-    const responseJson = (await response.json()) as ServerTrap[]
+    const response = await fetch(this.requestEndpoint);
+    const responseJson = (await response.json()) as ServerTrap[];
 
     return responseJson.map((trap) => this.mapServerTrapToTrap(trap));
-  }
+  };
 
-  addSingle = async (trap: AddTrap): Promise<{ entity: Trap | undefined; httpCode: number; }> => {
+  addSingle = async (
+    trap: AddTrap,
+  ): Promise<{ entity: Trap | undefined; httpCode: number }> => {
     const response = await fetch(this.requestEndpoint, {
       method: "POST",
       headers: {
@@ -35,7 +37,7 @@ export class TrapDataFetcher extends DataFetcher<Trap> {
       },
       body: JSON.stringify({
         name: trap.name,
-        effect: trap.effect
+        effect: trap.effect,
       }),
     });
 
@@ -51,11 +53,11 @@ export class TrapDataFetcher extends DataFetcher<Trap> {
         httpCode: response.status,
       };
     }
-  }
+  };
 
   editSingle = async (
-    trap: Trap
-  ): Promise<{ entity: Trap | undefined, httpCode: number }> => {
+    trap: Trap,
+  ): Promise<{ entity: Trap | undefined; httpCode: number }> => {
     const response = await fetch(`${this.requestEndpoint}/${trap.id}`, {
       method: "PUT",
       headers: {
@@ -63,7 +65,7 @@ export class TrapDataFetcher extends DataFetcher<Trap> {
       },
       body: JSON.stringify({
         name: trap.name,
-        effect: trap.effect
+        effect: trap.effect,
       }),
     });
 
@@ -82,7 +84,7 @@ export class TrapDataFetcher extends DataFetcher<Trap> {
     }
   };
 
-  deleteSingle = async (id: string): Promise<{ httpCode: number; }> => {
+  deleteSingle = async (id: string): Promise<{ httpCode: number }> => {
     const response = await fetch(`${this.requestEndpoint}/${id}`, {
       method: "DELETE",
     });
@@ -90,5 +92,5 @@ export class TrapDataFetcher extends DataFetcher<Trap> {
     return {
       httpCode: response.status,
     };
-  }
+  };
 }

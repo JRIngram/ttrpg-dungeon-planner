@@ -41,7 +41,7 @@ export default function Trap() {
     trapList?.find((trap) => trap.id === selectedId);
 
   const renderTrapDisplay = () => {
-    const TrapForm = FormBuilder<TrapType>
+    const TrapForm = FormBuilder<TrapType>;
     const formFields = [
       {
         id: "trap-name",
@@ -65,7 +65,7 @@ export default function Trap() {
         initialValue: undefined,
         isRequired: true,
       },
-    ]
+    ];
 
     if (!selectedTrapId) {
       return (
@@ -74,7 +74,9 @@ export default function Trap() {
           <TrapForm
             dataFetcher={trapDataFetcher}
             inputMode={InputMode.NEW}
-            onCancelCallback={() => { return }}
+            onCancelCallback={() => {
+              return;
+            }}
             onSubmitCallback={async (trap) => {
               await refetch();
               setSelectedTrapId(trap?.id);
@@ -113,9 +115,7 @@ export default function Trap() {
           <div className="flex flex-col gap-4">
             <FieldTextDisplayGroup fields={trapFields} />
             {!selectedTrap.isDeletable && (
-              <p>
-                This trap is in use in a dungeon and so cannot be deleted.
-              </p>
+              <p>This trap is in use in a dungeon and so cannot be deleted.</p>
             )}
             <ButtonRow
               buttons={[
@@ -168,7 +168,7 @@ export default function Trap() {
 
   const pageTitle = selectedTrapId
     ? getSelectedTrap(data ?? [], selectedTrapId)?.name
-    : "Trap"
+    : "Trap";
 
   return (
     <div className="flex">
@@ -185,9 +185,7 @@ export default function Trap() {
       <main className="mx-auto w-3/6">
         <div className="flex flex-col gap-4">
           <div>
-            <p className="text-lg font-semibold">
-              {pageTitle}
-            </p>
+            <p className="text-lg font-semibold">{pageTitle}</p>
             {renderTrapDisplay()}
           </div>
           <ToastList toastList={toasts} />

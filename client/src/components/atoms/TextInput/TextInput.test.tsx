@@ -13,7 +13,7 @@ describe("TextInput", () => {
         id="test-id"
         ariaLabel={ariaLabel}
         placeholder={placeholderText}
-      />
+      />,
     );
 
     const textInput = screen.getByRole("textbox", { name: "A Test TextInput" });
@@ -32,7 +32,7 @@ describe("TextInput", () => {
         ariaLabel={ariaLabel}
         placeholder={placeholderText}
         initialValue="Test Iniital Value"
-      />
+      />,
     );
 
     const textInput = screen.getByRole("textbox", { name: "A Test TextInput" });
@@ -51,7 +51,7 @@ describe("TextInput", () => {
         ariaLabel={ariaLabel}
         placeholder={placeholderText}
         isRequired={true}
-      />
+      />,
     );
 
     expect(screen.getByRole("textbox")).toBeRequired();

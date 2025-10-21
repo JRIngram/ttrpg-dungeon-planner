@@ -50,10 +50,10 @@ describe("ButtonRow", () => {
     expect(screen.getByRole("button", { name: "Button Two" })).toBeVisible();
     expect(screen.getByRole("button", { name: "Button Three" })).toBeVisible();
     expect(
-      screen.getByRole("button", { name: "Button One" })
+      screen.getByRole("button", { name: "Button One" }),
     ).not.toBeDisabled();
     expect(
-      screen.getByRole("button", { name: "Button Two" })
+      screen.getByRole("button", { name: "Button Two" }),
     ).not.toBeDisabled();
     expect(screen.getByRole("button", { name: "Button Three" })).toBeDisabled();
   });

@@ -41,7 +41,7 @@ export default function Monster() {
     monsterList?.find((monster) => monster.id === selectedId);
 
   const renderMonsterDisplay = () => {
-    const MonsterForm = FormBuilder<MonsterType>
+    const MonsterForm = FormBuilder<MonsterType>;
     const formFields = [
       {
         id: "monster-name",
@@ -64,8 +64,8 @@ export default function Monster() {
         patternMessage: "Numeric values",
         initialValue: undefined,
         isRequired: true,
-      }
-    ]
+      },
+    ];
 
     if (!selectedMonsterId) {
       return (
@@ -74,7 +74,9 @@ export default function Monster() {
           <MonsterForm
             dataFetcher={monsterDataFetcher}
             inputMode={InputMode.NEW}
-            onCancelCallback={() => { return }}
+            onCancelCallback={() => {
+              return;
+            }}
             onSubmitCallback={async (monster) => {
               await refetch();
               setSelectedMonsterId(monster?.id);
@@ -169,7 +171,7 @@ export default function Monster() {
 
   const pageTitle = selectedMonsterId
     ? getSelectedMonster(data ?? [], selectedMonsterId)?.name
-    : "Monster"
+    : "Monster";
 
   return (
     <div className="flex">
@@ -186,9 +188,7 @@ export default function Monster() {
       <main className="mx-auto w-3/6">
         <div className="flex flex-col gap-4">
           <div>
-            <p className="text-lg font-semibold">
-              {pageTitle}
-            </p>
+            <p className="text-lg font-semibold">{pageTitle}</p>
             {renderMonsterDisplay()}
           </div>
           <ToastList toastList={toasts} />

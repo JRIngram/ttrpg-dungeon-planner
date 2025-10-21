@@ -28,7 +28,7 @@ describe("Toast", () => {
     (message, type, expected) => {
       render(<Toast id="1" message={message} type={type} onClose={() => {}} />);
       expect(screen.getByText(expected)).toBeVisible();
-    }
+    },
   );
 
   it("calls onClose when close is pressed", async () => {
@@ -39,7 +39,7 @@ describe("Toast", () => {
         message={"Hello I am a erronous toast"}
         type={ToastType.ERROR}
         onClose={onCloseSpy}
-      />
+      />,
     );
     await userEvent.click(screen.getByRole("button", { name: "Close" }));
     expect(onCloseSpy).toHaveBeenCalledOnce();
