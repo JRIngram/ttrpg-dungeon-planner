@@ -10,7 +10,8 @@ urlpatterns = [
     path("dungeon/<int:id>", views.DungeonSingle.as_view(), name="dungeon"),
     path("monster", views.MonsterList.as_view(), name="index"),
     path("monster/<int:id>", views.MonsterSingle.as_view(), name="monster"),
-    path("room/<int:room_id>", views.room_single, name="room"),
+    path("room", views.RoomList.as_view(), name="room"),
+    path("room/<int:id>", views.RoomSingle.as_view(), name="room"),
     path("trap", views.TrapList.as_view(), name="trap"),
     path("trap/<int:id>", views.TrapSingle.as_view(), name="trap"),
 ]
