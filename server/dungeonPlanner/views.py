@@ -68,8 +68,8 @@ class RoomSingle(generics.RetrieveUpdateDestroyAPIView):
 
     Allows for retrieving, updating and destroying
     """
-    queryset = Room.objects.all()
     serializer_class = RoomSerializer
+    queryset = Room.objects.all().prefetch_related('monsters', 'traps')
     lookup_field = 'id'
 
 class TrapList(generics.ListCreateAPIView):

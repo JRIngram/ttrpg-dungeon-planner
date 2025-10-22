@@ -96,7 +96,12 @@ class RoomSerializer(serializers.ModelSerializer):
         instance.refresh_from_db()
 
         return instance
-
+    
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['monsters'] = MonsterSerializer(instance.monsters.all(), many=True).data
+        representation['traps'] = TrapSerializer(instance.traps.all(), many=True).data
+        return representation
 
 class TrapSerializer(serializers.ModelSerializer):
     """
