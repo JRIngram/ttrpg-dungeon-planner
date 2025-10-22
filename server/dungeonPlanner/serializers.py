@@ -55,6 +55,8 @@ class RoomSerializer(serializers.ModelSerializer):
 
     name = serializers.CharField(required=True)
     description = serializers.CharField()
+    monsters = serializers.PrimaryKeyRelatedField(many=True, queryset=Monster.objects.all())
+    traps = serializers.PrimaryKeyRelatedField(many=True, queryset=Trap.objects.all())
 
     class Meta:
         """
@@ -67,8 +69,33 @@ class RoomSerializer(serializers.ModelSerializer):
         """
         Creates a room from validated data
         """
-        return Room.objects.create(**validated_data)
+        monsters = validated_data.pop('monsters', [])
+        traps = validated_data.pop('traps', [])
 
+        room = Room.objects.create(**validated_data)
+
+        room.monsters.set(monsters)
+        room.traps.set(traps)
+
+        # Ensures responses includes recently added monsters and traps
+        room.refresh_from_db()
+
+        return room
+    
+    def update(self, instance, validated_data):
+        monsters = validated_data.pop('monsters')
+        traps = validated_data.pop('traps', [])
+
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.monsters.set(monsters)
+        instance.traps.set(traps)
+
+        instance.save()
+        # Ensures responses includes recently added monsters and traps
+        instance.refresh_from_db()
+
+        return instance
 
 
 class TrapSerializer(serializers.ModelSerializer):
