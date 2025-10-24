@@ -42,7 +42,7 @@ type TabProps = {
 };
 
 const styles = {
-  base: "border-4 p-3 font-semibold w-full bg-green-600 text-black",
+  base: "my-4 mx-2 p-3 font-semibold w-full bg-green-600 text-black",
   selected: "bg-primary-200 text-white",
   notSelected: "bg-primary-50 text-black"
 }
