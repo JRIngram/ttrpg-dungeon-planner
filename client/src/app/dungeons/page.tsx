@@ -11,6 +11,7 @@ import type { Dungeon as DungeonType } from "@/types/dungeon";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { useToasts, useToastsDispatch } from "@/context/ToastContext";
+import { Tabs } from "@/components/molecules/Tabs/Tabs";
 
 export default function Dungeon() {
   const [selectedDungeonId, setSelectedDungeonId] = useState<string>();
@@ -217,6 +218,7 @@ export default function Dungeon() {
       <main className="mx-auto w-3/6">
         <div className="flex flex-col gap-4">
           <div>
+            <Tabs options={["Dungeon", "Rooms"]} onSelectCallback={() => {}} />
             <p className="text-lg font-semibold">{pageTitle}</p>
             {renderDungeonDisplay()}
           </div>
