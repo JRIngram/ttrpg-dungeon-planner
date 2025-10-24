@@ -120,6 +120,7 @@ export const DungeonTab = ({ selectedDungeon, setSelectedDungeonCallback, refetc
             fieldValue: `${e[1]}`,
           };
         });
+        
         return (
           <div className="flex flex-col gap-4">
             <FieldTextDisplayGroup fields={dungeonFields} />

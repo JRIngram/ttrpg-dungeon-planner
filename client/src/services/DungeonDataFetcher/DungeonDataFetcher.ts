@@ -22,6 +22,18 @@ export class DungeonDataFetcher extends DataFetcher<Dungeon> {
     };
   };
 
+  mapDungeonToServerDungeon = (dungeon: Dungeon): Omit<ServerDungeon, 'id'> => {
+    const { name, summary, levelMin, levelMax, playerCount } = dungeon
+    
+    return {
+        name: name,
+        summary: summary,
+        level_min: levelMin,
+        level_max: levelMax,
+        player_count: playerCount,
+      } 
+  }
+
   getList = async (): Promise<Dungeon[]> => {
     const responseJson = await fetch(this.requestEndpoint);
     const json = (await responseJson.json()) as ServerDungeon[];
@@ -34,20 +46,13 @@ export class DungeonDataFetcher extends DataFetcher<Dungeon> {
   addSingle = async (
     dungeon: AddDungeon,
   ): Promise<{ entity: Dungeon | undefined; httpCode: number }> => {
-    console.log("adding", dungeon);
     const response = await fetch(this.requestEndpoint, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        name: dungeon.name,
-        summary: dungeon.summary,
-        level_min: dungeon.levelMin,
-        level_max: dungeon.levelMax,
-        player_count: dungeon.playerCount,
-      }),
-    });
+      body: JSON.stringify(this.mapDungeonToServerDungeon(dungeon))
+    })
 
     if (!this.isSuccessfulHTTPCode(response.status)) {
       return {

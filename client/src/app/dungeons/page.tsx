@@ -8,6 +8,7 @@ import { useToasts, useToastsDispatch } from "@/context/ToastContext";
 import { Tabs } from "@/components/molecules/Tabs/Tabs";
 import { DungeonTab } from "./tabs/DungeonTab";
 import { DungeonDataFetcher } from "@/services/DungeonDataFetcher/DungeonDataFetcher";
+import { RoomTab } from "./tabs/RoomTab";
 
 type PageTabs = "Dungeon" | "Rooms";
 
@@ -85,7 +86,9 @@ export default function Dungeon() {
                 setSelectedDungeonCallback={setSelectedDungeonId}
               />
             ) : (
-              <p>To do: rooms!</p>
+              <RoomTab
+                selectedDungeonId={selectedDungeonId}
+              />
             )}
           </div>
           <ToastList toastList={toasts} />

@@ -28,6 +28,11 @@ type Props<T> = {
   fields: FormInputField[];
   inputMode: InputMode;
   existingEntity?: T;
+
+  // For data that is required for a request, but not extracted from form
+  requiredNonFormData?: {
+    [key: string]: string | number | undefined | Array<string | number>;
+  };
 };
 
 export const FormBuilder = <T,>({
@@ -37,6 +42,7 @@ export const FormBuilder = <T,>({
   inputMode,
   existingEntity,
   dataFetcher,
+  requiredNonFormData,
 }: Props<T>) => {
   const dispatch = useToastsDispatch();
 
@@ -45,7 +51,11 @@ export const FormBuilder = <T,>({
       field.formInputName,
       formData.get(field.formInputName),
     ]);
-    const newEntity = Object.fromEntries(fieldsToSubmit);
+    const newEntity = {
+      ...Object.fromEntries(fieldsToSubmit),
+      ...requiredNonFormData,
+    };
+
     if (inputMode === InputMode.NEW) {
       try {
         const { entity, httpCode } = await dataFetcher.addSingle(newEntity);
@@ -112,22 +122,22 @@ export const FormBuilder = <T,>({
           {fields.map((field) => {
             const getInitialValueFromExistingEntity = (
               existingEntity: Record<string, any>,
-              formInputName: string,
+              formInputName: string
             ) => {
               if (
                 inputMode === InputMode.EDIT &&
                 existingEntity &&
                 existingEntity[formInputName]
               ) {
-                console.log({ existingEntity });
                 return existingEntity[field.formInputName];
               }
               return field.initialValue;
             };
+
             const initialValue = existingEntity
               ? getInitialValueFromExistingEntity(
                   existingEntity,
-                  field.formInputName,
+                  field.formInputName
                 )
               : field.initialValue;
 
