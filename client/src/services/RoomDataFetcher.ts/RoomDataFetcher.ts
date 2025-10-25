@@ -56,8 +56,6 @@ export class RoomDataFetcher extends DataFetcher<Room> {
   addSingle = async (
     room: AddRoom,
   ): Promise<{ entity: Room | undefined; httpCode: number }> => {
-    console.log({ room });
-    console.log(JSON.stringify(this.mapRoomToServerRoom(room)));
     const response = await fetch(this.requestEndpoint, {
       method: "POST",
       headers: {

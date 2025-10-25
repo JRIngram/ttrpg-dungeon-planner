@@ -51,32 +51,38 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
       inputType: InputType.QuantitySelector,
       id: "room-monster",
       textInputFormName: "description",
-      itemName: "Monster",
+      itemName: "monsters",
       dropdownConfig: {
         placeholder: "Select a monster",
         options: [
           {
             label: "Monster 1",
-            value: "mon-1",
+            value: "1",
+          },
+          {
+            label: "Monster 2",
+            value: "2",
           },
         ],
       },
       isRequired: true,
+      allowMultipleOfSame: true,
     },
-        {
+    {
       inputType: InputType.QuantitySelector,
       id: "room-trap",
       textInputFormName: "description",
-      itemName: "Trap",
+      itemName: "traps",
       dropdownConfig: {
         placeholder: "Select a trap",
         options: [
           {
             label: "Trap 1",
-            value: "trap-1",
+            value: "1",
           },
         ],
       },
+      allowMultipleOfSame: true,
       isRequired: true,
     },
   ];
@@ -117,8 +123,6 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
           fields={formFields}
           requiredNonFormData={{
             dungeonId: selectedDungeonId,
-            monsters: [],
-            traps: [],
           }}
           endOfFormButtons={[
             {

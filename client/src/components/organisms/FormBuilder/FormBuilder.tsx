@@ -11,15 +11,22 @@ import {
 import { useToastsDispatch } from "@/context/ToastContext";
 import { DataFetcher } from "@/services/DataFetcher/DataFetcher";
 import { ToastType } from "@/types/toast";
+import { useState } from "react";
 
 export enum InputType {
   "Text",
   "QuantitySelector",
 }
 
+type FormInputGenericProps = {
+  allowMultipleOfSame?: boolean;
+};
+
 export type FormInputField =
-  | ({ inputType: InputType.Text } & FormTextInputProps)
-  | ({ inputType: InputType.QuantitySelector } & ItemQuantitySelectorProps);
+  | (FormInputGenericProps & { inputType: InputType.Text } & FormTextInputProps)
+  | (FormInputGenericProps & {
+      inputType: InputType.QuantitySelector;
+    } & ItemQuantitySelectorProps);
 
 export enum InputMode {
   "NEW",
@@ -66,18 +73,31 @@ export const FormBuilder = <T,>({
   const dispatch = useToastsDispatch();
 
   const getFieldsToSubmit = (fields: FormInputField[], formData: FormData) => {
+    const groupMultiFields = (fieldName: string, formData: FormData) => {
+      const keys = formData.keys().toArray();
+      const fieldNameRegex = RegExp(`^${fieldName}\-[0-9]+$`); // fieldName-AnyDigit, e.g. monster-1
+      const filteredKeys = keys.filter((k) => k.match(fieldNameRegex));
+      const fieldValues = filteredKeys.map((fk) => formData.get(fk)?.toString());
+      
+      return fieldValues;
+    };
+
     return fields.map((field) => {
-      console.log({ field });
       switch (field.inputType) {
         case InputType.Text:
-          return [field.formInputName, formData.get(field.formInputName)];
+          return [
+            field.formInputName,
+            field.allowMultipleOfSame
+              ? groupMultiFields(field.formInputName, formData)
+              : formData.get(`${field.formInputName}-0`),
+          ];
         case InputType.QuantitySelector:
-          console.log("we quant", { field });
-          console.log("quantSelector", {
-            qs: formData.get(field.textInputFormName),
-          });
-          console.log("itemSelector", { is: formData.get(field.itemName) });
-          return [];
+          return [
+            field.itemName,
+            field.allowMultipleOfSame
+              ? groupMultiFields(field.itemName, formData)
+              : formData.get(`${field.itemName}-0`),
+          ];
         default:
           return [];
       }
@@ -177,6 +197,8 @@ const RenderField = <T,>({
   inputMode,
   existingEntity,
 }: RenderFieldProps<T>) => {
+  const [fieldCount, setFieldCount] = useState<number>(1);
+
   const getInitialValueFromExistingEntity = (
     existingEntity: Record<string, any>,
     fieldName: string
@@ -186,8 +208,6 @@ const RenderField = <T,>({
       existingEntity &&
       existingEntity[fieldName]
     ) {
-      console.log({ e: existingEntity, f: field });
-
       switch (field.inputType) {
         case InputType.Text:
           return existingEntity[fieldName];
@@ -218,32 +238,55 @@ const RenderField = <T,>({
 
   const initialValue = getInitialValue(field, existingEntity);
 
-  switch (field.inputType) {
-    case InputType.Text:
-      return (
-        <FormTextInput
-          id={field.id}
-          formInputName={field.formInputName}
-          ariaLabel={field.ariaLabel}
-          formLabelText={field.formLabelText}
-          placeholder={field.placeholder}
-          pattern={field.pattern}
-          patternMessage={field.patternMessage}
-          initialValue={initialValue}
-          isRequired={field.isRequired}
-        />
-      );
-    case InputType.QuantitySelector:
-      return (
-        <ItemQuantitySelector
-          id={field.id}
-          itemName={field.itemName}
-          textInputFormName={field.textInputFormName}
-          dropdownConfig={field.dropdownConfig}
-          isRequired={field.isRequired}
-        />
-      );
-    default:
-      return;
+  const renderField = (index: number) => {
+    switch (field.inputType) {
+      case InputType.Text:
+        return (
+          <FormTextInput
+            id={`${field.id}-${index}`}
+            formInputName={`${field.formInputName}-${index}`}
+            ariaLabel={field.ariaLabel}
+            formLabelText={field.formLabelText}
+            placeholder={field.placeholder}
+            pattern={field.pattern}
+            patternMessage={field.patternMessage}
+            initialValue={initialValue}
+            isRequired={field.isRequired}
+          />
+        );
+      case InputType.QuantitySelector:
+        return (
+          <ItemQuantitySelector
+            id={`${field.id}-${index}`}
+            itemName={`${field.itemName}-${index}`}
+            textInputFormName={`${field.textInputFormName}-${index}`}
+            dropdownConfig={field.dropdownConfig}
+            isRequired={field.isRequired}
+          />
+        );
+      default:
+        return;
+    }
+  };
+
+  if (!field.allowMultipleOfSame) {
+    return renderField(0);
   }
+
+  return (
+    <>
+      {/* Fills an array with 0..N, where N is the fieldCount */}
+      {Array.from({ length: fieldCount }, (_, i) => i).map((c) =>
+        renderField(c)
+      )}
+      <div className="flex gap-4">
+        <button onClick={() => setFieldCount(fieldCount + 1)}>Add</button>
+        <button
+          onClick={() => setFieldCount(fieldCount > 1 ? fieldCount - 1 : 1)}
+        >
+          Remove
+        </button>
+      </div>
+    </>
+  );
 };
