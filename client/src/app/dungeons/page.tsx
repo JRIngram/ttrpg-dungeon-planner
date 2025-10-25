@@ -38,7 +38,7 @@ export default function Dungeon() {
 
   const getSelectedDungeon = (
     dungeonList: DungeonType[],
-    selectedId?: string
+    selectedId?: string,
   ): DungeonType | undefined =>
     dungeonList?.find((dungeon) => dungeon.id === selectedId);
 
@@ -80,15 +80,13 @@ export default function Dungeon() {
               <DungeonTab
                 selectedDungeon={getSelectedDungeon(
                   data ?? [],
-                  selectedDungeonId
+                  selectedDungeonId,
                 )}
                 refetchDungeonCallback={() => refetch()}
                 setSelectedDungeonCallback={setSelectedDungeonId}
               />
             ) : (
-              <RoomTab
-                selectedDungeonId={selectedDungeonId}
-              />
+              <RoomTab selectedDungeonId={selectedDungeonId} />
             )}
           </div>
           <ToastList toastList={toasts} />

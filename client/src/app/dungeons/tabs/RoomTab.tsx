@@ -1,6 +1,10 @@
 import { PropsWithChildren, useState } from "react";
 import { FieldTextDisplayGroup } from "@/components/molecules/FieldTextDisplayGroup/FieldTextDisplayGroup";
-import { FormBuilder } from "@/components/organisms/FormBuilder/FormBuilder";
+import {
+  FormBuilder,
+  FormInputField,
+  InputType,
+} from "@/components/organisms/FormBuilder/FormBuilder";
 import { InputMode } from "@/components/organisms/FormBuilder/FormBuilder";
 import { ButtonRow } from "@/components/molecules/ButtonRow/ButtonRow";
 import { ToastType } from "@/types/toast";
@@ -18,8 +22,9 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
 
   const roomDataFetcher = new RoomDataFetcher();
   const RoomForm = FormBuilder<Room>;
-  const formFields = [
+  const formFields: FormInputField[] = [
     {
+      inputType: InputType.Text,
       id: "room-name",
       formInputName: "name",
       ariaLabel: "Room name",
@@ -31,6 +36,7 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
       isRequired: true,
     },
     {
+      inputType: InputType.Text,
       id: "room-description",
       formInputName: "description",
       ariaLabel: "Room description",
@@ -59,6 +65,8 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
 
   if (isLoadingDungeonRooms) {
     return <p>Loading...</p>;
+  } else if (errorLoadingDungeonRooms) {
+    return <p>Error loading dungeon rooms.</p>;
   }
 
   return (
@@ -71,7 +79,7 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
           onCancelCallback={() => {
             return;
           }}
-          onSubmitCallback={async (dungeon) => {
+          onSubmitCallback={async () => {
             await refetch();
           }}
           fields={formFields}
@@ -80,6 +88,14 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
             monsters: [],
             traps: [],
           }}
+          endOfFormButtons={[
+            {
+              text: "Save",
+              onClick: async () => {},
+              variant: "primaryFilled",
+              isSubmit: true,
+            },
+          ]}
         />
       </ListItemContainer>
 
@@ -93,15 +109,15 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
 
         if (room.id === selectedRoomId) {
           return (
-            <ListItemContainer>
+            <ListItemContainer key={room.id}>
               <RoomForm
                 dataFetcher={roomDataFetcher}
                 inputMode={InputMode.EDIT}
                 onCancelCallback={() => {
-                    setSelectedRoomId("")
+                  setSelectedRoomId("");
                   return;
                 }}
-                onSubmitCallback={async (dungeon) => {
+                onSubmitCallback={async () => {
                   await refetch();
                 }}
                 fields={formFields}
@@ -118,7 +134,7 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
 
         if (room.id !== selectedRoomId) {
           return (
-            <ListItemContainer>
+            <ListItemContainer key={room.id}>
               <FieldTextDisplayGroup fields={roomFields} />
               <ButtonRow
                 buttons={[
@@ -131,14 +147,14 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
                     text: "Delete",
                     onClick: async () => {
                       const { httpCode } = await roomDataFetcher.deleteSingle(
-                        room.id
+                        room.id,
                       );
                       if (!roomDataFetcher.isSuccessfulHTTPCode(httpCode)) {
                         toastDispatch({
                           type: "add",
                           toast: {
                             type: ToastType.WARNING,
-                            message: `Could not delete dungeon ${room.name}. HTTP ${httpCode}`,
+                            message: `Could not delete room ${room.name}. HTTP ${httpCode}`,
                           },
                         });
                       } else {
@@ -147,7 +163,7 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
                           type: "add",
                           toast: {
                             type: ToastType.SUCCESS,
-                            message: "Successfully deleted dungeon",
+                            message: "Successfully deleted room",
                           },
                         });
                       }

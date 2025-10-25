@@ -22,17 +22,17 @@ export class DungeonDataFetcher extends DataFetcher<Dungeon> {
     };
   };
 
-  mapDungeonToServerDungeon = (dungeon: Dungeon): Omit<ServerDungeon, 'id'> => {
-    const { name, summary, levelMin, levelMax, playerCount } = dungeon
-    
+  mapDungeonToServerDungeon = (dungeon: Dungeon): Omit<ServerDungeon, "id"> => {
+    const { name, summary, levelMin, levelMax, playerCount } = dungeon;
+
     return {
-        name: name,
-        summary: summary,
-        level_min: levelMin,
-        level_max: levelMax,
-        player_count: playerCount,
-      } 
-  }
+      name: name,
+      summary: summary,
+      level_min: levelMin,
+      level_max: levelMax,
+      player_count: playerCount,
+    };
+  };
 
   getList = async (): Promise<Dungeon[]> => {
     const responseJson = await fetch(this.requestEndpoint);
@@ -51,8 +51,8 @@ export class DungeonDataFetcher extends DataFetcher<Dungeon> {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(this.mapDungeonToServerDungeon(dungeon))
-    })
+      body: JSON.stringify(this.mapDungeonToServerDungeon(dungeon)),
+    });
 
     if (!this.isSuccessfulHTTPCode(response.status)) {
       return {

@@ -62,7 +62,7 @@ export class RoomDataFetcher extends DataFetcher<Room> {
   };
 
   addSingle = async (
-    room: AddRoom
+    room: AddRoom,
   ): Promise<{ entity: Room | undefined; httpCode: number }> => {
     console.log({ room });
     console.log(JSON.stringify(this.mapRoomToServerRoom(room)));
@@ -89,7 +89,7 @@ export class RoomDataFetcher extends DataFetcher<Room> {
   };
 
   editSingle = async (
-    room: Room
+    room: Room,
   ): Promise<{ entity: Room | undefined; httpCode: number }> => {
     const response = await fetch(`${this.requestEndpoint}/${room.id}`, {
       method: "PUT",

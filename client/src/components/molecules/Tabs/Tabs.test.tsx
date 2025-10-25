@@ -15,7 +15,7 @@ describe("Tabs", () => {
     render(<Tabs options={options} onSelectCallback={() => {}} />);
 
     options.forEach((option) =>
-      expect(screen.getByRole("button", { name: option })).toBeVisible()
+      expect(screen.getByRole("button", { name: option })).toBeVisible(),
     );
   });
 

@@ -9,8 +9,8 @@ export type Room = {
   name: string;
   description: string;
   dungeonId: DungeonId;
-  monsters: MonsterId[]
-  traps: TrapId[]
+  monsters: MonsterId[];
+  traps: TrapId[];
 };
 
 export type AddRoom = Exclude<Room, "id">;
@@ -20,6 +20,6 @@ export type ServerRoom = {
   name: string;
   description: string;
   dungeon: DungeonId;
-  monsters: MonsterId[]
-  traps: TrapId[]
+  monsters: MonsterId[];
+  traps: TrapId[];
 };

@@ -1,16 +1,23 @@
+import { ButtonProps } from "@/components/atoms/Button/Button";
 import { ButtonRow } from "@/components/molecules/ButtonRow/ButtonRow";
 import { FormTextInput } from "@/components/molecules/FormTextInput/FormTextInput";
 import { useToastsDispatch } from "@/context/ToastContext";
 import { DataFetcher } from "@/services/DataFetcher/DataFetcher";
 import { ToastType } from "@/types/toast";
 
-type FormInputField = {
+export enum InputType {
+  "Text",
+  "Dropdown",
+}
+
+export type FormInputField = {
   id: string;
   formInputName: string;
   ariaLabel: string;
   formLabelText: string;
   placeholder: string;
   pattern: string;
+  inputType: InputType;
   patternMessage?: string;
   isRequired?: boolean;
   initialValue?: string;
@@ -28,6 +35,7 @@ type Props<T> = {
   fields: FormInputField[];
   inputMode: InputMode;
   existingEntity?: T;
+  endOfFormButtons?: ButtonProps[];
 
   // For data that is required for a request, but not extracted from form
   requiredNonFormData?: {
@@ -43,6 +51,19 @@ export const FormBuilder = <T,>({
   existingEntity,
   dataFetcher,
   requiredNonFormData,
+  endOfFormButtons = [
+    {
+      text: "Save",
+      onClick: async () => {},
+      variant: "primaryFilled",
+      isSubmit: true,
+    },
+    {
+      text: "Cancel",
+      onClick: onCancelCallback,
+      variant: "tertiaryOutline",
+    },
+  ],
 }: Props<T>) => {
   const dispatch = useToastsDispatch();
 
@@ -122,7 +143,7 @@ export const FormBuilder = <T,>({
           {fields.map((field) => {
             const getInitialValueFromExistingEntity = (
               existingEntity: Record<string, any>,
-              formInputName: string
+              formInputName: string,
             ) => {
               if (
                 inputMode === InputMode.EDIT &&
@@ -137,7 +158,7 @@ export const FormBuilder = <T,>({
             const initialValue = existingEntity
               ? getInitialValueFromExistingEntity(
                   existingEntity,
-                  field.formInputName
+                  field.formInputName,
                 )
               : field.initialValue;
 
@@ -156,21 +177,7 @@ export const FormBuilder = <T,>({
               />
             );
           })}
-          <ButtonRow
-            buttons={[
-              {
-                text: "Save",
-                onClick: async () => {},
-                variant: "primaryFilled",
-                isSubmit: true,
-              },
-              {
-                text: "Cancel",
-                onClick: onCancelCallback,
-                variant: "tertiaryOutline",
-              },
-            ]}
-          />
+          <ButtonRow buttons={endOfFormButtons} />
         </div>
       </form>
     </div>

@@ -38,17 +38,25 @@ type TabProps = {
   option: Option;
   testId: string;
   onTabSelectCallback: (tabIndex: number) => void;
-  isSelected: boolean
+  isSelected: boolean;
 };
 
 const styles = {
   base: "my-4 mx-2 p-3 font-semibold w-full bg-green-600 text-black",
   selected: "bg-primary-200 text-white",
-  notSelected: "bg-primary-50 text-black"
-}
+  notSelected: "bg-primary-50 text-black",
+};
 
-const Tab = ({ index, option, onTabSelectCallback, testId, isSelected }: TabProps) => {
-  const style = isSelected ? `${styles.base} ${styles.selected}` : `${styles.base} ${styles.notSelected}`
+const Tab = ({
+  index,
+  option,
+  onTabSelectCallback,
+  testId,
+  isSelected,
+}: TabProps) => {
+  const style = isSelected
+    ? `${styles.base} ${styles.selected}`
+    : `${styles.base} ${styles.notSelected}`;
 
   return (
     <button
