@@ -74,7 +74,7 @@ export const FormBuilder = <T,>({
 
   const getFieldsToSubmit = (fields: FormInputField[], formData: FormData) => {
     const groupMultiFields = (fieldName: string, formData: FormData) => {
-      const keys = formData.keys().toArray();
+      const keys = Array.from(formData.keys())
       const fieldNameRegex = RegExp(`^${fieldName}-[0-9]+$`); // fieldName-AnyDigit, e.g. monster-1
       const filteredKeys = keys.filter((k) => k.match(fieldNameRegex));
       const fieldValues = filteredKeys.map((fk) =>
