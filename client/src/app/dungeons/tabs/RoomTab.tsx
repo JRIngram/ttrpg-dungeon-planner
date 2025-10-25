@@ -70,7 +70,7 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
   const getPlacerholderMessage = (
     category: string,
     isLoading: boolean,
-    isError: Boolean
+    isError: Boolean,
   ) => {
     if (isLoading) {
       return `Loading ${category}`;
@@ -116,7 +116,7 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
         placeholder: getPlacerholderMessage(
           "monsters",
           isLoadingMonsters,
-          isErrorLoadingMonsters
+          isErrorLoadingMonsters,
         ),
         options: monsters ?? [],
       },
@@ -132,7 +132,7 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
         placeholder: getPlacerholderMessage(
           "traps",
           isLoadingTraps,
-          isErrorLoadingTraps
+          isErrorLoadingTraps,
         ),
         options: traps ?? [],
       },
@@ -223,7 +223,7 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
                     text: "Delete",
                     onClick: async () => {
                       const { httpCode } = await roomDataFetcher.deleteSingle(
-                        room.id
+                        room.id,
                       );
                       if (!roomDataFetcher.isSuccessfulHTTPCode(httpCode)) {
                         toastDispatch({

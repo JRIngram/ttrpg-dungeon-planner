@@ -11,10 +11,10 @@ describe("ItemQuantitySelector", () => {
     render(<ItemQuantitySelector />);
 
     expect(
-      screen.getByRole("textbox", { name: "Item quantity" })
+      screen.getByRole("textbox", { name: "Item quantity" }),
     ).toBeVisible();
     expect(
-      screen.getByRole("combobox", { name: "Select an Item" })
+      screen.getByRole("combobox", { name: "Select an Item" }),
     ).toBeVisible();
   });
 
@@ -40,7 +40,7 @@ describe("ItemQuantitySelector", () => {
           options: options,
           placeholder: "Select an item.",
         }}
-      />
+      />,
     );
 
     const quantitySelector = screen.getByRole("textbox", {
@@ -51,11 +51,14 @@ describe("ItemQuantitySelector", () => {
     });
 
     await userEvent.type(quantitySelector, "123");
-    await userEvent.selectOptions(itemSelector, screen.getByRole("option", {
+    await userEvent.selectOptions(
+      itemSelector,
+      screen.getByRole("option", {
         name: options[0].label,
-    }));
+      }),
+    );
 
     expect(quantitySelector).toHaveValue("123");
-    expect(itemSelector).toHaveValue(options[0].value)
+    expect(itemSelector).toHaveValue(options[0].value);
   });
 });

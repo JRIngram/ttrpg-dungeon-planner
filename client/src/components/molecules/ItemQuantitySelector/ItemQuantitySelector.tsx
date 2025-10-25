@@ -5,7 +5,10 @@ export type ItemQuantitySelectorProps = {
   id: string;
   itemName: string;
   textInputFormName: string;
-  dropdownConfig: Pick<DropdownProps, "placeholder" | "options" | "initialOption">; // just include placeholder and options
+  dropdownConfig: Pick<
+    DropdownProps,
+    "placeholder" | "options" | "initialOption"
+  >; // just include placeholder and options
   isRequired?: boolean;
 };
 

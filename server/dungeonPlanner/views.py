@@ -1,11 +1,15 @@
 """
 Defines the views for the dungeon planner app
 """
-from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
 from rest_framework import generics
 
-from dungeonPlanner.serializers import DungeonSerializer, MonsterSerializer, RoomSerializer, TrapSerializer
+from dungeonPlanner.serializers import (
+    DungeonSerializer,
+    MonsterSerializer,
+    RoomSerializer,
+    TrapSerializer
+)
 from .models import Monster, Trap, Room, Dungeon
 
 

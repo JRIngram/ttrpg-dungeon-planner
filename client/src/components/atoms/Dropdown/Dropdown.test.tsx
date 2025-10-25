@@ -18,7 +18,7 @@ describe("Dropdown", () => {
         formInputName={name}
         ariaLabel={ariaLabel}
         placeholder={placeholder}
-      />
+      />,
     );
 
     const dropdown = screen.getByRole("combobox", { name: ariaLabel });
@@ -27,7 +27,7 @@ describe("Dropdown", () => {
     expect(dropdown.getAttribute("name")).toBe(name);
     expect(dropdown.getAttribute("id")).toBe(id);
     expect(
-      screen.getByRole("option", { name: placeholder, selected: true })
+      screen.getByRole("option", { name: placeholder, selected: true }),
     ).toBeVisible();
   });
 
@@ -58,7 +58,7 @@ describe("Dropdown", () => {
         placeholder={placeholder}
         options={options}
         initialOption={options[initialValueIndex]}
-      />
+      />,
     );
 
     expect(screen.getByRole("combobox", { name: ariaLabel })).toBeVisible();
@@ -67,7 +67,7 @@ describe("Dropdown", () => {
       screen.getByRole("option", {
         name: options[initialValueIndex].label,
         selected: true,
-      })
+      }),
     ).toBeVisible();
   });
 
@@ -96,36 +96,36 @@ describe("Dropdown", () => {
         ariaLabel={ariaLabel}
         options={options}
         placeholder={placeholder}
-      />
+      />,
     );
 
     const dropdown = screen.getByRole("combobox", { name: ariaLabel });
 
     expect(
-      screen.getByRole("option", { name: placeholder, selected: true })
+      screen.getByRole("option", { name: placeholder, selected: true }),
     ).toBeVisible();
     expect(
       screen.queryByRole("option", {
         name: options[0].label,
         selected: true,
-      })
+      }),
     ).toBeNull();
 
     await userEvent.selectOptions(
       dropdown,
       screen.getByRole("option", {
         name: options[0].label,
-      })
+      }),
     );
 
     expect(
-      screen.queryByRole("option", { name: placeholder, selected: true })
+      screen.queryByRole("option", { name: placeholder, selected: true }),
     ).toBeNull();
     expect(
       screen.getByRole("option", {
         name: options[0].label,
         selected: true,
-      })
+      }),
     ).toBeVisible();
   });
 
@@ -139,13 +139,13 @@ describe("Dropdown", () => {
 
       if (isRequired) {
         expect(
-          screen.getByRole("combobox", { name: ariaLabel })
+          screen.getByRole("combobox", { name: ariaLabel }),
         ).toBeRequired();
       } else {
         expect(
-          screen.getByRole("combobox", { name: ariaLabel })
+          screen.getByRole("combobox", { name: ariaLabel }),
         ).not.toBeRequired();
       }
-    }
+    },
   );
 });

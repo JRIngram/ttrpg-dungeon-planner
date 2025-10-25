@@ -47,7 +47,7 @@ class MonsterSerializer(serializers.ModelSerializer):
         """
 
         return Monster.objects.create(**validated_data)
-    
+
 class RoomSerializer(serializers.ModelSerializer):
     """
     Serializer for the Room model
@@ -64,7 +64,7 @@ class RoomSerializer(serializers.ModelSerializer):
         """
         model = Room
         fields = ['id', 'name', 'description', 'traps', 'monsters', 'dungeon']
-    
+
     def create(self, validated_data):
         """
         Creates a room from validated data
@@ -81,7 +81,7 @@ class RoomSerializer(serializers.ModelSerializer):
         room.refresh_from_db()
 
         return room
-    
+
     def update(self, instance, validated_data):
         monsters = validated_data.pop('monsters')
         traps = validated_data.pop('traps', [])
@@ -96,7 +96,7 @@ class RoomSerializer(serializers.ModelSerializer):
         instance.refresh_from_db()
 
         return instance
-    
+
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         representation['monsters'] = MonsterSerializer(instance.monsters.all(), many=True).data

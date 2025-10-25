@@ -75,10 +75,12 @@ export const FormBuilder = <T,>({
   const getFieldsToSubmit = (fields: FormInputField[], formData: FormData) => {
     const groupMultiFields = (fieldName: string, formData: FormData) => {
       const keys = formData.keys().toArray();
-      const fieldNameRegex = RegExp(`^${fieldName}\-[0-9]+$`); // fieldName-AnyDigit, e.g. monster-1
+      const fieldNameRegex = RegExp(`^${fieldName}-[0-9]+$`); // fieldName-AnyDigit, e.g. monster-1
       const filteredKeys = keys.filter((k) => k.match(fieldNameRegex));
-      const fieldValues = filteredKeys.map((fk) => formData.get(fk)?.toString());
-      
+      const fieldValues = filteredKeys.map((fk) =>
+        formData.get(fk)?.toString(),
+      );
+
       return fieldValues;
     };
 
@@ -201,7 +203,7 @@ const RenderField = <T,>({
 
   const getInitialValueFromExistingEntity = (
     existingEntity: Record<string, any>,
-    fieldName: string
+    fieldName: string,
   ) => {
     if (
       inputMode === InputMode.EDIT &&
@@ -219,14 +221,14 @@ const RenderField = <T,>({
 
   const getInitialValue = (
     field: FormInputField,
-    existingEntity: T | undefined
+    existingEntity: T | undefined,
   ) => {
     switch (field.inputType) {
       case InputType.Text:
         return existingEntity
           ? getInitialValueFromExistingEntity(
               existingEntity,
-              field.formInputName
+              field.formInputName,
             )
           : field.initialValue;
       case InputType.QuantitySelector:
@@ -277,7 +279,7 @@ const RenderField = <T,>({
     <>
       {/* Fills an array with 0..N, where N is the fieldCount */}
       {Array.from({ length: fieldCount }, (_, i) => i).map((c) =>
-        renderField(c)
+        renderField(c),
       )}
       <div className="flex gap-4">
         <button onClick={() => setFieldCount(fieldCount + 1)}>Add</button>
