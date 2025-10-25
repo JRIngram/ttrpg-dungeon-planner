@@ -8,6 +8,7 @@ describe("TextInput", () => {
     const TextInput = composeStory(Primary, Meta);
     const ariaLabel = "A Test TextInput";
     const placeholderText = "Some test placeholder text";
+
     render(
       <TextInput
         id="test-id"

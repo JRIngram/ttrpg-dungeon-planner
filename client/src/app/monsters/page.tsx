@@ -1,7 +1,11 @@
 "use client";
 import { useState } from "react";
 import { NavDrawer } from "@/components/molecules/NavDrawer/NavDrawer";
-import { InputMode } from "@/components/organisms/FormBuilder/FormBuilder";
+import {
+  FormInputField,
+  InputMode,
+  InputType,
+} from "@/components/organisms/FormBuilder/FormBuilder";
 import { MonsterDataFetcher } from "@/services/MonsterDataFetcher/MonsterDataFetcher";
 import { useQuery } from "@tanstack/react-query";
 import { FieldTextDisplayGroup } from "@/components/molecules/FieldTextDisplayGroup/FieldTextDisplayGroup";
@@ -42,8 +46,9 @@ export default function Monster() {
 
   const renderMonsterDisplay = () => {
     const MonsterForm = FormBuilder<MonsterType>;
-    const formFields = [
+    const formFields: FormInputField[] = [
       {
+        inputType: InputType.Text,
         id: "monster-name",
         formInputName: "name",
         ariaLabel: "Monster name",
@@ -55,6 +60,7 @@ export default function Monster() {
         isRequired: true,
       },
       {
+        inputType: InputType.Text,
         id: "monster-xp",
         formInputName: "xp",
         ariaLabel: "Monster XP value",
