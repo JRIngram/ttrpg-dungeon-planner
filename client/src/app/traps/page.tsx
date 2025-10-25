@@ -1,7 +1,11 @@
 "use client";
 import { useState } from "react";
 import { NavDrawer } from "@/components/molecules/NavDrawer/NavDrawer";
-import { InputMode } from "@/components/organisms/FormBuilder/FormBuilder";
+import {
+  FormInputField,
+  InputMode,
+  InputType,
+} from "@/components/organisms/FormBuilder/FormBuilder";
 import { TrapDataFetcher } from "@/services/TrapDataFetcher/TrapDataFetcher";
 import { useQuery } from "@tanstack/react-query";
 import { FieldTextDisplayGroup } from "@/components/molecules/FieldTextDisplayGroup/FieldTextDisplayGroup";
@@ -42,8 +46,9 @@ export default function Trap() {
 
   const renderTrapDisplay = () => {
     const TrapForm = FormBuilder<TrapType>;
-    const formFields = [
+    const formFields: FormInputField[] = [
       {
+        inputType: InputType.Text,
         id: "trap-name",
         formInputName: "name",
         ariaLabel: "Trap name",
@@ -55,6 +60,7 @@ export default function Trap() {
         isRequired: true,
       },
       {
+        inputType: InputType.Text,
         id: "trap-effect",
         formInputName: "effect",
         ariaLabel: "Trap effect",

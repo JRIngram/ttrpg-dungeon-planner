@@ -1,0 +1,21 @@
+meta {
+  name: Update Room
+  type: http
+  seq: 4
+}
+
+put {
+  url: http://localhost:8000/dungeonPlanner/room/1
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "dungeon": 1,
+    "name": "Altar to Dave",
+    "description": "An unholy altar to Dave",
+    "monsters": [1],
+    "traps": [2]
+  }
+}
