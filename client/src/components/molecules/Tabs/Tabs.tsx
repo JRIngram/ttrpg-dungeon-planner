@@ -62,7 +62,7 @@ const Tab = ({
     <button
       className={style}
       key={option}
-      data-testId={testId}
+      data-testid={testId}
       onClick={() => onTabSelectCallback(index)}
     >
       {option}

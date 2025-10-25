@@ -1,5 +1,5 @@
 import { vi, it, describe, expect } from "vitest";
-import { DungeonDataFetcher } from "./DungeonDataFetcher";
+import { DungeonDataFetcher } from "../DungeonDataFetcher/DungeonDataFetcher";
 
 describe("MonsterDataFetcher", () => {
   describe("mapServerMonsterToMonster", () => {

@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-type Props = {
+export type DropdownProps = {
   id: string;
   formInputName: string;
   ariaLabel: string;
@@ -23,7 +23,7 @@ export const Dropdown = ({
   isRequired,
   initialOption,
   options,
-}: Props) => {
+}: DropdownProps) => {
   const [selectedIndex, setSelectedIndex] = useState<number>(
     initialOption ? options.findIndex((o) => o === initialOption) : -1,
   );
@@ -34,6 +34,7 @@ export const Dropdown = ({
       name={formInputName}
       aria-label={ariaLabel}
       required={!!isRequired}
+      className="ww-full rounded-lg p-4 border-2 border-secondary-500"
     >
       <option
         key={"placeholder"}
