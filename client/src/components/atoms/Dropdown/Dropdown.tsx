@@ -10,7 +10,7 @@ export type DropdownProps = {
   initialOption?: DropdownOption;
 };
 
-type DropdownOption = {
+export type DropdownOption = {
   value: string;
   label: string;
 };

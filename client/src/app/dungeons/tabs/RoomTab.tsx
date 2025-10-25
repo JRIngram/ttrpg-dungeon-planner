@@ -12,6 +12,9 @@ import type { Room } from "@/types/room";
 import { useToastsDispatch } from "@/context/ToastContext";
 import { RoomDataFetcher } from "@/services/RoomDataFetcher.ts/RoomDataFetcher";
 import { useQuery } from "@tanstack/react-query";
+import { MonsterDataFetcher } from "@/services/MonsterDataFetcher/MonsterDataFetcher";
+import { DropdownOption } from "@/components/atoms/Dropdown/Dropdown";
+import { TrapDataFetcher } from "@/services/TrapDataFetcher/TrapDataFetcher";
 
 type Props = {
   selectedDungeonId?: string;
@@ -21,6 +24,63 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
   const toastDispatch = useToastsDispatch();
 
   const roomDataFetcher = new RoomDataFetcher();
+  const monsterDataFetcher = new MonsterDataFetcher();
+  const trapDataFetcher = new TrapDataFetcher();
+
+  const {
+    data,
+    isLoading: isLoadingDungeonRooms,
+    isError: errorLoadingDungeonRooms,
+    refetch,
+  } = useQuery({
+    queryKey: [`dungeon-${selectedDungeonId}-room-list`],
+    queryFn: (): Promise<Room[]> | [] => {
+      return selectedDungeonId
+        ? roomDataFetcher.getListForDungeon(selectedDungeonId)
+        : [];
+    },
+  });
+
+  const {
+    data: monsters,
+    isLoading: isLoadingMonsters,
+    isError: isErrorLoadingMonsters,
+  } = useQuery({
+    queryKey: [`get-all-monsters`],
+    queryFn: async (): Promise<DropdownOption[]> =>
+      (await monsterDataFetcher.getList()).map((monster) => ({
+        label: `${monster.name} - ${monster.xp}`,
+        value: monster.id,
+      })),
+  });
+
+  const {
+    data: traps,
+    isLoading: isLoadingTraps,
+    isError: isErrorLoadingTraps,
+  } = useQuery({
+    queryKey: [`get-all-traps`],
+    queryFn: async (): Promise<DropdownOption[]> =>
+      (await trapDataFetcher.getList()).map((trap) => ({
+        label: `${trap.name}`,
+        value: trap.id,
+      })),
+  });
+
+  const getPlacerholderMessage = (
+    category: string,
+    isLoading: boolean,
+    isError: Boolean
+  ) => {
+    if (isLoading) {
+      return `Loading ${category}`;
+    } else if (isError) {
+      return `Error loading ${category}`;
+    } else {
+      return `No ${category}`;
+    }
+  };
+
   const RoomForm = FormBuilder<Room>;
   const formFields: FormInputField[] = [
     {
@@ -53,17 +113,12 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
       textInputFormName: "description",
       itemName: "monsters",
       dropdownConfig: {
-        placeholder: "Select a monster",
-        options: [
-          {
-            label: "Monster 1",
-            value: "1",
-          },
-          {
-            label: "Monster 2",
-            value: "2",
-          },
-        ],
+        placeholder: getPlacerholderMessage(
+          "monsters",
+          isLoadingMonsters,
+          isErrorLoadingMonsters
+        ),
+        options: monsters ?? [],
       },
       isRequired: true,
       allowMultipleOfSame: true,
@@ -74,32 +129,17 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
       textInputFormName: "description",
       itemName: "traps",
       dropdownConfig: {
-        placeholder: "Select a trap",
-        options: [
-          {
-            label: "Trap 1",
-            value: "1",
-          },
-        ],
+        placeholder: getPlacerholderMessage(
+          "traps",
+          isLoadingTraps,
+          isErrorLoadingTraps
+        ),
+        options: traps ?? [],
       },
       allowMultipleOfSame: true,
       isRequired: true,
     },
   ];
-
-  const {
-    data,
-    isLoading: isLoadingDungeonRooms,
-    isError: errorLoadingDungeonRooms,
-    refetch,
-  } = useQuery({
-    queryKey: [`dungeon-${selectedDungeonId}-room-list`],
-    queryFn: (): Promise<Room[]> | [] => {
-      return selectedDungeonId
-        ? roomDataFetcher.getListForDungeon(selectedDungeonId)
-        : [];
-    },
-  });
 
   if (isLoadingDungeonRooms) {
     return <p>Loading...</p>;
