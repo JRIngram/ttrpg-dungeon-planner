@@ -47,6 +47,38 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
       initialValue: undefined,
       isRequired: true,
     },
+    {
+      inputType: InputType.QuantitySelector,
+      id: "room-monster",
+      textInputFormName: "description",
+      itemName: "Monster",
+      dropdownConfig: {
+        placeholder: "Select a monster",
+        options: [
+          {
+            label: "Monster 1",
+            value: "mon-1",
+          },
+        ],
+      },
+      isRequired: true,
+    },
+        {
+      inputType: InputType.QuantitySelector,
+      id: "room-trap",
+      textInputFormName: "description",
+      itemName: "Trap",
+      dropdownConfig: {
+        placeholder: "Select a trap",
+        options: [
+          {
+            label: "Trap 1",
+            value: "trap-1",
+          },
+        ],
+      },
+      isRequired: true,
+    },
   ];
 
   const {
@@ -147,7 +179,7 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
                     text: "Delete",
                     onClick: async () => {
                       const { httpCode } = await roomDataFetcher.deleteSingle(
-                        room.id,
+                        room.id
                       );
                       if (!roomDataFetcher.isSuccessfulHTTPCode(httpCode)) {
                         toastDispatch({

@@ -1,27 +1,25 @@
 import { ButtonProps } from "@/components/atoms/Button/Button";
 import { ButtonRow } from "@/components/molecules/ButtonRow/ButtonRow";
-import { FormTextInput } from "@/components/molecules/FormTextInput/FormTextInput";
+import {
+  FormTextInput,
+  FormTextInputProps,
+} from "@/components/molecules/FormTextInput/FormTextInput";
+import {
+  ItemQuantitySelector,
+  ItemQuantitySelectorProps,
+} from "@/components/molecules/ItemQuantitySelector/ItemQuantitySelector";
 import { useToastsDispatch } from "@/context/ToastContext";
 import { DataFetcher } from "@/services/DataFetcher/DataFetcher";
 import { ToastType } from "@/types/toast";
 
 export enum InputType {
   "Text",
-  "Dropdown",
+  "QuantitySelector",
 }
 
-export type FormInputField = {
-  id: string;
-  formInputName: string;
-  ariaLabel: string;
-  formLabelText: string;
-  placeholder: string;
-  pattern: string;
-  inputType: InputType;
-  patternMessage?: string;
-  isRequired?: boolean;
-  initialValue?: string;
-};
+export type FormInputField =
+  | ({ inputType: InputType.Text } & FormTextInputProps)
+  | ({ inputType: InputType.QuantitySelector } & ItemQuantitySelectorProps);
 
 export enum InputMode {
   "NEW",
@@ -67,11 +65,27 @@ export const FormBuilder = <T,>({
 }: Props<T>) => {
   const dispatch = useToastsDispatch();
 
+  const getFieldsToSubmit = (fields: FormInputField[], formData: FormData) => {
+    return fields.map((field) => {
+      console.log({ field });
+      switch (field.inputType) {
+        case InputType.Text:
+          return [field.formInputName, formData.get(field.formInputName)];
+        case InputType.QuantitySelector:
+          console.log("we quant", { field });
+          console.log("quantSelector", {
+            qs: formData.get(field.textInputFormName),
+          });
+          console.log("itemSelector", { is: formData.get(field.itemName) });
+          return [];
+        default:
+          return [];
+      }
+    });
+  };
+
   const submitForm = async (formData: FormData) => {
-    const fieldsToSubmit = fields.map((field) => [
-      field.formInputName,
-      formData.get(field.formInputName),
-    ]);
+    const fieldsToSubmit = getFieldsToSubmit(fields, formData);
     const newEntity = {
       ...Object.fromEntries(fieldsToSubmit),
       ...requiredNonFormData,
@@ -103,10 +117,7 @@ export const FormBuilder = <T,>({
       }
     } else if (inputMode === InputMode.EDIT) {
       try {
-        const fieldsToSubmit = fields.map((field) => [
-          field.formInputName,
-          formData.get(field.formInputName),
-        ]);
+        const fieldsToSubmit = getFieldsToSubmit(fields, formData);
         const updatedEntityFields = Object.fromEntries(fieldsToSubmit);
         const { entity, httpCode } = await dataFetcher.editSingle({
           ...existingEntity,
@@ -140,46 +151,99 @@ export const FormBuilder = <T,>({
     <div className="flex flex-col gap-4">
       <form action={submitForm}>
         <div className="flex flex-col gap-2">
-          {fields.map((field) => {
-            const getInitialValueFromExistingEntity = (
-              existingEntity: Record<string, any>,
-              formInputName: string,
-            ) => {
-              if (
-                inputMode === InputMode.EDIT &&
-                existingEntity &&
-                existingEntity[formInputName]
-              ) {
-                return existingEntity[field.formInputName];
-              }
-              return field.initialValue;
-            };
-
-            const initialValue = existingEntity
-              ? getInitialValueFromExistingEntity(
-                  existingEntity,
-                  field.formInputName,
-                )
-              : field.initialValue;
-
-            return (
-              <FormTextInput
-                key={field.id}
-                id={field.id}
-                formInputName={field.formInputName}
-                ariaLabel={field.ariaLabel}
-                formLabelText={field.formLabelText}
-                placeholder={field.placeholder}
-                pattern={field.pattern}
-                patternMessage={field.patternMessage}
-                initialValue={initialValue}
-                isRequired={field.isRequired}
-              />
-            );
-          })}
+          {fields.map((field) => (
+            <RenderField
+              key={field.id}
+              inputMode={inputMode}
+              existingEntity={existingEntity}
+              field={field}
+            />
+          ))}
           <ButtonRow buttons={endOfFormButtons} />
         </div>
       </form>
     </div>
   );
+};
+
+type RenderFieldProps<T> = {
+  field: FormInputField;
+  inputMode: InputMode;
+  existingEntity?: T;
+};
+
+const RenderField = <T,>({
+  field,
+  inputMode,
+  existingEntity,
+}: RenderFieldProps<T>) => {
+  const getInitialValueFromExistingEntity = (
+    existingEntity: Record<string, any>,
+    fieldName: string
+  ) => {
+    if (
+      inputMode === InputMode.EDIT &&
+      existingEntity &&
+      existingEntity[fieldName]
+    ) {
+      console.log({ e: existingEntity, f: field });
+
+      switch (field.inputType) {
+        case InputType.Text:
+          return existingEntity[fieldName];
+        case InputType.QuantitySelector:
+          return existingEntity[fieldName];
+      }
+    }
+  };
+
+  const getInitialValue = (
+    field: FormInputField,
+    existingEntity: T | undefined
+  ) => {
+    switch (field.inputType) {
+      case InputType.Text:
+        return existingEntity
+          ? getInitialValueFromExistingEntity(
+              existingEntity,
+              field.formInputName
+            )
+          : field.initialValue;
+      case InputType.QuantitySelector:
+        return existingEntity
+          ? getInitialValueFromExistingEntity(existingEntity, field.itemName)
+          : undefined;
+    }
+  };
+
+  const initialValue = getInitialValue(field, existingEntity);
+
+  switch (field.inputType) {
+    case InputType.Text:
+      return (
+        <FormTextInput
+          id={field.id}
+          formInputName={field.formInputName}
+          ariaLabel={field.ariaLabel}
+          formLabelText={field.formLabelText}
+          placeholder={field.placeholder}
+          pattern={field.pattern}
+          patternMessage={field.patternMessage}
+          initialValue={initialValue}
+          isRequired={field.isRequired}
+        />
+      );
+    case InputType.QuantitySelector:
+      return (
+        <ItemQuantitySelector
+          id={field.id}
+          itemName={field.itemName}
+          textInputFormName={field.textInputFormName}
+          dropdownConfig={field.dropdownConfig}
+          isRequired={field.isRequired}
+        />
+      );
+    default:
+      return;
+  }
 };

@@ -28,14 +28,6 @@ export class RoomDataFetcher extends DataFetcher<Room> {
   mapRoomToServerRoom = (room: Room): Omit<ServerRoom, "id"> => {
     const { name, description, dungeonId, traps, monsters } = room;
 
-    console.log("yikes,", {
-      name,
-      description,
-      traps,
-      monsters,
-      dungeon: dungeonId,
-    });
-
     return {
       name,
       description,

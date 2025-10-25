@@ -1,6 +1,6 @@
 import { TextInput } from "@/components/atoms/TextInput/TextInput";
 
-type Props = {
+export type FormTextInputProps = {
   id: string;
   formInputName: string;
   ariaLabel: string;
@@ -22,7 +22,7 @@ export const FormTextInput = ({
   patternMessage,
   isRequired = false,
   initialValue = "",
-}: Props) => {
+}: FormTextInputProps) => {
   return (
     <>
       <label className="text-typograph-500 font-semibold" htmlFor={id}>

@@ -13,6 +13,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
+    id: "test",
     itemName: "Item",
     textInputFormName: "item-quantity",
     dropdownConfig: {
