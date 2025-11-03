@@ -43,9 +43,34 @@ class Room(models.Model):
     """
     name = models.CharField()
     description = models.CharField()
-    traps = models.ManyToManyField(Trap, blank=True)
-    monsters = models.ManyToManyField(Monster, blank=True)
+    traps = models.ManyToManyField(Trap, blank=True, through="RoomTrap")
+    monsters = models.ManyToManyField(Monster, blank=True, through="RoomMonster")
     dungeon = models.ForeignKey(Dungeon, on_delete=models.CASCADE)
 
     def __str__(self):
         return str(f"{self.name}")
+    
+class RoomMonster(models.Model):
+    """
+    Model for junction table for room and monsters
+    Contains additional information.
+    """
+    room = models.ForeignKey(Room, on_delete=models.CASCADE)
+    monster = models.ForeignKey(Monster, on_delete=models.CASCADE)
+    quantity = models.SmallIntegerField()
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["room", "monster"], name="unique_room_monster"
+            )
+        ]
+
+class RoomTrap(models.Model):
+    """
+    Model for junction table for room and monsters
+    Contains additional information.
+    """
+    room = models.ForeignKey(Room, on_delete=models.CASCADE)
+    trap = models.ForeignKey(Trap, on_delete=models.CASCADE)
+    quantity = models.SmallIntegerField()

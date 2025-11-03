@@ -3,7 +3,7 @@ Defines serializers for the dungeonPlanner app
 """
 
 from rest_framework import serializers
-from dungeonPlanner.models import Dungeon, Monster, Room, Trap
+from dungeonPlanner.models import Dungeon, Monster, Room, RoomMonster, RoomTrap, Trap
 
 class DungeonSerializer(serializers.ModelSerializer):
     """
@@ -48,6 +48,39 @@ class MonsterSerializer(serializers.ModelSerializer):
 
         return Monster.objects.create(**validated_data)
 
+class TrapSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the Trap model
+    """
+
+    name = serializers.CharField(required=True)
+    effect = serializers.CharField(required=True)
+
+    class Meta:
+        """
+        Define serializer fields
+        """
+
+        model = Trap
+        fields = ['id', 'name', 'effect']
+
+    def create(self, validated_data):
+        """
+        Creates a trap from validated data
+        """
+
+        return Trap.objects.create(**validated_data)
+
+class RoomMonsterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model= RoomMonster
+        fields = ['monster', 'quantity']
+
+class RoomTrapSerializer(serializers.ModelSerializer):
+    class Meta:
+        model= RoomTrap
+        fields = ['trap', 'quantity']
+
 class RoomSerializer(serializers.ModelSerializer):
     """
     Serializer for the Room model
@@ -55,13 +88,14 @@ class RoomSerializer(serializers.ModelSerializer):
 
     name = serializers.CharField(required=True)
     description = serializers.CharField()
-    monsters = serializers.PrimaryKeyRelatedField(many=True, queryset=Monster.objects.all())
-    traps = serializers.PrimaryKeyRelatedField(many=True, queryset=Trap.objects.all())
+    monsters = RoomMonsterSerializer(source="roommonster_set", many=True, required=False )
+    traps = RoomTrapSerializer(source="roomtrap_set", many=True, required=False)
 
     class Meta:
         """
         Define serializer fields for Room
         """
+
         model = Room
         fields = ['id', 'name', 'description', 'traps', 'monsters', 'dungeon']
 
@@ -69,13 +103,27 @@ class RoomSerializer(serializers.ModelSerializer):
         """
         Creates a room from validated data
         """
-        monsters = validated_data.pop('monsters', [])
-        traps = validated_data.pop('traps', [])
 
+        traps = validated_data.pop('roomtrap_set', [])
+        monsters = validated_data.pop("roommonster_set", [])
         room = Room.objects.create(**validated_data)
 
-        room.monsters.set(monsters)
-        room.traps.set(traps)
+        for monster in monsters:
+            RoomMonster.objects.create(
+                room=room,
+                monster=monster['monster'],
+                quantity=monster['quantity']
+            )
+
+        for trap in traps:
+            RoomTrap.objects.create(
+                room=room,
+                trap=trap['trap'],
+                quantity=trap['quantity']
+            )
+
+        # room.monsters.set(monsters)
+        # room.traps.set(traps)
 
         # Ensures responses includes recently added monsters and traps
         room.refresh_from_db()
@@ -103,25 +151,3 @@ class RoomSerializer(serializers.ModelSerializer):
         representation['traps'] = TrapSerializer(instance.traps.all(), many=True).data
         return representation
 
-class TrapSerializer(serializers.ModelSerializer):
-    """
-    Serializer for the Trap model
-    """
-
-    name = serializers.CharField(required=True)
-    effect = serializers.CharField(required=True)
-
-    class Meta:
-        """
-        Define serializer fields
-        """
-
-        model = Trap
-        fields = ['id', 'name', 'effect']
-
-    def create(self, validated_data):
-        """
-        Creates a trap from validated data
-        """
-
-        return Trap.objects.create(**validated_data)
