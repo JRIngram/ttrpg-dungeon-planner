@@ -145,15 +145,25 @@ class RoomSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         
+        representation['monsters'] = self.map_monsters_with_roommonster(instance)
+        representation['traps'] = self.map_trap_with_roomtrap(instance)
+        return representation
+    
+    def map_monsters_with_roommonster(self, instance):
         room_monsters = RoomMonsterSerializer(instance.roommonster_set, many=True).data
         monsters = MonsterSerializer(instance.monsters.all(), many=True).data
         for monster in monsters:
             for room_monster in room_monsters:
                 if(room_monster['monster'] == monster['id']):
                     monster['quantity'] = room_monster['quantity']
+        return monsters
 
-        representation['roomtrap_set'] = RoomTrapSerializer(instance.roomtrap_set, many=True).data
-        representation['monsters'] = monsters
-        representation['traps'] = TrapSerializer(instance.traps.all(), many=True).data
-        return representation
+    def map_trap_with_roomtrap(self, instance):
+        room_traps = RoomTrapSerializer(instance.roomtrap_set, many=True).data
+        traps = TrapSerializer(instance.traps.all(), many=True).data
+        for trap in traps:
+            for room_trap in room_traps:
+                if(room_trap['trap'] == trap['id']):
+                    trap['quantity'] = room_trap['quantity']
+        return trap
 
