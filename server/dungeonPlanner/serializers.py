@@ -165,5 +165,5 @@ class RoomSerializer(serializers.ModelSerializer):
             for room_trap in room_traps:
                 if(room_trap['trap'] == trap['id']):
                     trap['quantity'] = room_trap['quantity']
-        return trap
+        return traps
 

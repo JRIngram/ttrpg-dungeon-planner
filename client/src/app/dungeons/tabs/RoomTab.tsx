@@ -15,6 +15,7 @@ import { useQuery } from "@tanstack/react-query";
 import { MonsterDataFetcher } from "@/services/MonsterDataFetcher/MonsterDataFetcher";
 import { DropdownOption } from "@/components/atoms/Dropdown/Dropdown";
 import { TrapDataFetcher } from "@/services/TrapDataFetcher/TrapDataFetcher";
+import { Monster, MonsterWithQuantity } from "@/types/monster";
 
 type Props = {
   selectedDungeonId?: string;
@@ -70,7 +71,7 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
   const getPlacerholderMessage = (
     category: string,
     isLoading: boolean,
-    isError: Boolean,
+    isError: Boolean
   ) => {
     if (isLoading) {
       return `Loading ${category}`;
@@ -116,7 +117,7 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
         placeholder: getPlacerholderMessage(
           "monsters",
           isLoadingMonsters,
-          isErrorLoadingMonsters,
+          isErrorLoadingMonsters
         ),
         options: monsters ?? [],
       },
@@ -132,7 +133,7 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
         placeholder: getPlacerholderMessage(
           "traps",
           isLoadingTraps,
-          isErrorLoadingTraps,
+          isErrorLoadingTraps
         ),
         options: traps ?? [],
       },
@@ -176,13 +177,6 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
       </ListItemContainer>
 
       {data?.map((room) => {
-        const roomFields = Object.entries(room).map((e) => {
-          return {
-            fieldName: e[0],
-            fieldValue: `${e[1]}`,
-          };
-        });
-
         if (room.id === selectedRoomId) {
           return (
             <ListItemContainer key={room.id}>
@@ -209,6 +203,8 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
         }
 
         if (room.id !== selectedRoomId) {
+          const roomFields = formatRoomFields(room);
+
           return (
             <ListItemContainer key={room.id}>
               <FieldTextDisplayGroup fields={roomFields} />
@@ -223,7 +219,7 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
                     text: "Delete",
                     onClick: async () => {
                       const { httpCode } = await roomDataFetcher.deleteSingle(
-                        room.id,
+                        room.id
                       );
                       if (!roomDataFetcher.isSuccessfulHTTPCode(httpCode)) {
                         toastDispatch({
@@ -260,4 +256,31 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
 
 const ListItemContainer = ({ children }: PropsWithChildren) => {
   return <div className="border-b-2 border-primary-50 pb-4">{children}</div>;
+};
+
+const formatRoomFields = (room: Room) => {
+  const isSimpleField = (value: unknown): value is string | number => typeof value ==='string' || typeof value === 'number';
+  
+  const simpleFields = Object.entries(room)
+    .filter((e) => isSimpleField(e[1]))
+    .map((entry) => ({
+      fieldName: entry[0],
+      fieldValue: `${entry[1]}`,
+    }));
+
+  const monsterFields = room.monsters?.map(monster => {
+    return {
+      fieldName: monster.name,
+      fieldValue: `${monster.xp}xp each; ${monster.quantity} in room. (${monster.xp * monster.quantity}xp total)`,
+    }
+  })
+
+  const trapFields = room.traps.map(trap => {
+    return {
+      fieldName: trap.name,
+      fieldValue: `${trap.quantity} in room.`
+    }
+  })
+
+  return [simpleFields, monsterFields, trapFields].flat()
 };
