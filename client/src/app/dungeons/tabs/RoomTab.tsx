@@ -273,14 +273,20 @@ const formatRoomFields = (room: Room) => {
       fieldName: monster.name,
       fieldValue: `${monster.xp}xp each; ${monster.quantity} in room. (${monster.xp * monster.quantity}xp total)`,
     }
-  })
+  });
 
   const trapFields = room.traps.map(trap => {
     return {
       fieldName: trap.name,
       fieldValue: `${trap.quantity} in room.`
     }
-  })
+  });
 
-  return [simpleFields, monsterFields, trapFields].flat()
+  const totalXp = room.monsters.map(monster => monster.xp * monster.quantity).reduce((accumulator, currentMonsterXp) => accumulator + currentMonsterXp);
+  const totalXpField = {
+    fieldName: "Total Room XP",
+    fieldValue: `${totalXp}xp`,
+  }
+
+  return [simpleFields, monsterFields, trapFields, totalXpField].flat()
 };
