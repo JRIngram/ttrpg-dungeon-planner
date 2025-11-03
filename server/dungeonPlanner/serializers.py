@@ -122,9 +122,6 @@ class RoomSerializer(serializers.ModelSerializer):
                 quantity=trap['quantity']
             )
 
-        # room.monsters.set(monsters)
-        # room.traps.set(traps)
-
         # Ensures responses includes recently added monsters and traps
         room.refresh_from_db()
 
@@ -147,7 +144,16 @@ class RoomSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
-        representation['monsters'] = MonsterSerializer(instance.monsters.all(), many=True).data
+        
+        room_monsters = RoomMonsterSerializer(instance.roommonster_set, many=True).data
+        monsters = MonsterSerializer(instance.monsters.all(), many=True).data
+        for monster in monsters:
+            for room_monster in room_monsters:
+                if(room_monster['monster'] == monster['id']):
+                    monster['quantity'] = room_monster['quantity']
+
+        representation['roomtrap_set'] = RoomTrapSerializer(instance.roomtrap_set, many=True).data
+        representation['monsters'] = monsters
         representation['traps'] = TrapSerializer(instance.traps.all(), many=True).data
         return representation
 
