@@ -128,13 +128,33 @@ class RoomSerializer(serializers.ModelSerializer):
         return room
 
     def update(self, instance, validated_data):
-        monsters = validated_data.pop('monsters')
-        traps = validated_data.pop('traps', [])
+        traps = validated_data.pop('roomtrap_set', [])
+        monsters = validated_data.pop("roommonster_set", [])
 
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
-        instance.monsters.set(monsters)
-        instance.traps.set(traps)
+
+        for monster in monsters:
+            room_monster, created = RoomMonster.objects.get_or_create(
+                room=instance,
+                monster=monster['monster'],
+                defaults={"quantity": monster['quantity']}
+            )
+
+            if created == False:
+                room_monster.quantity = monster['quantity']
+                room_monster.save()
+
+        for trap in traps:
+            room_trap, created = RoomTrap.objects.get_or_create(
+                room=instance,
+                trap=trap['trap'],
+                defaults={"quantity": trap['quantity']}
+            )
+
+            if created == False:
+                room_trap.quantity = trap['quantity']
+                room_trap.save()
 
         instance.save()
         # Ensures responses includes recently added monsters and traps

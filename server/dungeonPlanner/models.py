@@ -74,3 +74,10 @@ class RoomTrap(models.Model):
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
     trap = models.ForeignKey(Trap, on_delete=models.CASCADE)
     quantity = models.SmallIntegerField()
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["room", "trap"], name="unique_room_trap"
+            )
+        ]
