@@ -264,6 +264,10 @@ const RenderField = <T,>({
             textInputFormName={`${field.textInputFormName}-${index}`}
             dropdownConfig={field.dropdownConfig}
             isRequired={field.isRequired}
+            initialValue={initialValue ? {
+              itemValue: initialValue[index].id,
+              quantity: initialValue[index].quantity
+            } : undefined}
           />
         );
       default:
