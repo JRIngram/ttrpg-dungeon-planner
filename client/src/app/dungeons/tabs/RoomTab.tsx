@@ -111,7 +111,7 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
     {
       inputType: InputType.QuantitySelector,
       id: "room-monster",
-      textInputFormName: "description",
+      textInputFormName: "monsters",
       itemName: "monsters",
       dropdownConfig: {
         placeholder: getPlacerholderMessage(
@@ -121,13 +121,13 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
         ),
         options: monsters ?? [],
       },
-      isRequired: true,
+      isRequired: false,
       allowMultipleOfSame: true,
     },
     {
       inputType: InputType.QuantitySelector,
       id: "room-trap",
-      textInputFormName: "description",
+      textInputFormName: "traps",
       itemName: "traps",
       dropdownConfig: {
         placeholder: getPlacerholderMessage(
@@ -138,7 +138,7 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
         options: traps ?? [],
       },
       allowMultipleOfSame: true,
-      isRequired: true,
+      isRequired: false,
     },
   ];
 

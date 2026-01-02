@@ -73,13 +73,25 @@ export const FormBuilder = <T,>({
   const dispatch = useToastsDispatch();
 
   const getFieldsToSubmit = (fields: FormInputField[], formData: FormData) => {
+
+    /**
+     * Groups fields together if they have same fieldName.
+     * Assumes they are the same due to being a pair in quantity fields.
+     */
     const groupMultiFields = (fieldName: string, formData: FormData) => {
+      // This is hacky, but I've accepted I'm refactoring the forms
+      const depluralisedKey = fieldName.substring(0, fieldName.length - 1);
+
       const keys = Array.from(formData.keys());
       const fieldNameRegex = RegExp(`^${fieldName}-[0-9]+$`); // fieldName-AnyDigit, e.g. monster-1
-      const filteredKeys = keys.filter((k) => k.match(fieldNameRegex));
-      const fieldValues = filteredKeys.map((fk) =>
-        formData.get(fk)?.toString(),
-      );
+      const filteredKeys = Array.from(new Set(keys.filter((k) => k.match(fieldNameRegex))))
+      const fieldValues = filteredKeys.map((fk) => {
+        const matchingValues = formData.getAll(fk);
+        const quantityObject: {[key:string]: any} = {}
+        quantityObject.quantity = matchingValues[0];
+        quantityObject[depluralisedKey] = matchingValues[1];
+        return quantityObject;
+      });
 
       return fieldValues;
     };
