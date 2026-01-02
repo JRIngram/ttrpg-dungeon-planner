@@ -282,7 +282,7 @@ const formatRoomFields = (room: Room) => {
     }
   });
 
-  const totalXp = room.monsters.map(monster => monster.xp * monster.quantity).reduce((accumulator, currentMonsterXp) => accumulator + currentMonsterXp);
+  const totalXp = room.monsters.length ? room.monsters.map(monster => monster.xp * monster.quantity).reduce((accumulator, currentMonsterXp) => accumulator + currentMonsterXp) : 0;
   const totalXpField = {
     fieldName: "Total Room XP",
     fieldValue: `${totalXp}xp`,
