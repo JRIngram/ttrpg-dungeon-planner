@@ -73,7 +73,6 @@ export const FormBuilder = <T,>({
   const dispatch = useToastsDispatch();
 
   const getFieldsToSubmit = (fields: FormInputField[], formData: FormData) => {
-
     /**
      * Groups fields together if they have same fieldName.
      * Assumes they are the same due to being a pair in quantity fields.
@@ -84,16 +83,42 @@ export const FormBuilder = <T,>({
 
       const keys = Array.from(formData.keys());
       const fieldNameRegex = RegExp(`^${fieldName}-[0-9]+$`); // fieldName-AnyDigit, e.g. monster-1
-      const filteredKeys = keys.filter((k) => k.match(fieldNameRegex))
+      const filteredKeys = keys.filter((k) => k.match(fieldNameRegex));
       const fieldValues = filteredKeys.map((fk) => {
         const matchingValues = formData.getAll(fk);
-        const quantityObject: {[key:string]: any} = {}
+        const quantityObject: { [key: string]: any } = {};
         quantityObject.quantity = matchingValues[0];
         quantityObject[depluralisedKey] = matchingValues[1];
         return quantityObject;
       });
 
-      return fieldValues;
+      /**
+       * Dedupes objects in an array by stringifiying the objects, 
+       * checking if the array already contains that string
+       * Once all objects stringified and processed, the objects are then parsed back to JSON
+       * 
+       * @param fieldValues 
+       * @returns An array with fields deduped
+       */
+      const dedupeFieldValues = (
+        fieldValues: { [key: string]: any }[]
+      ): { [key: string]: any }[] => {
+        let dedupedStringifiedFieldValues: string[] = [];
+        fieldValues.forEach((fv) => {
+          const stringifiedEntry = JSON.stringify(fv);
+          if (!dedupedStringifiedFieldValues.includes(stringifiedEntry)) {
+            dedupedStringifiedFieldValues.push(stringifiedEntry);
+          }
+        });
+
+        const dedupedFieldValues = dedupedStringifiedFieldValues.map((fv) =>
+          JSON.parse(fv)
+        );
+        
+        return dedupedFieldValues;
+      };
+
+      return dedupeFieldValues(fieldValues);
     };
 
     return fields.map((field) => {
@@ -118,19 +143,26 @@ export const FormBuilder = <T,>({
     });
   };
 
+  /**
+   * Removes fields from the array if the object is 
+   * an array containing only objects with empty fields
+   */
   const filterEmptyFields = (field: Array<any>) => {
     const fieldValue = field[1];
-    if(Array.isArray(fieldValue)) {
-      const isEmptyObject = (valueObject: Object) => Object.values(valueObject).filter(fieldVal => !!fieldVal).length > 0;
+    if (Array.isArray(fieldValue)) {
+      const isEmptyObject = (valueObject: Object) =>
+        Object.values(valueObject).filter((fieldVal) => !!fieldVal).length > 0;
 
-      return fieldValue.filter(f => isEmptyObject(f)).length
+      return fieldValue.filter((f) => isEmptyObject(f)).length;
     }
     return fieldValue;
-  }
+  };
 
   const submitForm = async (formData: FormData) => {
-    const fieldsToSubmit = getFieldsToSubmit(fields, formData).filter(field => filterEmptyFields(field));
-    
+    const fieldsToSubmit = getFieldsToSubmit(fields, formData).filter((field) =>
+      filterEmptyFields(field)
+    );
+
     const newEntity = {
       ...Object.fromEntries(fieldsToSubmit),
       ...requiredNonFormData,
@@ -226,14 +258,13 @@ const RenderField = <T,>({
 
   const getInitialValueFromExistingEntity = (
     existingEntity: Record<string, any>,
-    fieldName: string,
+    fieldName: string
   ) => {
     if (
       inputMode === InputMode.EDIT &&
       existingEntity &&
       existingEntity[fieldName]
     ) {
-      console.log({existingEntity})
       switch (field.inputType) {
         case InputType.Text:
           return existingEntity[fieldName];
@@ -245,14 +276,14 @@ const RenderField = <T,>({
 
   const getInitialValue = (
     field: FormInputField,
-    existingEntity: T | undefined,
-  )  => {
+    existingEntity: T | undefined
+  ) => {
     switch (field.inputType) {
       case InputType.Text:
         return existingEntity
           ? getInitialValueFromExistingEntity(
               existingEntity,
-              field.formInputName,
+              field.formInputName
             )
           : field.initialValue;
       case InputType.QuantitySelector:
@@ -263,11 +294,13 @@ const RenderField = <T,>({
   };
 
   const initialValue = getInitialValue(field, existingEntity);
-  const initialValueIsDefined = (initialValue: Array<any> | string | number | undefined) => {
-    if(initialValue === undefined) return false;
-    if(Array.isArray(initialValue)) return initialValue.length
-    return true
-  }
+  const initialValueIsDefined = (
+    initialValue: Array<any> | string | number | undefined
+  ) => {
+    if (initialValue === undefined) return false;
+    if (Array.isArray(initialValue)) return initialValue.length;
+    return true;
+  };
 
   const renderField = (index: number) => {
     switch (field.inputType) {
@@ -293,10 +326,14 @@ const RenderField = <T,>({
             textInputFormName={`${field.textInputFormName}-${index}`}
             dropdownConfig={field.dropdownConfig}
             isRequired={field.isRequired}
-            initialValue={initialValueIsDefined(initialValue) ? {
-              itemValue: initialValue[index].id,
-              quantity: initialValue[index].quantity
-            } : undefined}
+            initialValue={
+              initialValueIsDefined(initialValue)
+                ? {
+                    itemValue: initialValue[index].id,
+                    quantity: initialValue[index].quantity,
+                  }
+                : undefined
+            }
           />
         );
       default:
@@ -312,7 +349,7 @@ const RenderField = <T,>({
     <>
       {/* Fills an array with 0..N, where N is the fieldCount */}
       {Array.from({ length: fieldCount }, (_, i) => i).map((c) =>
-        renderField(c),
+        renderField(c)
       )}
       <div className="flex gap-4">
         <button onClick={() => setFieldCount(fieldCount + 1)}>Add</button>
