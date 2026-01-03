@@ -233,6 +233,7 @@ const RenderField = <T,>({
       existingEntity &&
       existingEntity[fieldName]
     ) {
+      console.log({existingEntity})
       switch (field.inputType) {
         case InputType.Text:
           return existingEntity[fieldName];
@@ -245,7 +246,7 @@ const RenderField = <T,>({
   const getInitialValue = (
     field: FormInputField,
     existingEntity: T | undefined,
-  ) => {
+  )  => {
     switch (field.inputType) {
       case InputType.Text:
         return existingEntity
@@ -262,6 +263,11 @@ const RenderField = <T,>({
   };
 
   const initialValue = getInitialValue(field, existingEntity);
+  const initialValueIsDefined = (initialValue: Array<any> | string | number | undefined) => {
+    if(initialValue === undefined) return false;
+    if(Array.isArray(initialValue)) return initialValue.length
+    return true
+  }
 
   const renderField = (index: number) => {
     switch (field.inputType) {
@@ -287,7 +293,7 @@ const RenderField = <T,>({
             textInputFormName={`${field.textInputFormName}-${index}`}
             dropdownConfig={field.dropdownConfig}
             isRequired={field.isRequired}
-            initialValue={initialValue ? {
+            initialValue={initialValueIsDefined(initialValue) ? {
               itemValue: initialValue[index].id,
               quantity: initialValue[index].quantity
             } : undefined}
