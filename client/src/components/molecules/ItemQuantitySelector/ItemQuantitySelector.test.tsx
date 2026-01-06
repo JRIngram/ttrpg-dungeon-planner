@@ -61,4 +61,49 @@ describe("ItemQuantitySelector", () => {
     expect(quantitySelector).toHaveValue("123");
     expect(itemSelector).toHaveValue(options[0].value);
   });
+
+  it("displays default value", async () => {
+    const ItemQuantitySelector = composeStory(Default, meta);
+    const options = [
+      {
+        label: "Item One",
+        value: "1",
+      },
+      {
+        label: "Item Two",
+        value: "2",
+      },
+      {
+        label: "Item Three",
+        value: "3",
+      },
+    ];
+    const initialValue = { itemValue: "3", quantity: "4" };
+
+    render(
+      <ItemQuantitySelector
+        dropdownConfig={{
+          options: options,
+          placeholder: "Select an item.",
+        }}
+        initialValue={initialValue}
+      />,
+    );
+
+    const quantitySelector = screen.getByRole("textbox", {
+      name: "Item quantity",
+    });
+    const itemSelector = screen.getByRole("combobox", {
+      name: "Select an Item",
+    });
+
+    const initialItemIndex = options.findIndex(
+      (o) => o.value === initialValue.itemValue,
+    );
+    const initialItemLabel = options[initialItemIndex].label;
+
+    expect(quantitySelector).toHaveValue(initialValue.quantity);
+    expect(itemSelector).toHaveValue(initialValue.itemValue);
+    expect(screen.getByText(initialItemLabel)).toBeVisible();
+  });
 });

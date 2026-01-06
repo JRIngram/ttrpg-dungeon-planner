@@ -3,7 +3,7 @@ Defines serializers for the dungeonPlanner app
 """
 
 from rest_framework import serializers
-from dungeonPlanner.models import Dungeon, Monster, Room, Trap
+from dungeonPlanner.models import Dungeon, Monster, Room, RoomMonster, RoomTrap, Trap
 
 class DungeonSerializer(serializers.ModelSerializer):
     """
@@ -48,61 +48,6 @@ class MonsterSerializer(serializers.ModelSerializer):
 
         return Monster.objects.create(**validated_data)
 
-class RoomSerializer(serializers.ModelSerializer):
-    """
-    Serializer for the Room model
-    """
-
-    name = serializers.CharField(required=True)
-    description = serializers.CharField()
-    monsters = serializers.PrimaryKeyRelatedField(many=True, queryset=Monster.objects.all())
-    traps = serializers.PrimaryKeyRelatedField(many=True, queryset=Trap.objects.all())
-
-    class Meta:
-        """
-        Define serializer fields for Room
-        """
-        model = Room
-        fields = ['id', 'name', 'description', 'traps', 'monsters', 'dungeon']
-
-    def create(self, validated_data):
-        """
-        Creates a room from validated data
-        """
-        monsters = validated_data.pop('monsters', [])
-        traps = validated_data.pop('traps', [])
-
-        room = Room.objects.create(**validated_data)
-
-        room.monsters.set(monsters)
-        room.traps.set(traps)
-
-        # Ensures responses includes recently added monsters and traps
-        room.refresh_from_db()
-
-        return room
-
-    def update(self, instance, validated_data):
-        monsters = validated_data.pop('monsters')
-        traps = validated_data.pop('traps', [])
-
-        for attr, value in validated_data.items():
-            setattr(instance, attr, value)
-        instance.monsters.set(monsters)
-        instance.traps.set(traps)
-
-        instance.save()
-        # Ensures responses includes recently added monsters and traps
-        instance.refresh_from_db()
-
-        return instance
-
-    def to_representation(self, instance):
-        representation = super().to_representation(instance)
-        representation['monsters'] = MonsterSerializer(instance.monsters.all(), many=True).data
-        representation['traps'] = TrapSerializer(instance.traps.all(), many=True).data
-        return representation
-
 class TrapSerializer(serializers.ModelSerializer):
     """
     Serializer for the Trap model
@@ -125,3 +70,152 @@ class TrapSerializer(serializers.ModelSerializer):
         """
 
         return Trap.objects.create(**validated_data)
+
+class RoomMonsterSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the RoomMonster model
+    """
+    class Meta:
+        model= RoomMonster
+        fields = ['monster', 'quantity']
+
+class RoomTrapSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the RoomTrap model
+    """
+    class Meta:
+        model= RoomTrap
+        fields = ['trap', 'quantity']
+
+class RoomSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the Room model
+    """
+
+    name = serializers.CharField(required=True)
+    description = serializers.CharField()
+    monsters = RoomMonsterSerializer(source="roommonster_set", many=True, required=False )
+    traps = RoomTrapSerializer(source="roomtrap_set", many=True, required=False)
+
+    class Meta:
+        """
+        Define serializer fields for Room
+        """
+
+        model = Room
+        fields = ['id', 'name', 'description', 'traps', 'monsters', 'dungeon']
+
+    def create(self, validated_data):
+        """
+        Creates a room from validated data
+        """
+
+        traps = validated_data.pop('roomtrap_set', [])
+        monsters = validated_data.pop("roommonster_set", [])
+        room = Room.objects.create(**validated_data)
+
+        for monster in monsters:
+            RoomMonster.objects.create(
+                room=room,
+                monster=monster['monster'],
+                quantity=monster['quantity']
+            )
+
+        for trap in traps:
+            RoomTrap.objects.create(
+                room=room,
+                trap=trap['trap'],
+                quantity=trap['quantity']
+            )
+
+        # Ensures responses includes recently added monsters and traps
+        room.refresh_from_db()
+
+        return room
+
+    def update(self, instance, validated_data):
+        traps = validated_data.pop('roomtrap_set', [])
+        monsters = validated_data.pop("roommonster_set", [])
+
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+
+        for monster in monsters:
+            room_monster, created = RoomMonster.objects.get_or_create(
+                room=instance,
+                monster=monster['monster'],
+                defaults={"quantity": monster['quantity']}
+            )
+
+            if created is False:
+                room_monster.quantity = monster['quantity']
+                room_monster.save()
+
+        for trap in traps:
+            room_trap, created = RoomTrap.objects.get_or_create(
+                room=instance,
+                trap=trap['trap'],
+                defaults={"quantity": trap['quantity']}
+            )
+
+            if created is False:
+                room_trap.quantity = trap['quantity']
+                room_trap.save()
+
+        instance.save()
+        # Ensures responses includes recently added monsters and traps
+        instance.refresh_from_db()
+
+        return instance
+
+    def to_representation(self, instance):
+        """
+        Adds monsters and traps fields to the room return value
+        """
+        representation = super().to_representation(instance)
+
+        representation['monsters'] = self.map_monsters_with_roommonster(instance)
+        representation['traps'] = self.map_trap_with_roomtrap(instance)
+        return representation
+
+    def map_monsters_with_roommonster(self, instance):
+        """
+        Combines RoomMonster data with monster data and returns that value
+
+        Used to return monster data _and_ quantity data taken from RoomMonster models
+
+        e.g. 
+            room_monsters   =   [{'monster': 40, 'quantity': 1}]
+            monsters        =   [{'id': 40, 'name': 'Goblin', 'xp': 50}]
+            return value    =   [{'id': 40, 'name': 'Goblin', 'xp': 50, 'quantity': 1}]
+        """
+
+        room_monsters = RoomMonsterSerializer(instance.roommonster_set, many=True).data
+        monsters = MonsterSerializer(instance.monsters.all(), many=True).data
+        for monster in monsters:
+            for room_monster in room_monsters:
+                if room_monster['monster'] == monster['id']:
+                    monster['quantity'] = room_monster['quantity']
+        return monsters
+
+    def map_trap_with_roomtrap(self, instance):
+        """
+        Combines RoomTrap data with trap data and returns that value
+
+        Used to return trap data _and_ quantity data taken from RoomTrap models
+
+        e.g. 
+            room_traps    =   [{'trap': 40, 'quantity': 1}]
+            traps         =   [{'id': 40, 'name': 'Hidden Pit', 'effect': '1d4 bludgeoning'}]
+            return value  =   [
+                    {'id': 40, 'name': 'Hidden Pit', 'effect': '1d4 bludgeoning', 'quantity': 1}
+            ]
+        """
+
+        room_traps = RoomTrapSerializer(instance.roomtrap_set, many=True).data
+        traps = TrapSerializer(instance.traps.all(), many=True).data
+        for trap in traps:
+            for room_trap in room_traps:
+                if room_trap['trap'] == trap['id']:
+                    trap['quantity'] = room_trap['quantity']
+        return traps
