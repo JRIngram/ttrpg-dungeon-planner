@@ -47,7 +47,7 @@ export const ItemQuantitySelector = ({
         initialOption={
           initialValue !== undefined
             ? dropdownConfig.options.find(
-                (o) => o.value === initialValue.itemValue
+                (o) => o.value === initialValue.itemValue,
               )
             : undefined
         }

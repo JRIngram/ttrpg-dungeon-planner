@@ -49,7 +49,7 @@ class Room(models.Model):
 
     def __str__(self):
         return str(f"{self.name}")
-    
+
 class RoomMonster(models.Model):
     """
     Model for junction table for room and monsters

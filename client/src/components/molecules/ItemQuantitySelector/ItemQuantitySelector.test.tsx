@@ -11,10 +11,10 @@ describe("ItemQuantitySelector", () => {
     render(<ItemQuantitySelector />);
 
     expect(
-      screen.getByRole("textbox", { name: "Item quantity" })
+      screen.getByRole("textbox", { name: "Item quantity" }),
     ).toBeVisible();
     expect(
-      screen.getByRole("combobox", { name: "Select an Item" })
+      screen.getByRole("combobox", { name: "Select an Item" }),
     ).toBeVisible();
   });
 
@@ -40,7 +40,7 @@ describe("ItemQuantitySelector", () => {
           options: options,
           placeholder: "Select an item.",
         }}
-      />
+      />,
     );
 
     const quantitySelector = screen.getByRole("textbox", {
@@ -55,7 +55,7 @@ describe("ItemQuantitySelector", () => {
       itemSelector,
       screen.getByRole("option", {
         name: options[0].label,
-      })
+      }),
     );
 
     expect(quantitySelector).toHaveValue("123");
@@ -87,7 +87,7 @@ describe("ItemQuantitySelector", () => {
           placeholder: "Select an item.",
         }}
         initialValue={initialValue}
-      />
+      />,
     );
 
     const quantitySelector = screen.getByRole("textbox", {
@@ -98,7 +98,7 @@ describe("ItemQuantitySelector", () => {
     });
 
     const initialItemIndex = options.findIndex(
-      (o) => o.value === initialValue.itemValue
+      (o) => o.value === initialValue.itemValue,
     );
     const initialItemLabel = options[initialItemIndex].label;
 

@@ -101,7 +101,7 @@ export const FormBuilder = <T,>({
        * @returns An array with fields deduped
        */
       const dedupeFieldValues = (
-        fieldValues: { [key: string]: any }[]
+        fieldValues: { [key: string]: any }[],
       ): { [key: string]: any }[] => {
         let dedupedStringifiedFieldValues: string[] = [];
         fieldValues.forEach((fv) => {
@@ -112,7 +112,7 @@ export const FormBuilder = <T,>({
         });
 
         const dedupedFieldValues = dedupedStringifiedFieldValues.map((fv) =>
-          JSON.parse(fv)
+          JSON.parse(fv),
         );
 
         return dedupedFieldValues;
@@ -160,7 +160,7 @@ export const FormBuilder = <T,>({
 
   const submitForm = async (formData: FormData) => {
     const fieldsToSubmit = getFieldsToSubmit(fields, formData).filter((field) =>
-      filterEmptyFields(field)
+      filterEmptyFields(field),
     );
 
     const newEntity = {
@@ -226,9 +226,7 @@ export const FormBuilder = <T,>({
 
   return (
     <div className="flex flex-col gap-4">
-      <form
-        action={submitForm}
-      >
+      <form action={submitForm}>
         <div className="flex flex-col gap-2">
           {fields.map((field) => {
             return (
@@ -260,7 +258,7 @@ const RenderField = <T,>({
 }: RenderFieldProps<T>) => {
   const getInitialValueFromExistingEntity = (
     existingEntity: Record<string, any>,
-    fieldName: string
+    fieldName: string,
   ) => {
     if (
       inputMode === InputMode.EDIT &&
@@ -278,14 +276,14 @@ const RenderField = <T,>({
 
   const getInitialValue = (
     field: FormInputField,
-    existingEntity: T | undefined
+    existingEntity: T | undefined,
   ) => {
     switch (field.inputType) {
       case InputType.Text:
         return existingEntity
           ? getInitialValueFromExistingEntity(
               existingEntity,
-              field.formInputName
+              field.formInputName,
             )
           : field.initialValue;
       case InputType.QuantitySelector:
@@ -298,11 +296,11 @@ const RenderField = <T,>({
   const initialValue = getInitialValue(field, existingEntity);
 
   const [fieldCount, setFieldCount] = useState<number>(
-    initialValue?.length ?? 1
+    initialValue?.length ?? 1,
   );
 
   const initialValueIsDefined = (
-    initialValue: Array<any> | string | number | undefined
+    initialValue: Array<any> | string | number | undefined,
   ) => {
     if (initialValue === undefined) return false;
     if (Array.isArray(initialValue)) return initialValue.length;
@@ -356,7 +354,7 @@ const RenderField = <T,>({
     <>
       {/* Fills an array with 0..N, where N is the fieldCount */}
       {Array.from({ length: fieldCount }, (_, i) => i).map((c) =>
-        renderField(c)
+        renderField(c),
       )}
       <div className="flex gap-4">
         <button onClick={() => setFieldCount(fieldCount + 1)}>Add</button>

@@ -13,7 +13,6 @@ export interface TrapWithQuantity extends Trap {
   quantity: number;
 }
 
-
 export type ServerTrap = {
   id: string;
   name: string;

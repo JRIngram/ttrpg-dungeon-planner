@@ -71,7 +71,7 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
   const getPlacerholderMessage = (
     category: string,
     isLoading: boolean,
-    isError: Boolean
+    isError: Boolean,
   ) => {
     if (isLoading) {
       return `Loading ${category}`;
@@ -117,7 +117,7 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
         placeholder: getPlacerholderMessage(
           "monsters",
           isLoadingMonsters,
-          isErrorLoadingMonsters
+          isErrorLoadingMonsters,
         ),
         options: monsters ?? [],
       },
@@ -133,7 +133,7 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
         placeholder: getPlacerholderMessage(
           "traps",
           isLoadingTraps,
-          isErrorLoadingTraps
+          isErrorLoadingTraps,
         ),
         options: traps ?? [],
       },
@@ -219,7 +219,7 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
                     text: "Delete",
                     onClick: async () => {
                       const { httpCode } = await roomDataFetcher.deleteSingle(
-                        room.id
+                        room.id,
                       );
                       if (!roomDataFetcher.isSuccessfulHTTPCode(httpCode)) {
                         toastDispatch({
@@ -259,8 +259,9 @@ const ListItemContainer = ({ children }: PropsWithChildren) => {
 };
 
 const formatRoomFields = (room: Room) => {
-  const isSimpleField = (value: unknown): value is string | number => typeof value ==='string' || typeof value === 'number';
-  
+  const isSimpleField = (value: unknown): value is string | number =>
+    typeof value === "string" || typeof value === "number";
+
   const simpleFields = Object.entries(room)
     .filter((e) => isSimpleField(e[1]))
     .map((entry) => ({
@@ -268,25 +269,31 @@ const formatRoomFields = (room: Room) => {
       fieldValue: `${entry[1]}`,
     }));
 
-  const monsterFields = room.monsters?.map(monster => {
+  const monsterFields = room.monsters?.map((monster) => {
     return {
       fieldName: monster.name,
       fieldValue: `${monster.xp}xp each; ${monster.quantity} in room. (${monster.xp * monster.quantity}xp total)`,
-    }
+    };
   });
 
-  const trapFields = room.traps.map(trap => {
+  const trapFields = room.traps.map((trap) => {
     return {
       fieldName: trap.name,
-      fieldValue: `${trap.quantity} in room.`
-    }
+      fieldValue: `${trap.quantity} in room.`,
+    };
   });
 
-  const totalXp = room.monsters.length ? room.monsters.map(monster => monster.xp * monster.quantity).reduce((accumulator, currentMonsterXp) => accumulator + currentMonsterXp) : 0;
+  const totalXp = room.monsters.length
+    ? room.monsters
+        .map((monster) => monster.xp * monster.quantity)
+        .reduce(
+          (accumulator, currentMonsterXp) => accumulator + currentMonsterXp,
+        )
+    : 0;
   const totalXpField = {
     fieldName: "Total Room XP",
     fieldValue: `${totalXp}xp`,
-  }
+  };
 
-  return [simpleFields, monsterFields, trapFields, totalXpField].flat()
+  return [simpleFields, monsterFields, trapFields, totalXpField].flat();
 };
