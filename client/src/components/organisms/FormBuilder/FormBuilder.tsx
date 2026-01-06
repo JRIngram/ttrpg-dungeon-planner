@@ -93,11 +93,11 @@ export const FormBuilder = <T,>({
       });
 
       /**
-       * Dedupes objects in an array by stringifiying the objects, 
+       * Dedupes objects in an array by stringifiying the objects,
        * checking if the array already contains that string
        * Once all objects stringified and processed, the objects are then parsed back to JSON
-       * 
-       * @param fieldValues 
+       *
+       * @param fieldValues
        * @returns An array with fields deduped
        */
       const dedupeFieldValues = (
@@ -114,7 +114,7 @@ export const FormBuilder = <T,>({
         const dedupedFieldValues = dedupedStringifiedFieldValues.map((fv) =>
           JSON.parse(fv)
         );
-        
+
         return dedupedFieldValues;
       };
 
@@ -144,7 +144,7 @@ export const FormBuilder = <T,>({
   };
 
   /**
-   * Removes fields from the array if the object is 
+   * Removes fields from the array if the object is
    * an array containing only objects with empty fields
    */
   const filterEmptyFields = (field: Array<any>) => {
@@ -226,16 +226,20 @@ export const FormBuilder = <T,>({
 
   return (
     <div className="flex flex-col gap-4">
-      <form action={submitForm}>
+      <form
+        action={submitForm}
+      >
         <div className="flex flex-col gap-2">
-          {fields.map((field) => (
-            <RenderField
-              key={field.id}
-              inputMode={inputMode}
-              existingEntity={existingEntity}
-              field={field}
-            />
-          ))}
+          {fields.map((field) => {
+            return (
+              <RenderField
+                key={field.id}
+                inputMode={inputMode}
+                existingEntity={existingEntity}
+                field={field}
+              />
+            );
+          })}
           <ButtonRow buttons={endOfFormButtons} />
         </div>
       </form>
@@ -254,8 +258,6 @@ const RenderField = <T,>({
   inputMode,
   existingEntity,
 }: RenderFieldProps<T>) => {
-  const [fieldCount, setFieldCount] = useState<number>(1);
-
   const getInitialValueFromExistingEntity = (
     existingEntity: Record<string, any>,
     fieldName: string
@@ -294,6 +296,11 @@ const RenderField = <T,>({
   };
 
   const initialValue = getInitialValue(field, existingEntity);
+
+  const [fieldCount, setFieldCount] = useState<number>(
+    initialValue?.length ?? 1
+  );
+
   const initialValueIsDefined = (
     initialValue: Array<any> | string | number | undefined
   ) => {
