@@ -1,6 +1,6 @@
-import { DungeonId } from "./dungeon";
-import { MonsterId } from "./monster";
-import { TrapId } from "./trap";
+import type { DungeonId } from "./dungeon";
+import type { MonsterId, MonsterWithQuantity } from "./monster";
+import type { TrapId, TrapWithQuantity } from "./trap";
 
 export type RoomId = string;
 
@@ -9,8 +9,8 @@ export type Room = {
   name: string;
   description: string;
   dungeonId: DungeonId;
-  monsters: MonsterId[];
-  traps: TrapId[];
+  monsters: MonsterWithQuantity[];
+  traps: TrapWithQuantity[];
 };
 
 export type AddRoom = Exclude<Room, "id">;
@@ -20,6 +20,6 @@ export type ServerRoom = {
   name: string;
   description: string;
   dungeon: DungeonId;
-  monsters: MonsterId[];
-  traps: TrapId[];
+  monsters: MonsterWithQuantity[];
+  traps: TrapWithQuantity[];
 };
