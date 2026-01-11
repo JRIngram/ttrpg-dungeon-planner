@@ -1,5 +1,10 @@
-import { Dropdown, DropdownProps } from "@/components/atoms/Dropdown/Dropdown";
+import {
+  Dropdown,
+  DropdownOption,
+  DropdownProps,
+} from "@/components/atoms/Dropdown/Dropdown";
 import { TextInput } from "@/components/atoms/TextInput/TextInput";
+import { useState } from "react";
 
 type ItemQuantityPair = {
   itemValue: string;
@@ -13,6 +18,7 @@ export type ItemQuantitySelectorProps = {
   dropdownConfig: Pick<DropdownProps, "placeholder" | "options">;
   isRequired?: boolean;
   initialValue?: ItemQuantityPair;
+  onItemQuantityChangeCallback: (itemQuantityPair: ItemQuantityPair) => void;
 };
 
 export const ItemQuantitySelector = ({
@@ -22,7 +28,13 @@ export const ItemQuantitySelector = ({
   dropdownConfig,
   isRequired,
   initialValue,
+  onItemQuantityChangeCallback,
 }: ItemQuantitySelectorProps) => {
+  const [quantity, setQuantity] = useState("");
+  const [selectedOption, setSelectedOption] = useState<
+    DropdownOption | undefined
+  >(undefined);
+
   return (
     <div className="flex gap-4 justify-between" id={id}>
       <TextInput
@@ -32,10 +44,14 @@ export const ItemQuantitySelector = ({
         placeholder="Enter a quantity"
         pattern="\d*"
         isRequired={isRequired}
-        value={
-          initialValue !== undefined ? initialValue.quantity : undefined
-        }
-        onChangeCallback={() => {}}
+        value={initialValue !== undefined ? initialValue.quantity : undefined}
+        onChangeCallback={(value: string) => {
+          setQuantity(value);
+          onItemQuantityChangeCallback({
+            quantity: value,
+            itemValue: selectedOption?.value ?? "",
+          });
+        }}
       />
 
       <Dropdown
@@ -52,6 +68,13 @@ export const ItemQuantitySelector = ({
               )
             : undefined
         }
+        onChangeCallback={(selectedOption?: DropdownOption) => {
+          setSelectedOption(selectedOption);
+          onItemQuantityChangeCallback({
+            quantity: quantity,
+            itemValue: selectedOption?.value ?? "",
+          });
+        }}
       />
     </div>
   );

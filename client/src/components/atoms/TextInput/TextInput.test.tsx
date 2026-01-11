@@ -37,13 +37,17 @@ describe("TextInput", () => {
   it("calls onChangeCallback when a user changes the value", async () => {
     const onChangeCallbackSpy = vi.fn();
     const TextInput = composeStory(Primary, Meta);
-    render(<TextInput onChangeCallback={(value: string) => onChangeCallbackSpy(value)} />);
+    render(
+      <TextInput
+        onChangeCallback={(value: string) => onChangeCallbackSpy(value)}
+      />,
+    );
 
-    const textBox = screen.getByRole("textbox")
-    const stringToInput = "Hello world!"
-    await userEvent.type(textBox, stringToInput)
+    const textBox = screen.getByRole("textbox");
+    const stringToInput = "Hello world!";
+    await userEvent.type(textBox, stringToInput);
 
-    expect(onChangeCallbackSpy).toHaveBeenCalledTimes(stringToInput.length)
-    expect(onChangeCallbackSpy).toHaveBeenLastCalledWith(stringToInput)
+    expect(onChangeCallbackSpy).toHaveBeenCalledTimes(stringToInput.length);
+    expect(onChangeCallbackSpy).toHaveBeenLastCalledWith(stringToInput);
   });
 });

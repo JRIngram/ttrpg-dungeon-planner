@@ -17,6 +17,7 @@ export const Default: Story = {
     formInputName: "test-dropdown",
     ariaLabel: "A Test Dropdown",
     placeholder: "Placerholder option",
+    onChangeCallback: () => {},
     options: [
       {
         value: "1",

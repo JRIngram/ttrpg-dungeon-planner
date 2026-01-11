@@ -33,5 +33,6 @@ export const Default: Story = {
         },
       ],
     },
+    onItemQuantityChangeCallback: () => {},
   },
 };

@@ -36,8 +36,8 @@ export const TextInput = ({
         placeholder={placeholder}
         value={inputValue}
         onChange={(event) => {
-          setInputValue(event.target.value)
-          onChangeCallback(event.target.value)
+          setInputValue(event.target.value);
+          onChangeCallback(event.target.value);
         }}
         pattern={pattern}
         title={patternMessage}
