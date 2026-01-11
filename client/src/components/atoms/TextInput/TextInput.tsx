@@ -6,9 +6,10 @@ type Props = {
   ariaLabel: string;
   placeholder: string;
   pattern: string;
+  onChangeCallback: (value: string) => void;
   patternMessage?: string;
   isRequired?: boolean;
-  initialValue?: string;
+  value?: string;
 };
 
 export const TextInput = ({
@@ -19,9 +20,10 @@ export const TextInput = ({
   pattern,
   patternMessage,
   isRequired = false,
-  initialValue = "",
+  value = "",
+  onChangeCallback,
 }: Props) => {
-  const [value, setValue] = useState<string>(initialValue);
+  const [inputValue, setInputValue] = useState<string>(value);
 
   return (
     <div>
@@ -32,8 +34,11 @@ export const TextInput = ({
         type="text"
         aria-label={ariaLabel}
         placeholder={placeholder}
-        value={value}
-        onChange={(event) => setValue(event.target.value)}
+        value={inputValue}
+        onChange={(event) => {
+          setInputValue(event.target.value)
+          onChangeCallback(event.target.value)
+        }}
         pattern={pattern}
         title={patternMessage}
         {...(isRequired ? { required: true } : {})}

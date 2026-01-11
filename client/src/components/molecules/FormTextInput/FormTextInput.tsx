@@ -33,7 +33,7 @@ export const FormTextInput = ({
         ariaLabel={ariaLabel}
         placeholder={placeholder}
         formInputName={formInputName}
-        initialValue={initialValue}
+        value={initialValue}
         pattern={pattern}
         patternMessage={patternMessage}
         isRequired

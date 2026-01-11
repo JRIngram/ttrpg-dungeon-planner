@@ -32,9 +32,10 @@ export const ItemQuantitySelector = ({
         placeholder="Enter a quantity"
         pattern="\d*"
         isRequired={isRequired}
-        initialValue={
+        value={
           initialValue !== undefined ? initialValue.quantity : undefined
         }
+        onChangeCallback={() => {}}
       />
 
       <Dropdown
