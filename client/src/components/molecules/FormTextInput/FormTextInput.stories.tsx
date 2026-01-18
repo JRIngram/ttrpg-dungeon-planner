@@ -20,5 +20,14 @@ export const Primary: Story = {
     placeholder: "Some placeholder text",
     pattern: "[a-zA-Z]{1,}",
     patternMessage: "Alphabetical characters only",
+    onChangeCallback: () => {},
   },
 };
+
+export const WithInitialValue: Story = {
+  args: {
+    ...Primary.args,
+    value: "I am a set value"
+  },
+};
+

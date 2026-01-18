@@ -3,7 +3,7 @@ import { render, screen } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 import { vi } from "vitest";
 import { composeStory } from "@storybook/react";
-import Meta, { Primary } from "./TextInput.stories";
+import Meta, { Primary, WithInitialValue } from "./TextInput.stories";
 
 describe("TextInput", () => {
   it("renders TextInput with correct aria-label and placeholder text", () => {
@@ -34,9 +34,12 @@ describe("TextInput", () => {
     expect(screen.getByRole("textbox")).toBeRequired();
   });
 
-  it("calls onChangeCallback when a user changes the value", async () => {
+  it.each([
+    { storyPrefix: "Without initial value", component: Primary, clearBeforeTyping: false},
+    { storyPrefix: "With initial value", component: WithInitialValue, clearBeforeTyping: true},
+  ])("$storyPrefix > calls onChangeCallback when a user changes the value", async ({ component, clearBeforeTyping }) => {
     const onChangeCallbackSpy = vi.fn();
-    const TextInput = composeStory(Primary, Meta);
+    const TextInput = composeStory(component, Meta);
     render(
       <TextInput
         onChangeCallback={(value: string) => onChangeCallbackSpy(value)}
@@ -45,9 +48,14 @@ describe("TextInput", () => {
 
     const textBox = screen.getByRole("textbox");
     const stringToInput = "Hello world!";
+    if(clearBeforeTyping) {
+      await userEvent.clear(textBox);
+    }
     await userEvent.type(textBox, stringToInput);
 
-    expect(onChangeCallbackSpy).toHaveBeenCalledTimes(stringToInput.length);
+    const changeCount = clearBeforeTyping ? stringToInput.length + 1 :  stringToInput.length;
+    expect(onChangeCallbackSpy).toHaveBeenCalledTimes(changeCount);
     expect(onChangeCallbackSpy).toHaveBeenLastCalledWith(stringToInput);
+    expect(textBox).toHaveValue(stringToInput);
   });
 });
