@@ -37,8 +37,9 @@ export const DungeonTab = ({
       placeholder: "e.g. The Lost Ruins",
       pattern: `(\\w|\\s){1,}`,
       patternMessage: "Alphanumeric characters",
-      initialValue: undefined,
+      value: undefined,
       isRequired: true,
+      onChangeCallback: () => {}
     },
     {
       inputType: InputType.Text,
@@ -49,8 +50,9 @@ export const DungeonTab = ({
       placeholder: "e.g. Shadowy ruins of an old Dwarvern mining outpost",
       pattern: `(\\w|\\s){1,}`,
       patternMessage: "Alphanumeric characters",
-      initialValue: undefined,
+      value: undefined,
       isRequired: true,
+      onChangeCallback: () => {}
     },
     {
       inputType: InputType.Text,
@@ -61,8 +63,9 @@ export const DungeonTab = ({
       placeholder: "1",
       pattern: `(\\d){1,}`,
       patternMessage: "Numerical characters",
-      initialValue: undefined,
+      value: undefined,
       isRequired: true,
+      onChangeCallback: () => {}
     },
     {
       inputType: InputType.Text,
@@ -73,8 +76,9 @@ export const DungeonTab = ({
       placeholder: "3",
       pattern: `(\\d){1,}`,
       patternMessage: "Numerical characters",
-      initialValue: undefined,
+      value: undefined,
       isRequired: true,
+      onChangeCallback: () => {}
     },
     {
       inputType: InputType.Text,
@@ -85,8 +89,9 @@ export const DungeonTab = ({
       placeholder: "4",
       pattern: `(\\d){1,}`,
       patternMessage: "Numerical characters",
-      initialValue: undefined,
+      value: undefined,
       isRequired: true,
+      onChangeCallback: () => {}
     },
   ];
 

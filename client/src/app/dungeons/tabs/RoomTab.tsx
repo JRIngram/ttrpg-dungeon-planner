@@ -93,8 +93,9 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
       placeholder: "e.g. Guard Barracks",
       pattern: `(\\w|\\s){1,}`,
       patternMessage: "Alphanumeric characters",
-      initialValue: undefined,
+      value: undefined,
       isRequired: true,
+      onChangeCallback: () => {}
     },
     {
       inputType: InputType.Text,
@@ -105,8 +106,9 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
       placeholder: "e.g. A dusty old barracks, with a few bunk beds.",
       pattern: `(\\w|\\s){1,}`,
       patternMessage: "Alphanumeric characters",
-      initialValue: undefined,
+      value: undefined,
       isRequired: true,
+      onChangeCallback: () => {}
     },
     {
       inputType: InputType.QuantitySelector,
@@ -123,6 +125,7 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
       },
       isRequired: false,
       allowMultipleOfSame: true,
+      onItemQuantityChangeCallback: () => {},
     },
     {
       inputType: InputType.QuantitySelector,
@@ -139,6 +142,7 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
       },
       allowMultipleOfSame: true,
       isRequired: false,
+      onItemQuantityChangeCallback: () => {},
     },
   ];
 

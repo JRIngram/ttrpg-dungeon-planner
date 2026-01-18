@@ -285,7 +285,7 @@ const RenderField = <T,>({
               existingEntity,
               field.formInputName,
             )
-          : field.initialValue;
+          : field.value;
       case InputType.QuantitySelector:
         return existingEntity
           ? getInitialValueFromExistingEntity(existingEntity, field.itemName)
@@ -319,8 +319,9 @@ const RenderField = <T,>({
             placeholder={field.placeholder}
             pattern={field.pattern}
             patternMessage={field.patternMessage}
-            initialValue={initialValue}
+            value={initialValue}
             isRequired={field.isRequired}
+            onChangeCallback={field.onChangeCallback}
           />
         );
       case InputType.QuantitySelector:
@@ -339,6 +340,7 @@ const RenderField = <T,>({
                   }
                 : undefined
             }
+            onItemQuantityChangeCallback={() => {}}
           />
         );
       default:

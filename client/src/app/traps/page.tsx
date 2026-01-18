@@ -56,8 +56,9 @@ export default function Trap() {
         placeholder: "e.g. Hidden Pit",
         pattern: `(\\w|\\s){1,}`,
         patternMessage: "Alphanumeric characters",
-        initialValue: undefined,
+        value: undefined,
         isRequired: true,
+        onChangeCallback: () => {}
       },
       {
         inputType: InputType.Text,
@@ -68,8 +69,9 @@ export default function Trap() {
         placeholder: "e.g. 1d4 falling damage",
         pattern: `(\\w|\\s){1,}`,
         patternMessage: "Alphanumeric characters",
-        initialValue: undefined,
+        value: undefined,
         isRequired: true,
+        onChangeCallback: () => {}
       },
     ];
 

@@ -56,8 +56,9 @@ export default function Monster() {
         placeholder: "e.g. Goblin",
         pattern: `(\\w|\\s){1,}`,
         patternMessage: "Alphanumeric characters",
-        initialValue: undefined,
+        value: undefined,
         isRequired: true,
+        onChangeCallback: () => {},
       },
       {
         inputType: InputType.Text,
@@ -68,8 +69,9 @@ export default function Monster() {
         placeholder: "e.g. 50",
         pattern: "[0-9]{1,}",
         patternMessage: "Numeric values",
-        initialValue: undefined,
+        value: undefined,
         isRequired: true,
+        onChangeCallback: () => {},
       },
     ];
 
