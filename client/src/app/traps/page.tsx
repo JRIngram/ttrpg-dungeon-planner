@@ -56,7 +56,7 @@ export default function Trap() {
         placeholder: "e.g. Hidden Pit",
         pattern: `(\\w|\\s){1,}`,
         patternMessage: "Alphanumeric characters",
-        value: undefined,
+        value: "",
         isRequired: true,
         onChangeCallback: () => {}
       },
@@ -69,7 +69,7 @@ export default function Trap() {
         placeholder: "e.g. 1d4 falling damage",
         pattern: `(\\w|\\s){1,}`,
         patternMessage: "Alphanumeric characters",
-        value: undefined,
+        value: "",
         isRequired: true,
         onChangeCallback: () => {}
       },

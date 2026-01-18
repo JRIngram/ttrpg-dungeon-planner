@@ -93,7 +93,7 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
       placeholder: "e.g. Guard Barracks",
       pattern: `(\\w|\\s){1,}`,
       patternMessage: "Alphanumeric characters",
-      value: undefined,
+      value: "",
       isRequired: true,
       onChangeCallback: () => {}
     },
@@ -106,7 +106,7 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
       placeholder: "e.g. A dusty old barracks, with a few bunk beds.",
       pattern: `(\\w|\\s){1,}`,
       patternMessage: "Alphanumeric characters",
-      value: undefined,
+      value: "",
       isRequired: true,
       onChangeCallback: () => {}
     },
