@@ -7,7 +7,7 @@ export type Monster = {
   isDeletable?: boolean;
 };
 
-export type AddMonster = Exclude<Monster, "id" | "isDeletable">;
+export type AddMonster = Omit<Monster, "id" | "isDeletable">;
 
 export interface MonsterWithQuantity extends Monster {
   quantity: number;
