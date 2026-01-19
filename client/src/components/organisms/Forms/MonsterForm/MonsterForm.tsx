@@ -45,14 +45,12 @@ export const MonsterForm = ({ onCancelCallback, onSubmitCallback }: Props) => {
     }
   };
 
-  console.log(state);
-
   return (
     <>
       <p>Please select a monster or create a new one below</p>
       <form
         data-testid="monster-form"
-        onSubmit={async (e: React.FormEvent) => {
+        action={async () => {
           await submitForm();
         }}
       >
