@@ -164,6 +164,7 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
           }}
           onSubmitCallback={async () => {
             await refetch();
+
           }}
           fields={formFields}
           requiredNonFormData={{

@@ -9,9 +9,9 @@ export type FormTextInputProps = {
   placeholder: string;
   pattern: string;
   onChangeCallback: (formInputValue: string) => void;
+  value: string;
   patternMessage?: string;
   isRequired?: boolean;
-  value?: string;
 };
 
 export const FormTextInput = ({
