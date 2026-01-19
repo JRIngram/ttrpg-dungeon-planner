@@ -3,7 +3,7 @@ export type MonsterId = string;
 export type Monster = {
   id: MonsterId;
   name: string;
-  xp: number;
+  xp: string;
   isDeletable?: boolean;
 };
 

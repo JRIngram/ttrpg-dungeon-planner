@@ -22,7 +22,43 @@ export const MonsterForm = ({ onCancelCallback, onSubmitCallback }: Props) => {
   const [state, dispatch] = useReducer(monsterFormReducer, initialState);
   const toastsDispatch = useToastsDispatch();
 
+  const validateInputs = () => {
+    let errorsPresent = false;
+    const monsterNameRegex = /(\w|\s){1,}/;
+    const monsterXPRegex = /^\d+$/;
+
+    if (!state.name.match(monsterNameRegex)) {
+      dispatch({
+        type: MonsterFormActionTypes.SET_NAME_ERROR,
+        payload: "Alphanumerical characters only.",
+      });
+      errorsPresent = true;
+    } else {
+      dispatch({
+        type: MonsterFormActionTypes.SET_NAME_ERROR,
+        payload: "",
+      });
+    }
+
+    if (!state.xp.match(monsterXPRegex)) {
+      dispatch({
+        type: MonsterFormActionTypes.SET_XP_ERROR,
+        payload: "Numerical characters only.",
+      });
+      errorsPresent = true;
+    } else {
+      dispatch({
+        type: MonsterFormActionTypes.SET_XP_ERROR,
+        payload: "",
+      });
+    }
+
+    return errorsPresent;
+  };
+
   const submitForm = async () => {
+    if (validateInputs()) return;
+
     const dataFetcher = new MonsterDataFetcher();
     const monsterToSubmit: AddMonster = { name: state.name, xp: state.xp };
 
