@@ -59,6 +59,7 @@ export default function Monster() {
         value: "",
         isRequired: true,
         onChangeCallback: () => {},
+        errorMessage: "",
       },
       {
         inputType: InputType.Text,
@@ -72,6 +73,7 @@ export default function Monster() {
         value: "",
         isRequired: true,
         onChangeCallback: () => {},
+        errorMessage: "",
       },
     ];
 

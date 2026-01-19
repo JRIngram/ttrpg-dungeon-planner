@@ -58,7 +58,8 @@ export default function Trap() {
         patternMessage: "Alphanumeric characters",
         value: "",
         isRequired: true,
-        onChangeCallback: () => {}
+        onChangeCallback: () => {},
+        errorMessage: "",
       },
       {
         inputType: InputType.Text,
@@ -71,7 +72,8 @@ export default function Trap() {
         patternMessage: "Alphanumeric characters",
         value: "",
         isRequired: true,
-        onChangeCallback: () => {}
+        onChangeCallback: () => {},
+        errorMessage: "",
       },
     ];
 

@@ -11,6 +11,7 @@ export type FormTextInputProps = {
   onChangeCallback: (formInputValue: string) => void;
   value: string;
   patternMessage?: string;
+  errorMessage: string;
   isRequired?: boolean;
 };
 
@@ -23,10 +24,11 @@ export const FormTextInput = ({
   pattern,
   patternMessage,
   onChangeCallback,
+  value,
+  errorMessage,
   isRequired = false,
-  value = "",
 }: FormTextInputProps) => {
-  const [formInputValue, setformInputValue] = useState<string>(value)
+  const [formInputValue, setformInputValue] = useState<string>(value);
 
   return (
     <>
@@ -42,12 +44,12 @@ export const FormTextInput = ({
         pattern={pattern}
         patternMessage={patternMessage}
         onChangeCallback={(value) => {
-          setformInputValue(value)
-          onChangeCallback(value)
-
+          setformInputValue(value);
+          onChangeCallback(value);
         }}
         isRequired
       />
+      {errorMessage.length > 0 && <p>{errorMessage}</p>}
     </>
   );
 };

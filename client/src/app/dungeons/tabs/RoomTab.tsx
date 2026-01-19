@@ -95,7 +95,8 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
       patternMessage: "Alphanumeric characters",
       value: "",
       isRequired: true,
-      onChangeCallback: () => {}
+      onChangeCallback: () => {},
+      errorMessage: "",
     },
     {
       inputType: InputType.Text,
@@ -108,7 +109,8 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
       patternMessage: "Alphanumeric characters",
       value: "",
       isRequired: true,
-      onChangeCallback: () => {}
+      onChangeCallback: () => {},
+      errorMessage: "",
     },
     {
       inputType: InputType.QuantitySelector,
@@ -164,7 +166,6 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
           }}
           onSubmitCallback={async () => {
             await refetch();
-
           }}
           fields={formFields}
           requiredNonFormData={{

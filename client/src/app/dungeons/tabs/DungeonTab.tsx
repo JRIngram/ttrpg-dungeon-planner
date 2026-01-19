@@ -39,7 +39,8 @@ export const DungeonTab = ({
       patternMessage: "Alphanumeric characters",
       value: "",
       isRequired: true,
-      onChangeCallback: () => {}
+      onChangeCallback: () => {},
+      errorMessage: "",
     },
     {
       inputType: InputType.Text,
@@ -52,7 +53,8 @@ export const DungeonTab = ({
       patternMessage: "Alphanumeric characters",
       value: "",
       isRequired: true,
-      onChangeCallback: () => {}
+      onChangeCallback: () => {},
+      errorMessage: "",
     },
     {
       inputType: InputType.Text,
@@ -65,7 +67,8 @@ export const DungeonTab = ({
       patternMessage: "Numerical characters",
       value: "",
       isRequired: true,
-      onChangeCallback: () => {}
+      onChangeCallback: () => {},
+      errorMessage: "",
     },
     {
       inputType: InputType.Text,
@@ -78,7 +81,8 @@ export const DungeonTab = ({
       patternMessage: "Numerical characters",
       value: "",
       isRequired: true,
-      onChangeCallback: () => {}
+      onChangeCallback: () => {},
+      errorMessage: "",
     },
     {
       inputType: InputType.Text,
@@ -91,7 +95,8 @@ export const DungeonTab = ({
       patternMessage: "Numerical characters",
       value: "",
       isRequired: true,
-      onChangeCallback: () => {}
+      onChangeCallback: () => {},
+      errorMessage: "",
     },
   ];
 

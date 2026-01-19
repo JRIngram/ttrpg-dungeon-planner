@@ -24,7 +24,9 @@ export const MonsterForm = ({ onCancelCallback, onSubmitCallback }: Props) => {
 
   const submitForm = async () => {
     const dataFetcher = new MonsterDataFetcher();
-    const { entity, httpCode } = await dataFetcher.addSingle(state);
+    const monsterToSubmit: AddMonster = { name: state.name, xp: state.xp };
+
+    const { entity, httpCode } = await dataFetcher.addSingle(monsterToSubmit);
     if (entity === undefined) {
       toastsDispatch({
         type: "add",
@@ -71,6 +73,7 @@ export const MonsterForm = ({ onCancelCallback, onSubmitCallback }: Props) => {
                 payload: monsterName,
               })
             }
+            errorMessage={state.monsterNameInputError}
           />
           <FormTextInput
             id="monster-xp"
@@ -88,6 +91,7 @@ export const MonsterForm = ({ onCancelCallback, onSubmitCallback }: Props) => {
                 payload: monsterXp,
               })
             }
+            errorMessage={state.monsterXpInputError}
           />
         </div>
         <div className="mt-4">

@@ -17,8 +17,13 @@ type UpdateXP = {
 
 type MonsterFormAction = UpdateName | UpdateXP;
 
+type MonsterForm = AddMonster & {
+  monsterNameInputError: string;
+  monsterXpInputError: string;
+};
+
 export const monsterFormReducer = (
-  state: AddMonster,
+  state: MonsterForm,
   action: MonsterFormAction,
 ) => {
   switch (action.type) {
@@ -37,7 +42,9 @@ export const monsterFormReducer = (
   }
 };
 
-export const initialState: AddMonster = {
+export const initialState: MonsterForm = {
   name: "",
   xp: 0,
+  monsterNameInputError: "",
+  monsterXpInputError: "",
 };

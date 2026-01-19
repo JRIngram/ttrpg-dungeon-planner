@@ -322,6 +322,7 @@ const RenderField = <T,>({
             value={initialValue}
             isRequired={field.isRequired}
             onChangeCallback={field.onChangeCallback}
+            errorMessage=""
           />
         );
       case InputType.QuantitySelector:
