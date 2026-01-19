@@ -63,7 +63,7 @@ export const MonsterForm = ({ onCancelCallback, onSubmitCallback }: Props) => {
             ariaLabel="Monster name"
             formLabelText="Name"
             placeholder="e.g. Goblin"
-            pattern="[\\w\\s]+"
+            pattern="(\\w|\\s){1,}"
             patternMessage="Alphanumeric characters"
             value={state.name}
             isRequired={true}
@@ -80,7 +80,7 @@ export const MonsterForm = ({ onCancelCallback, onSubmitCallback }: Props) => {
             ariaLabel="Monster XP value"
             formLabelText="XP Value"
             placeholder="e.g. 50"
-            pattern="[0-9]+"
+            pattern="[0-9]{1,}"
             patternMessage="Numeric values"
             value={`${state.xp}`}
             isRequired={true}
