@@ -1,11 +1,6 @@
 "use client";
 import { useState } from "react";
 import { NavDrawer } from "@/components/molecules/NavDrawer/NavDrawer";
-import {
-  FormInputField,
-  InputMode,
-  InputType,
-} from "@/components/organisms/FormBuilder/FormBuilder";
 import { TrapDataFetcher } from "@/services/TrapDataFetcher/TrapDataFetcher";
 import { useQuery } from "@tanstack/react-query";
 import { FieldTextDisplayGroup } from "@/components/molecules/FieldTextDisplayGroup/FieldTextDisplayGroup";
@@ -14,7 +9,7 @@ import { ToastList } from "@/components/organisms/ToastList/ToastList";
 import { useToasts, useToastsDispatch } from "@/context/ToastContext";
 import { ToastType } from "@/types/toast";
 import { Trap as TrapType } from "@/types/trap";
-import { FormBuilder } from "@/components/organisms/FormBuilder/FormBuilder";
+import { TrapForm } from "@/components/organisms/Forms/TrapForm/TrapForm";
 
 export default function Trap() {
   const [selectedTrapId, setSelectedTrapId] = useState<string>();
@@ -45,45 +40,10 @@ export default function Trap() {
     trapList?.find((trap) => trap.id === selectedId);
 
   const renderTrapDisplay = () => {
-    const TrapForm = FormBuilder<TrapType>;
-    const formFields: FormInputField[] = [
-      {
-        inputType: InputType.Text,
-        id: "trap-name",
-        formInputName: "name",
-        ariaLabel: "Trap name",
-        formLabelText: "Name",
-        placeholder: "e.g. Hidden Pit",
-        pattern: `(\\w|\\s){1,}`,
-        patternMessage: "Alphanumeric characters",
-        value: "",
-        isRequired: true,
-        onChangeCallback: () => {},
-        errorMessage: "",
-      },
-      {
-        inputType: InputType.Text,
-        id: "trap-effect",
-        formInputName: "effect",
-        ariaLabel: "Trap effect",
-        formLabelText: "Trap Effect",
-        placeholder: "e.g. 1d4 falling damage",
-        pattern: `(\\w|\\s){1,}`,
-        patternMessage: "Alphanumeric characters",
-        value: "",
-        isRequired: true,
-        onChangeCallback: () => {},
-        errorMessage: "",
-      },
-    ];
-
     if (!selectedTrapId) {
       return (
         <>
-          <p>Please select a trap or create a new one below</p>
           <TrapForm
-            dataFetcher={trapDataFetcher}
-            inputMode={InputMode.NEW}
             onCancelCallback={() => {
               return;
             }}
@@ -91,7 +51,6 @@ export default function Trap() {
               await refetch();
               setSelectedTrapId(trap?.id);
             }}
-            fields={formFields}
           />
         </>
       );
@@ -101,16 +60,13 @@ export default function Trap() {
         if (isEditing) {
           return (
             <TrapForm
-              dataFetcher={trapDataFetcher}
-              inputMode={InputMode.EDIT}
-              existingEntity={selectedTrap}
+              existingTrap={selectedTrap}
               onSubmitCallback={async (trap) => {
                 await refetch();
                 setIsEditing(false);
                 setSelectedTrapId(trap?.id);
               }}
               onCancelCallback={() => setIsEditing(false)}
-              fields={formFields}
             />
           );
         }
