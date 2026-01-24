@@ -1,12 +1,10 @@
-import { AddMonster, Monster } from "@/types/monster";
-import type { InputMode } from "../types";
-import { ButtonProps } from "@/components/atoms/Button/Button";
+import { AddOrEditMonster, Monster } from "@/types/monster";
 import { MonsterDataFetcher } from "@/services/MonsterDataFetcher/MonsterDataFetcher";
 import { FormTextInput } from "@/components/molecules/FormTextInput/FormTextInput";
 import { ButtonRow } from "@/components/molecules/ButtonRow/ButtonRow";
 import { useReducer } from "react";
 import {
-  initialState,
+  getInitialState,
   MonsterFormActionTypes,
   monsterFormReducer,
 } from "./reducer";
@@ -16,10 +14,18 @@ import { ToastType } from "@/types/toast";
 type Props = {
   onSubmitCallback: (entity: Monster) => void;
   onCancelCallback: () => void;
+  existingMonster?: Monster;
 };
 
-export const MonsterForm = ({ onCancelCallback, onSubmitCallback }: Props) => {
-  const [state, dispatch] = useReducer(monsterFormReducer, initialState);
+export const MonsterForm = ({
+  onCancelCallback,
+  onSubmitCallback,
+  existingMonster,
+}: Props) => {
+  const [state, dispatch] = useReducer(
+    monsterFormReducer,
+    getInitialState(existingMonster),
+  );
   const toastsDispatch = useToastsDispatch();
 
   const validateInputs = () => {
@@ -60,9 +66,16 @@ export const MonsterForm = ({ onCancelCallback, onSubmitCallback }: Props) => {
     if (validateInputs()) return;
 
     const dataFetcher = new MonsterDataFetcher();
-    const monsterToSubmit: AddMonster = { name: state.name, xp: state.xp };
+    const monsterToSubmit: AddOrEditMonster = {
+      name: state.name,
+      xp: state.xp,
+      id: state?.id,
+    };
 
-    const { entity, httpCode } = await dataFetcher.addSingle(monsterToSubmit);
+    const { entity, httpCode } = monsterToSubmit.id
+      ? await dataFetcher.editSingle(monsterToSubmit)
+      : await dataFetcher.addSingle(monsterToSubmit);
+
     if (entity === undefined) {
       toastsDispatch({
         type: "add",
@@ -85,8 +98,8 @@ export const MonsterForm = ({ onCancelCallback, onSubmitCallback }: Props) => {
 
   return (
     <>
-      <p>Please select a monster or create a new one below</p>
-      <form data-testid="monster-form">
+      {!state.id && <p>Please select a monster or create a new one below</p>}
+      <form data-testid="monster-form" onSubmit={(e) => e.preventDefault()}>
         <div className="flex flex-col gap-2">
           <FormTextInput
             id="monster-name"

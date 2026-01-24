@@ -1,4 +1,4 @@
-import { AddMonster } from "@/types/monster";
+import { Monster } from "@/types/monster";
 
 export enum MonsterFormActionTypes {
   "UPDATE_NAME",
@@ -29,7 +29,7 @@ type SetXPError = {
 
 type MonsterFormAction = UpdateName | UpdateXP | SetNameError | SetXPError;
 
-type MonsterForm = AddMonster & {
+type MonsterForm = Omit<Monster, "isDeleteable"> & {
   monsterNameInputError: string;
   monsterXpInputError: string;
 };
@@ -64,9 +64,21 @@ export const monsterFormReducer = (
   }
 };
 
-export const initialState: MonsterForm = {
-  name: "",
-  xp: "",
-  monsterNameInputError: "",
-  monsterXpInputError: "",
+export const getInitialState = (
+  existingMonster: Monster | undefined,
+): MonsterForm => {
+  const baseInitialValue = {
+    id: "",
+    name: "",
+    xp: "",
+    monsterNameInputError: "",
+    monsterXpInputError: "",
+  };
+
+  return existingMonster
+    ? {
+        ...baseInitialValue,
+        ...existingMonster,
+      }
+    : baseInitialValue;
 };

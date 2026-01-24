@@ -1,3 +1,5 @@
+import Monster from "@/app/monsters/page";
+
 export type MonsterId = string;
 
 export type Monster = {
@@ -7,7 +9,11 @@ export type Monster = {
   isDeletable?: boolean;
 };
 
+export type AddOrEditMonster = AddMonster | EditMonster;
+
 export type AddMonster = Omit<Monster, "id" | "isDeletable">;
+
+export type EditMonster = Omit<Monster, "isDeletable">;
 
 export interface MonsterWithQuantity extends Monster {
   quantity: number;
