@@ -86,12 +86,7 @@ export const MonsterForm = ({ onCancelCallback, onSubmitCallback }: Props) => {
   return (
     <>
       <p>Please select a monster or create a new one below</p>
-      <form
-        data-testid="monster-form"
-        action={async () => {
-          await submitForm();
-        }}
-      >
+      <form data-testid="monster-form">
         <div className="flex flex-col gap-2">
           <FormTextInput
             id="monster-name"
@@ -136,7 +131,7 @@ export const MonsterForm = ({ onCancelCallback, onSubmitCallback }: Props) => {
               {
                 text: "Save",
                 onClick: async () => {
-                  console.log("Hi");
+                  submitForm();
                 },
                 variant: "primaryFilled",
                 isSubmit: true,

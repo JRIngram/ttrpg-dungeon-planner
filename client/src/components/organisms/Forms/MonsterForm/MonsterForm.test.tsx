@@ -1,18 +1,51 @@
 import { composeStory } from "@storybook/react";
-import { it, describe, expect, vi, beforeEach, beforeAll } from "vitest";
+import {
+  it,
+  describe,
+  expect,
+  vi,
+  beforeEach,
+  beforeAll,
+  afterAll,
+} from "vitest";
 import Meta, { Default } from "./MonsterForm.stories";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MonsterDataFetcher } from "@/services/MonsterDataFetcher/MonsterDataFetcher";
 import { afterEach } from "node:test";
+import { setupServer } from "msw/node";
+import { http, HttpResponse } from "msw";
+
+const handlers = [
+  http.post("http://127.0.0.1:8000/dungeonPlanner/monster", () => {
+    return HttpResponse.json({
+      httpCode: 200,
+      entity: {
+        id: 1,
+        name: "Goblin",
+        xp: 30,
+      },
+    });
+  }),
+];
+
+const server = setupServer(...handlers);
 
 describe("Monster Form", () => {
+  beforeAll(() => {
+    server.listen();
+  });
+
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   afterEach(() => {
     vi.resetAllMocks();
+  });
+
+  afterAll(() => {
+    server.close();
   });
 
   describe("end of form buttons", () => {
@@ -50,11 +83,10 @@ describe("Monster Form", () => {
 
     const nameInput = screen.getByRole("textbox", { name: "Monster name" });
     const xpInput = screen.getByRole("textbox", { name: "Monster XP value" });
-    const form = screen.getByTestId("monster-form");
 
     await userEvent.type(nameInput, "Goblin");
     await userEvent.type(xpInput, "30");
-    fireEvent.submit(form);
+    await userEvent.click(screen.getByRole("button", { name: "Save" }));
 
     expect(submitSpy).toHaveBeenCalled();
   });

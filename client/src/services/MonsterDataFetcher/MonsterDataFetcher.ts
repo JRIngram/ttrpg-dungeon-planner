@@ -1,9 +1,4 @@
-import type {
-  AddMonster,
-  Monster,
-  MonsterId,
-  ServerMonster,
-} from "@/types/monster";
+import type { AddMonster, Monster, ServerMonster } from "@/types/monster";
 import { DataFetcher } from "../DataFetcher/DataFetcher";
 
 export class MonsterDataFetcher extends DataFetcher<Monster> {
