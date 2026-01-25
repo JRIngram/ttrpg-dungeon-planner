@@ -1,11 +1,6 @@
 "use client";
 import { useState } from "react";
 import { NavDrawer } from "@/components/molecules/NavDrawer/NavDrawer";
-import {
-  FormInputField,
-  InputMode,
-  InputType,
-} from "@/components/organisms/FormBuilder/FormBuilder";
 import { MonsterDataFetcher } from "@/services/MonsterDataFetcher/MonsterDataFetcher";
 import { useQuery } from "@tanstack/react-query";
 import { FieldTextDisplayGroup } from "@/components/molecules/FieldTextDisplayGroup/FieldTextDisplayGroup";
@@ -14,7 +9,6 @@ import { type Monster as MonsterType } from "@/types/monster";
 import { ToastList } from "@/components/organisms/ToastList/ToastList";
 import { useToasts, useToastsDispatch } from "@/context/ToastContext";
 import { ToastType } from "@/types/toast";
-import { FormBuilder } from "@/components/organisms/FormBuilder/FormBuilder";
 import { MonsterForm } from "@/components/organisms/Forms/MonsterForm/MonsterForm";
 
 export default function Monster() {

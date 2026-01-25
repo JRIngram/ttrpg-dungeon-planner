@@ -1,5 +1,10 @@
 import { DataFetcher } from "../DataFetcher/DataFetcher";
-import type { AddDungeon, Dungeon, ServerDungeon } from "@/types/dungeon";
+import type {
+  AddDungeon,
+  AddOrEditDungeon,
+  Dungeon,
+  ServerDungeon,
+} from "@/types/dungeon";
 
 export class DungeonDataFetcher extends DataFetcher<Dungeon> {
   readonly requestEndpoint: string;
@@ -22,7 +27,9 @@ export class DungeonDataFetcher extends DataFetcher<Dungeon> {
     };
   };
 
-  mapDungeonToServerDungeon = (dungeon: Dungeon): Omit<ServerDungeon, "id"> => {
+  mapDungeonToServerDungeon = (
+    dungeon: Omit<Dungeon, "id">,
+  ): Omit<ServerDungeon, "id"> => {
     const { name, summary, levelMin, levelMax, playerCount } = dungeon;
 
     return {

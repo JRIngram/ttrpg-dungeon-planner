@@ -9,7 +9,16 @@ export type Dungeon = {
   playerCount: number;
 };
 
-export type AddDungeon = Exclude<Dungeon, "id">;
+export type AddOrEditDungeon = AddDungeon | EditDungeon;
+
+export type AddDungeon = Omit<Dungeon, "id">;
+
+/**
+ * Unlike other entities, Dungeon does not have "isDeletable"
+ * and so EditDungeon = Dungeon. Defined explicitly for standardisation
+ * across entities.
+ */
+export type EditDungeon = Dungeon;
 
 export type ServerDungeon = {
   id: DungeonId;

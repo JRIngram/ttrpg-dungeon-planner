@@ -1,6 +1,6 @@
 import type { AddRoom, Room, ServerRoom } from "@/types/room";
 import { DataFetcher } from "../DataFetcher/DataFetcher";
-import type { AddDungeon, Dungeon, ServerDungeon } from "@/types/dungeon";
+import type { AddOrEditDungeon, Dungeon, ServerDungeon } from "@/types/dungeon";
 
 export class RoomDataFetcher extends DataFetcher<Room> {
   readonly requestEndpoint: string;

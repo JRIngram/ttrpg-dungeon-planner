@@ -1,5 +1,3 @@
-import Monster from "@/app/monsters/page";
-
 export type MonsterId = string;
 
 export type Monster = {

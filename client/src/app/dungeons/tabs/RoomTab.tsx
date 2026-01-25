@@ -278,7 +278,7 @@ const formatRoomFields = (room: Room) => {
   const monsterFields = room.monsters?.map((monster) => {
     return {
       fieldName: monster.name,
-      fieldValue: `${monster.xp}xp each; ${monster.quantity} in room. (${monster.xp * monster.quantity}xp total)`,
+      fieldValue: `${monster.xp}xp each; ${monster.quantity} in room. (${parseInt(monster.xp) * monster.quantity}xp total)`,
     };
   });
 
@@ -291,7 +291,7 @@ const formatRoomFields = (room: Room) => {
 
   const totalXp = room.monsters.length
     ? room.monsters
-        .map((monster) => monster.xp * monster.quantity)
+        .map((monster) => parseInt(monster.xp) * monster.quantity)
         .reduce(
           (accumulator, currentMonsterXp) => accumulator + currentMonsterXp,
         )
