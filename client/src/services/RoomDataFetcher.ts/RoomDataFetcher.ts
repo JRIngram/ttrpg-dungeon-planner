@@ -1,4 +1,4 @@
-import type { AddRoom, Room, ServerRoom } from "@/types/room";
+import type { AddRoom, Room, ServerRoom, ApiRoomData } from "@/types/room";
 import { DataFetcher } from "../DataFetcher/DataFetcher";
 import type { AddOrEditDungeon, Dungeon, ServerDungeon } from "@/types/dungeon";
 
@@ -37,6 +37,29 @@ export class RoomDataFetcher extends DataFetcher<Room> {
     };
   };
 
+  mapRoomToApiFormat = (room: Room | AddRoom): ApiRoomData => {
+    const { name, description, dungeonId, traps, monsters } = room;
+
+    // Transform monsters and traps to API format
+    const apiMonsters = monsters.map(monster => ({
+      quantity: monster.quantity.toString(),
+      monster: monster.id,
+    }));
+
+    const apiTraps = traps.map(trap => ({
+      quantity: trap.quantity.toString(),
+      trap: trap.id,
+    }));
+
+    return {
+      name,
+      description,
+      dungeon: dungeonId,
+      monsters: apiMonsters,
+      traps: apiTraps,
+    };
+  };
+
   getList = async (): Promise<Room[]> => {
     const responseJson = await fetch(this.requestEndpoint);
     const json = (await responseJson.json()) as ServerRoom[];
@@ -61,7 +84,7 @@ export class RoomDataFetcher extends DataFetcher<Room> {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(this.mapRoomToServerRoom(room)),
+      body: JSON.stringify(this.mapRoomToApiFormat(room)),
     });
 
     if (!this.isSuccessfulHTTPCode(response.status)) {
@@ -86,7 +109,7 @@ export class RoomDataFetcher extends DataFetcher<Room> {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(this.mapRoomToServerRoom(room)),
+      body: JSON.stringify(this.mapRoomToApiFormat(room)),
     });
 
     if (!this.isSuccessfulHTTPCode(response.status)) {

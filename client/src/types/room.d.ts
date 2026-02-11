@@ -23,3 +23,22 @@ export type ServerRoom = {
   monsters: MonsterWithQuantity[];
   traps: TrapWithQuantity[];
 };
+
+// API format types for room creation/editing
+export type ApiRoomMonster = {
+  quantity: string;
+  monster: MonsterId;
+};
+
+export type ApiRoomTrap = {
+  quantity: string;
+  trap: TrapId;
+};
+
+export type ApiRoomData = {
+  name: string;
+  description: string;
+  dungeon: DungeonId;
+  monsters: ApiRoomMonster[];
+  traps: ApiRoomTrap[];
+};

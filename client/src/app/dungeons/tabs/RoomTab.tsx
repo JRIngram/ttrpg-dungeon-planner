@@ -16,6 +16,7 @@ import { MonsterDataFetcher } from "@/services/MonsterDataFetcher/MonsterDataFet
 import { DropdownOption } from "@/components/atoms/Dropdown/Dropdown";
 import { TrapDataFetcher } from "@/services/TrapDataFetcher/TrapDataFetcher";
 import { Monster, MonsterWithQuantity } from "@/types/monster";
+import { RoomForm } from "@/components/organisms/Forms/RoomForm/RoomForm";
 
 type Props = {
   selectedDungeonId?: string;
@@ -82,71 +83,8 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
     }
   };
 
-  const RoomForm = FormBuilder<Room>;
-  const formFields: FormInputField[] = [
-    {
-      inputType: InputType.Text,
-      id: "room-name",
-      formInputName: "name",
-      ariaLabel: "Room name",
-      formLabelText: "Name",
-      placeholder: "e.g. Guard Barracks",
-      pattern: `(\\w|\\s){1,}`,
-      patternMessage: "Alphanumeric characters",
-      value: "",
-      isRequired: true,
-      onChangeCallback: () => {},
-      errorMessage: "",
-    },
-    {
-      inputType: InputType.Text,
-      id: "room-description",
-      formInputName: "description",
-      ariaLabel: "Room description",
-      formLabelText: "Description",
-      placeholder: "e.g. A dusty old barracks, with a few bunk beds.",
-      pattern: `(\\w|\\s){1,}`,
-      patternMessage: "Alphanumeric characters",
-      value: "",
-      isRequired: true,
-      onChangeCallback: () => {},
-      errorMessage: "",
-    },
-    {
-      inputType: InputType.QuantitySelector,
-      id: "room-monster",
-      textInputFormName: "monsters",
-      itemName: "monsters",
-      dropdownConfig: {
-        placeholder: getPlacerholderMessage(
-          "monsters",
-          isLoadingMonsters,
-          isErrorLoadingMonsters,
-        ),
-        options: monsters ?? [],
-      },
-      isRequired: false,
-      allowMultipleOfSame: true,
-      onItemQuantityChangeCallback: () => {},
-    },
-    {
-      inputType: InputType.QuantitySelector,
-      id: "room-trap",
-      textInputFormName: "traps",
-      itemName: "traps",
-      dropdownConfig: {
-        placeholder: getPlacerholderMessage(
-          "traps",
-          isLoadingTraps,
-          isErrorLoadingTraps,
-        ),
-        options: traps ?? [],
-      },
-      allowMultipleOfSame: true,
-      isRequired: false,
-      onItemQuantityChangeCallback: () => {},
-    },
-  ];
+  if (selectedDungeonId === undefined)
+    return <p>Error: dungeon must be selected!</p>;
 
   if (isLoadingDungeonRooms) {
     return <p>Loading...</p>;
@@ -159,26 +97,13 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
       <ListItemContainer>
         <p>Create a new room or edit an existing one below</p>
         <RoomForm
-          dataFetcher={roomDataFetcher}
-          inputMode={InputMode.NEW}
+          dungeonId={selectedDungeonId}
           onCancelCallback={() => {
             return;
           }}
           onSubmitCallback={async () => {
             await refetch();
           }}
-          fields={formFields}
-          requiredNonFormData={{
-            dungeonId: selectedDungeonId,
-          }}
-          endOfFormButtons={[
-            {
-              text: "Save",
-              onClick: async () => {},
-              variant: "primaryFilled",
-              isSubmit: true,
-            },
-          ]}
         />
       </ListItemContainer>
 
@@ -187,8 +112,7 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
           return (
             <ListItemContainer key={room.id}>
               <RoomForm
-                dataFetcher={roomDataFetcher}
-                inputMode={InputMode.EDIT}
+                dungeonId={selectedDungeonId}
                 onCancelCallback={() => {
                   setSelectedRoomId("");
                   return;
@@ -196,13 +120,7 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
                 onSubmitCallback={async () => {
                   await refetch();
                 }}
-                fields={formFields}
-                requiredNonFormData={{
-                  dungeonId: selectedDungeonId,
-                  monsters: [],
-                  traps: [],
-                }}
-                existingEntity={room}
+                existingRoom={room}
               />
             </ListItemContainer>
           );

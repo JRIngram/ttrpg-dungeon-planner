@@ -39,7 +39,9 @@ export const Dropdown = ({
       required={!!isRequired}
       className="ww-full rounded-lg p-4 border-2 border-secondary-500"
       onChange={(e) => {
-        const selectedOption = options.find((o) => o.value === e.target.value);
+        const selectedOption = options.find(
+          (o) => `${o.value}` === `${e.target.value}`,
+        );
         onChangeCallback(selectedOption);
       }}
     >
