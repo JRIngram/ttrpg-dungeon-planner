@@ -2,7 +2,8 @@ import { AddRoom, Room } from "@/types/room";
 import { RoomDataFetcher } from "@/services/RoomDataFetcher.ts/RoomDataFetcher";
 import { FormTextInput } from "@/components/molecules/FormTextInput/FormTextInput";
 import { ButtonRow } from "@/components/molecules/ButtonRow/ButtonRow";
-import { useReducer, useState, useEffect } from "react";
+import { useReducer } from "react";
+import { useQuery } from "@tanstack/react-query";
 import {
   getInitialState,
   RoomFormActionTypes,
@@ -36,74 +37,34 @@ export const RoomForm = ({
   );
   const toastsDispatch = useToastsDispatch();
 
-  // State for monsters and traps dropdown options
-  const [monsters, setMonsters] = useState<DropdownOption[]>([]);
-  const [traps, setTraps] = useState<DropdownOption[]>([]);
-  const [isLoadingMonsters, setIsLoadingMonsters] = useState(true);
-  const [isLoadingTraps, setIsLoadingTraps] = useState(true);
-  const [monsterError, setMonsterError] = useState(false);
-  const [trapError, setTrapError] = useState(false);
+  const monsterDataFetcher = new MonsterDataFetcher();
+  const trapDataFetcher = new TrapDataFetcher();
 
-  // Load monsters and traps data
-  useEffect(() => {
-    const monsterDataFetcher = new MonsterDataFetcher();
-    const trapDataFetcher = new TrapDataFetcher();
+  const {
+    data: monsters = [],
+    isLoading: isLoadingMonsters,
+    isError: monsterError,
+  } = useQuery({
+    queryKey: ["get-all-monsters"],
+    queryFn: async (): Promise<DropdownOption[]> =>
+      (await monsterDataFetcher.getList()).map((monster) => ({
+        label: `${monster.name} - ${monster.xp}xp`,
+        value: monster.id,
+      })),
+  });
 
-    const loadMonsters = async () => {
-      try {
-        setIsLoadingMonsters(true);
-        const monsterList = await monsterDataFetcher.getList();
-        setMonsters(
-          monsterList.map((monster) => ({
-            label: `${monster.name} - ${monster.xp}xp`,
-            value: monster.id,
-          })),
-        );
-        setMonsterError(false);
-      } catch (error) {
-        console.error("Error loading monsters:", error);
-        setMonsterError(true);
-      } finally {
-        setIsLoadingMonsters(false);
-      }
-    };
-
-    const loadTraps = async () => {
-      try {
-        setIsLoadingTraps(true);
-        const trapList = await trapDataFetcher.getList();
-        setTraps(
-          trapList.map((trap) => ({
-            label: `${trap.name}`,
-            value: trap.id,
-          })),
-        );
-        setTrapError(false);
-      } catch (error) {
-        console.error("Error loading traps:", error);
-        setTrapError(true);
-      } finally {
-        setIsLoadingTraps(false);
-      }
-    };
-
-    loadMonsters();
-    loadTraps();
-  }, []);
-
-  const getPlaceholderMessage = (
-    category: string,
-    isLoading: boolean,
-    isError: boolean,
-  ) => {
-    if (isLoading) {
-      return `Loading ${category}`;
-    } else if (isError) {
-      return `Error loading ${category}`;
-    } else {
-      return `Select ${category}`;
-    }
-  };
+  const {
+    data: traps = [],
+    isLoading: isLoadingTraps,
+    isError: trapError,
+  } = useQuery({
+    queryKey: ["get-all-traps"],
+    queryFn: async (): Promise<DropdownOption[]> =>
+      (await trapDataFetcher.getList()).map((trap) => ({
+        label: `${trap.name}`,
+        value: trap.id,
+      })),
+  });
 
   const validateInputs = () => {
     let errorsPresent = false;
@@ -174,8 +135,6 @@ export const RoomForm = ({
 
     const dataFetcher = new RoomDataFetcher();
 
-    console.log({ dungeonId });
-
     const roomData: AddRoom = {
       name: state.name,
       description: state.description,
@@ -212,6 +171,21 @@ export const RoomForm = ({
       });
     }
   };
+
+  const getMonsterDropdownPlaceholder = () => {
+    if (isLoadingMonsters) return "Loading monsters...";
+    if (monsterError) return "Error loading monsters!";
+    return "Select monster";
+  };
+  const monsterDropdownPlaceholder = getMonsterDropdownPlaceholder();
+
+  const getTrapDropdownPlaceholder = () => {
+    if (isLoadingTraps) return "Loading traps...";
+    if (trapError) return "Error loading traps!";
+    return "Select trap";
+  };
+
+  const trapDropdownPlaceholder = getTrapDropdownPlaceholder();
 
   return (
     <>
@@ -255,7 +229,6 @@ export const RoomForm = ({
             errorMessage={state.roomDescriptionInputError}
           />
 
-          {/* Monster Selector */}
           <div className="mt-4">
             <h3 className="text-lg font-semibold mb-2">Monsters</h3>
             <ItemQuantitySelector
@@ -263,17 +236,11 @@ export const RoomForm = ({
               itemName="monsters"
               textInputFormName="monster-quantity"
               dropdownConfig={{
-                placeholder: getPlaceholderMessage(
-                  "monsters",
-                  isLoadingMonsters,
-                  monsterError,
-                ),
+                placeholder: monsterDropdownPlaceholder,
                 options: monsters,
               }}
               isRequired={false}
               onItemQuantityChangeCallback={(itemQuantityPair) => {
-                console.log("yo", itemQuantityPair);
-                // Handle monster selection and quantity
                 const selectedMonsterId = itemQuantityPair.itemValue;
                 const quantity = parseInt(itemQuantityPair.quantity) || 0;
 
@@ -282,7 +249,6 @@ export const RoomForm = ({
                     (m) => m.value === selectedMonsterId,
                   );
                   if (selectedMonster) {
-                    // Find the monster details from the dropdown
                     const monsterName = selectedMonster.label.split(" - ")[0];
                     const monsterXp =
                       selectedMonster.label
@@ -296,17 +262,14 @@ export const RoomForm = ({
                       quantity: quantity,
                     };
 
-                    // Update monsters array
                     const updatedMonsters = [...state.monsters];
                     const existingIndex = updatedMonsters.findIndex(
                       (m) => m.id === selectedMonsterId,
                     );
 
                     if (existingIndex >= 0) {
-                      // Update existing monster quantity
                       updatedMonsters[existingIndex].quantity = quantity;
                     } else {
-                      // Add new monster
                       updatedMonsters.push(newMonster);
                     }
 
@@ -330,7 +293,6 @@ export const RoomForm = ({
             )}
           </div>
 
-          {/* Trap Selector */}
           <div className="mt-4">
             <h3 className="text-lg font-semibold mb-2">Traps</h3>
             <ItemQuantitySelector
@@ -338,16 +300,11 @@ export const RoomForm = ({
               itemName="traps"
               textInputFormName="trap-quantity"
               dropdownConfig={{
-                placeholder: getPlaceholderMessage(
-                  "traps",
-                  isLoadingTraps,
-                  trapError,
-                ),
+                placeholder: trapDropdownPlaceholder,
                 options: traps,
               }}
               isRequired={false}
               onItemQuantityChangeCallback={(itemQuantityPair) => {
-                // Handle trap selection and quantity
                 const selectedTrapId = itemQuantityPair.itemValue;
                 const quantity = parseInt(itemQuantityPair.quantity) || 0;
 
@@ -359,7 +316,7 @@ export const RoomForm = ({
                     const newTrap: TrapWithQuantity = {
                       id: selectedTrapId,
                       name: selectedTrap.label,
-                      effect: "", // Effect will be fetched from API if needed
+                      effect: "",
                       quantity: quantity,
                     };
 
