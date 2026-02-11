@@ -2,7 +2,7 @@ import { AddRoom, Room } from "@/types/room";
 import { RoomDataFetcher } from "@/services/RoomDataFetcher.ts/RoomDataFetcher";
 import { FormTextInput } from "@/components/molecules/FormTextInput/FormTextInput";
 import { ButtonRow } from "@/components/molecules/ButtonRow/ButtonRow";
-import { useReducer } from "react";
+import { useReducer, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   getInitialState,
@@ -65,6 +65,37 @@ export const RoomForm = ({
         value: trap.id,
       })),
   });
+
+  // State for managing multiple selectors
+  const [monsterSelectors, setMonsterSelectors] = useState([{ id: 1 }]);
+  const [trapSelectors, setTrapSelectors] = useState([{ id: 1 }]);
+
+  // Helper functions for managing selectors
+  const addMonsterSelector = () => {
+    const newId = monsterSelectors.length > 0
+      ? Math.max(...monsterSelectors.map(s => s.id)) + 1
+      : 1;
+    setMonsterSelectors([...monsterSelectors, { id: newId }]);
+  };
+
+  const removeMonsterSelector = (id: number) => {
+    if (monsterSelectors.length > 1) {
+      setMonsterSelectors(monsterSelectors.filter(selector => selector.id !== id));
+    }
+  };
+
+  const addTrapSelector = () => {
+    const newId = trapSelectors.length > 0
+      ? Math.max(...trapSelectors.map(s => s.id)) + 1
+      : 1;
+    setTrapSelectors([...trapSelectors, { id: newId }]);
+  };
+
+  const removeTrapSelector = (id: number) => {
+    if (trapSelectors.length > 1) {
+      setTrapSelectors(trapSelectors.filter(selector => selector.id !== id));
+    }
+  };
 
   const validateInputs = () => {
     let errorsPresent = false;
@@ -172,20 +203,8 @@ export const RoomForm = ({
     }
   };
 
-  const getMonsterDropdownPlaceholder = () => {
-    if (isLoadingMonsters) return "Loading monsters...";
-    if (monsterError) return "Error loading monsters!";
-    return "Select monster";
-  };
-  const monsterDropdownPlaceholder = getMonsterDropdownPlaceholder();
 
-  const getTrapDropdownPlaceholder = () => {
-    if (isLoadingTraps) return "Loading traps...";
-    if (trapError) return "Error loading traps!";
-    return "Select trap";
-  };
 
-  const trapDropdownPlaceholder = getTrapDropdownPlaceholder();
 
   return (
     <>
@@ -236,7 +255,11 @@ export const RoomForm = ({
               itemName="monsters"
               textInputFormName="monster-quantity"
               dropdownConfig={{
-                placeholder: monsterDropdownPlaceholder,
+                placeholder: isLoadingMonsters
+                  ? "Loading monsters..."
+                  : monsterError
+                  ? "Error loading monsters!"
+                  : "Select monster",
                 options: monsters,
               }}
               isRequired={false}
@@ -300,7 +323,11 @@ export const RoomForm = ({
               itemName="traps"
               textInputFormName="trap-quantity"
               dropdownConfig={{
-                placeholder: trapDropdownPlaceholder,
+                placeholder: isLoadingTraps
+                  ? "Loading traps..."
+                  : trapError
+                  ? "Error loading traps!"
+                  : "Select trap",
                 options: traps,
               }}
               isRequired={false}

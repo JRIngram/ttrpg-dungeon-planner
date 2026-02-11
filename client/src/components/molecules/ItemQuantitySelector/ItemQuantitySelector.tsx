@@ -6,7 +6,7 @@ import {
 import { TextInput } from "@/components/atoms/TextInput/TextInput";
 import { useState } from "react";
 
-type ItemQuantityPair = {
+export type ItemQuantityPair = {
   itemValue: string;
   quantity: string;
 };
