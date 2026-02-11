@@ -65,10 +65,10 @@ type SetTrapQuantityError = {
   payload: string;
 };
 
-type RoomFormAction = 
-  | UpdateName 
-  | UpdateDescription 
-  | SetNameError 
+type RoomFormAction =
+  | UpdateName
+  | UpdateDescription
+  | SetNameError
   | SetDescriptionError
   | UpdateMonsters
   | UpdateTraps
@@ -163,7 +163,6 @@ export const getInitialState = (existingRoom: Room | undefined): RoomForm => {
     ? {
         ...baseInitialValue,
         ...existingRoom,
-        // Ensure error fields are initialized even when existing room is provided
         roomNameInputError: "",
         roomDescriptionInputError: "",
         monsterIdError: "",

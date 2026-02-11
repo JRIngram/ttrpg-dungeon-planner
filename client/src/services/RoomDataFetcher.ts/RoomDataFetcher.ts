@@ -41,14 +41,14 @@ export class RoomDataFetcher extends DataFetcher<Room> {
     const { name, description, dungeonId, traps, monsters } = room;
 
     // Transform monsters and traps to API format
-    const apiMonsters = monsters.map(monster => ({
+    const apiMonsters = monsters.map((monster) => ({
       quantity: monster.quantity.toString(),
-      monster: monster.id,
+      monster: monster.monster,
     }));
 
-    const apiTraps = traps.map(trap => ({
+    const apiTraps = traps.map((trap) => ({
       quantity: trap.quantity.toString(),
-      trap: trap.id,
+      trap: trap.trap,
     }));
 
     return {

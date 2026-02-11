@@ -2,7 +2,7 @@ import { AddRoom, Room } from "@/types/room";
 import { RoomDataFetcher } from "@/services/RoomDataFetcher.ts/RoomDataFetcher";
 import { FormTextInput } from "@/components/molecules/FormTextInput/FormTextInput";
 import { ButtonRow } from "@/components/molecules/ButtonRow/ButtonRow";
-import { useReducer, useState } from "react";
+import { useReducer } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   getInitialState,
@@ -14,9 +14,8 @@ import { ToastType } from "@/types/toast";
 import { MonsterDataFetcher } from "@/services/MonsterDataFetcher/MonsterDataFetcher";
 import { TrapDataFetcher } from "@/services/TrapDataFetcher/TrapDataFetcher";
 import { DropdownOption } from "@/components/atoms/Dropdown/Dropdown";
-import { ItemQuantitySelector } from "@/components/molecules/ItemQuantitySelector/ItemQuantitySelector";
-import { MonsterWithQuantity, Monster } from "@/types/monster";
-import { TrapWithQuantity, Trap } from "@/types/trap";
+import { ItemQuantityPair } from "@/components/molecules/ItemQuantitySelector/ItemQuantitySelector";
+import { ItemQuantitySelectorGroup } from "../../ItemQuantitySelectorGroup/ItemQuantitySelectorGroup";
 
 type Props = {
   dungeonId: string;
@@ -66,37 +65,6 @@ export const RoomForm = ({
       })),
   });
 
-  // State for managing multiple selectors
-  const [monsterSelectors, setMonsterSelectors] = useState([{ id: 1 }]);
-  const [trapSelectors, setTrapSelectors] = useState([{ id: 1 }]);
-
-  // Helper functions for managing selectors
-  const addMonsterSelector = () => {
-    const newId = monsterSelectors.length > 0
-      ? Math.max(...monsterSelectors.map(s => s.id)) + 1
-      : 1;
-    setMonsterSelectors([...monsterSelectors, { id: newId }]);
-  };
-
-  const removeMonsterSelector = (id: number) => {
-    if (monsterSelectors.length > 1) {
-      setMonsterSelectors(monsterSelectors.filter(selector => selector.id !== id));
-    }
-  };
-
-  const addTrapSelector = () => {
-    const newId = trapSelectors.length > 0
-      ? Math.max(...trapSelectors.map(s => s.id)) + 1
-      : 1;
-    setTrapSelectors([...trapSelectors, { id: newId }]);
-  };
-
-  const removeTrapSelector = (id: number) => {
-    if (trapSelectors.length > 1) {
-      setTrapSelectors(trapSelectors.filter(selector => selector.id !== id));
-    }
-  };
-
   const validateInputs = () => {
     let errorsPresent = false;
     const roomNameRegex = /(\w|\s){1,}/;
@@ -128,9 +96,10 @@ export const RoomForm = ({
       });
     }
 
-    // Validate monsters
     if (
-      state.monsters.some((monster) => !monster.id || monster.quantity <= 0)
+      state.monsters.some(
+        (monster) => !monster.monster || monster.quantity <= 0,
+      )
     ) {
       dispatch({
         type: RoomFormActionTypes.SET_MONSTER_ID_ERROR,
@@ -144,8 +113,7 @@ export const RoomForm = ({
       });
     }
 
-    // Validate traps
-    if (state.traps.some((trap) => !trap.id || trap.quantity <= 0)) {
+    if (state.traps.some((trap) => !trap.trap || trap.quantity <= 0)) {
       dispatch({
         type: RoomFormActionTypes.SET_TRAP_ID_ERROR,
         payload: "Please select valid traps with quantity > 0",
@@ -203,9 +171,6 @@ export const RoomForm = ({
     }
   };
 
-
-
-
   return (
     <>
       {!state.id && <p>Please select a room or create a new one below</p>}
@@ -250,58 +215,37 @@ export const RoomForm = ({
 
           <div className="mt-4">
             <h3 className="text-lg font-semibold mb-2">Monsters</h3>
-            <ItemQuantitySelector
+            <ItemQuantitySelectorGroup
               id="room-monster-selector"
               itemName="monsters"
               textInputFormName="monster-quantity"
+              initialValue={[]}
               dropdownConfig={{
                 placeholder: isLoadingMonsters
                   ? "Loading monsters..."
                   : monsterError
-                  ? "Error loading monsters!"
-                  : "Select monster",
+                    ? "Error loading monsters!"
+                    : "Select monster",
                 options: monsters,
               }}
               isRequired={false}
               onItemQuantityChangeCallback={(itemQuantityPair) => {
-                const selectedMonsterId = itemQuantityPair.itemValue;
-                const quantity = parseInt(itemQuantityPair.quantity) || 0;
+                const mappedMonsterQuantityPairs = itemQuantityPair.map(
+                  (iqPair: ItemQuantityPair) => {
+                    const selecterMonsterId = iqPair.itemValue;
+                    const quantity = parseInt(iqPair.quantity) || 0;
 
-                if (selectedMonsterId && quantity > 0) {
-                  const selectedMonster = monsters.find(
-                    (m) => m.value === selectedMonsterId,
-                  );
-                  if (selectedMonster) {
-                    const monsterName = selectedMonster.label.split(" - ")[0];
-                    const monsterXp =
-                      selectedMonster.label
-                        .split(" - ")[1]
-                        ?.replace("xp", "") || "0";
-
-                    const newMonster: MonsterWithQuantity = {
-                      id: selectedMonsterId,
-                      name: monsterName,
-                      xp: monsterXp,
-                      quantity: quantity,
+                    return {
+                      monster: selecterMonsterId,
+                      quantity,
                     };
+                  },
+                );
 
-                    const updatedMonsters = [...state.monsters];
-                    const existingIndex = updatedMonsters.findIndex(
-                      (m) => m.id === selectedMonsterId,
-                    );
-
-                    if (existingIndex >= 0) {
-                      updatedMonsters[existingIndex].quantity = quantity;
-                    } else {
-                      updatedMonsters.push(newMonster);
-                    }
-
-                    dispatch({
-                      type: RoomFormActionTypes.UPDATE_MONSTERS,
-                      payload: updatedMonsters,
-                    });
-                  }
-                }
+                dispatch({
+                  type: RoomFormActionTypes.UPDATE_MONSTERS,
+                  payload: mappedMonsterQuantityPairs,
+                });
               }}
             />
             {state.monsterIdError && (
@@ -318,7 +262,7 @@ export const RoomForm = ({
 
           <div className="mt-4">
             <h3 className="text-lg font-semibold mb-2">Traps</h3>
-            <ItemQuantitySelector
+            <ItemQuantitySelectorGroup
               id="room-trap-selector"
               itemName="traps"
               textInputFormName="trap-quantity"
@@ -326,44 +270,29 @@ export const RoomForm = ({
                 placeholder: isLoadingTraps
                   ? "Loading traps..."
                   : trapError
-                  ? "Error loading traps!"
-                  : "Select trap",
+                    ? "Error loading traps!"
+                    : "Select trap",
                 options: traps,
               }}
+              initialValue={[]}
               isRequired={false}
               onItemQuantityChangeCallback={(itemQuantityPair) => {
-                const selectedTrapId = itemQuantityPair.itemValue;
-                const quantity = parseInt(itemQuantityPair.quantity) || 0;
+                const mappedTrapQuantityPairs = itemQuantityPair.map(
+                  (iqPair: ItemQuantityPair) => {
+                    const selectedTrapId = iqPair.itemValue;
+                    const quantity = parseInt(iqPair.quantity) || 0;
 
-                if (selectedTrapId && quantity > 0) {
-                  const selectedTrap = traps.find(
-                    (t) => t.value === selectedTrapId,
-                  );
-                  if (selectedTrap) {
-                    const newTrap: TrapWithQuantity = {
-                      id: selectedTrapId,
-                      name: selectedTrap.label,
-                      effect: "",
-                      quantity: quantity,
+                    return {
+                      trap: selectedTrapId,
+                      quantity,
                     };
+                  },
+                );
 
-                    const updatedTraps = [...state.traps];
-                    const existingIndex = updatedTraps.findIndex(
-                      (t) => t.id === selectedTrapId,
-                    );
-
-                    if (existingIndex >= 0) {
-                      updatedTraps[existingIndex].quantity = quantity;
-                    } else {
-                      updatedTraps.push(newTrap);
-                    }
-
-                    dispatch({
-                      type: RoomFormActionTypes.UPDATE_TRAPS,
-                      payload: updatedTraps,
-                    });
-                  }
-                }
+                dispatch({
+                  type: RoomFormActionTypes.UPDATE_TRAPS,
+                  payload: mappedTrapQuantityPairs,
+                });
               }}
             />
             {state.trapIdError && (
