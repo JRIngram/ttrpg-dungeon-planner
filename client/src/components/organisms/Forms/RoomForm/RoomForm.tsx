@@ -173,7 +173,6 @@ export const RoomForm = ({
 
   return (
     <>
-      {!state.id && <p>Please select a room or create a new one below</p>}
       <form data-testid="room-form" onSubmit={(e) => e.preventDefault()}>
         <div className="flex flex-col gap-2">
           <FormTextInput
@@ -219,7 +218,10 @@ export const RoomForm = ({
               id="room-monster-selector"
               itemName="monsters"
               textInputFormName="monster-quantity"
-              initialValue={[]}
+              initialValue={state.monsters.map((monster) => ({
+                itemValue: monster.id,
+                quantity: monster.quantity,
+              }))}
               dropdownConfig={{
                 placeholder: isLoadingMonsters
                   ? "Loading monsters..."
@@ -274,7 +276,10 @@ export const RoomForm = ({
                     : "Select trap",
                 options: traps,
               }}
-              initialValue={[]}
+              initialValue={state.traps.map((trap) => ({
+                itemValue: trap.id,
+                quantity: trap.quantity,
+              }))}
               isRequired={false}
               onItemQuantityChangeCallback={(itemQuantityPair) => {
                 const mappedTrapQuantityPairs = itemQuantityPair.map(
