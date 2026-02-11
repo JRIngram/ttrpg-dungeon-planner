@@ -14,7 +14,7 @@ export type ItemQuantitySelectorGroupProps = {
   dropdownConfig: Pick<DropdownProps, "placeholder" | "options">;
   isRequired: boolean;
   initialValue: ItemQuantityPair[];
-  onItemQuantityChangeCallback: (itemQuantityPair: ItemQuantityPair) => void;
+  onItemQuantityChangeCallback: (itemQuantityPairs: ItemQuantityPair[]) => void;
 };
 
 export const ItemQuantitySelectorGroup = ({
@@ -35,21 +35,30 @@ export const ItemQuantitySelectorGroup = ({
 
   return (
     <>
-      {new Array(inputRowCount).fill(inputRowCount).map((_, i) => (
+      {new Array(inputRowCount).fill(inputRowCount).map((_, rowIndex) => (
         <ItemQuantitySelector
-          key={i}
+          key={rowIndex}
           id={id}
           itemName={itemName}
           textInputFormName={textInputFormName}
           dropdownConfig={dropdownConfig}
           onItemQuantityChangeCallback={(itemQuantityPair) => {
-            const updatedItemQuantityPairs = itemQuantityPairs.map(
-              (previousIQPair, idx) =>
-                idx === i ? itemQuantityPair : previousIQPair,
-            );
+            let updatedItemQuantityPairs;
+            if (rowIndex === itemQuantityPairs.length) {
+              updatedItemQuantityPairs = [
+                ...itemQuantityPairs,
+                itemQuantityPair,
+              ];
+            } else {
+              updatedItemQuantityPairs = itemQuantityPairs.map(
+                (previousIQPair, idx) =>
+                  idx === rowIndex ? itemQuantityPair : previousIQPair,
+              );
+            }
             setItemQuantityPairs(updatedItemQuantityPairs);
+            onItemQuantityChangeCallback(updatedItemQuantityPairs);
           }}
-          initialValue={initialValue[i]}
+          initialValue={initialValue[rowIndex]}
           isRequired={isRequired}
         />
       ))}
@@ -66,9 +75,17 @@ export const ItemQuantitySelectorGroup = ({
             onClick: () => {
               if (inputRowCount !== 1) {
                 setInputRowCount(inputRowCount - 1);
-                setItemQuantityPairs(
-                  itemQuantityPairs.slice(0, itemQuantityPairs.length - 1),
+                console.log({
+                  itemQuantityPairs,
+                  u: itemQuantityPairs.slice(0, itemQuantityPairs.length - 1),
+                });
+
+                const updatedItemQuantityPairs = itemQuantityPairs.slice(
+                  0,
+                  itemQuantityPairs.length - 1,
                 );
+                setItemQuantityPairs(updatedItemQuantityPairs);
+                onItemQuantityChangeCallback(updatedItemQuantityPairs);
               }
             },
           },
