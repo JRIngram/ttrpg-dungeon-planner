@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { DungeonForm } from "./DungeonForm";
 
 const meta: Meta<typeof DungeonForm> = {
-  title: "Organisms/Forms/DungeonForm",
+  title: "Components/Organisms/Forms/DungeonForm",
   component: DungeonForm,
   tags: ["autodocs"],
   argTypes: {

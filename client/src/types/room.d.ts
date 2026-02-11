@@ -13,7 +13,7 @@ export type Room = {
   traps: TrapWithQuantity[];
 };
 
-export type AddRoom = Exclude<Room, "id">;
+export type AddRoom = Omit<Room, "id">;
 
 export type ServerRoom = {
   id: RoomId;

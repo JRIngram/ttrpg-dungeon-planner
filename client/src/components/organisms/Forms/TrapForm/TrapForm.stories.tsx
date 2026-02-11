@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { TrapForm } from "./TrapForm";
 
 const meta: Meta<typeof TrapForm> = {
-  title: "Organisms/Forms/TrapForm",
+  title: "Components/Organisms/Forms/TrapForm",
   component: TrapForm,
   tags: ["autodocs"],
   argTypes: {

@@ -1,0 +1,33 @@
+import type { Meta, StoryObj } from "@storybook/react";
+import { RoomForm } from "./RoomForm";
+import { MonsterDataFetcher } from "@/services/MonsterDataFetcher/MonsterDataFetcher";
+import type { Monster } from "@/types/monster";
+import { Room } from "@/types/room";
+
+const meta = {
+  title: "Components/Organisms/Forms/RoomForm",
+  component: RoomForm,
+  parameters: {},
+  tags: ["autodocs"],
+} satisfies Meta<typeof RoomForm>;
+
+export default meta;
+type Story = StoryObj<typeof meta>;
+
+export const Default: Story = {
+  args: {
+    onSubmitCallback: (entity: Room) => console.log("Submitted:", entity),
+    onCancelCallback: () => console.log("Cancelled"),
+  },
+};
+
+// export const ExistingMonster: Story = {
+//   args: {
+//     ...Default.args,
+//     existingMonster: {
+//       id: "1",
+//       name: "Test Mob",
+//       xp: "50",
+//     },
+//   },
+// };

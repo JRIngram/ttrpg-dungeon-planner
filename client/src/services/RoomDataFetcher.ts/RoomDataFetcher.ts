@@ -25,7 +25,7 @@ export class RoomDataFetcher extends DataFetcher<Room> {
     };
   };
 
-  mapRoomToServerRoom = (room: Room): Omit<ServerRoom, "id"> => {
+  mapRoomToServerRoom = (room: Room | AddRoom): Omit<ServerRoom, "id"> => {
     const { name, description, dungeonId, traps, monsters } = room;
 
     return {
