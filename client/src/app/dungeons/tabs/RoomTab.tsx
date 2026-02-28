@@ -36,32 +36,6 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
     },
   });
 
-  const {
-    data: monsters,
-    isLoading: isLoadingMonsters,
-    isError: isErrorLoadingMonsters,
-  } = useQuery({
-    queryKey: [`get-all-monsters`],
-    queryFn: async (): Promise<DropdownOption[]> =>
-      (await monsterDataFetcher.getList()).map((monster) => ({
-        label: `${monster.name} - ${monster.xp}`,
-        value: monster.id,
-      })),
-  });
-
-  const {
-    data: traps,
-    isLoading: isLoadingTraps,
-    isError: isErrorLoadingTraps,
-  } = useQuery({
-    queryKey: [`get-all-traps`],
-    queryFn: async (): Promise<DropdownOption[]> =>
-      (await trapDataFetcher.getList()).map((trap) => ({
-        label: `${trap.name}`,
-        value: `${trap.id}`,
-      })),
-  });
-
   if (selectedDungeonId === undefined)
     return <p>Error: dungeon must be selected!</p>;
 

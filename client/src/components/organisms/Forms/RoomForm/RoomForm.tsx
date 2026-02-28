@@ -65,7 +65,7 @@ export const RoomForm = ({
     queryFn: async (): Promise<DropdownOption[]> =>
       (await trapDataFetcher.getList()).map((trap) => ({
         label: `${trap.name}`,
-        value: `${trap.id}`,
+        value: trap.id,
       })),
   });
 
@@ -73,8 +73,6 @@ export const RoomForm = ({
     let errorsPresent = false;
     const roomNameRegex = /(\w|\s){1,}/;
     const roomDescriptionRegex = /(\w|\s){1,}/;
-
-    console.log({ state });
 
     if (!state.name.match(roomNameRegex)) {
       dispatch({
@@ -120,9 +118,11 @@ export const RoomForm = ({
     }
 
     if (
-      state.traps.some((trap) => !trap.trap || parseInt(trap.quantity) <= 0)
+      state.traps.some(
+        (trap) =>
+          (!trap.trap && trap.trap !== "") || parseInt(trap.quantity) < 0,
+      )
     ) {
-      state.traps.forEach((t) => console.log(parseInt(t.quantity)));
       dispatch({
         type: RoomFormActionTypes.SET_TRAP_ID_ERROR,
         payload: "Please select valid traps with quantity > 0",
@@ -269,10 +269,12 @@ export const RoomForm = ({
                     : "Select trap",
                 options: traps,
               }}
-              initialValue={state.traps.map((trapQuantityPair) => ({
-                itemValue: trapQuantityPair.trap,
-                quantity: trapQuantityPair.quantity,
-              }))}
+              initialValue={state.traps.map((trapQuantityPair) => {
+                return {
+                  itemValue: trapQuantityPair.trap,
+                  quantity: trapQuantityPair.quantity,
+                };
+              })}
               isRequired={false}
               onItemQuantityChangeCallback={(itemQuantityPair) => {
                 const mappedTrapQuantityPairs = itemQuantityPair.map(
