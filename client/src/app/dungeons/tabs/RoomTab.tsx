@@ -1,15 +1,13 @@
 import { PropsWithChildren, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { FieldTextDisplayGroup } from "@/components/molecules/FieldTextDisplayGroup/FieldTextDisplayGroup";
 import { ButtonRow } from "@/components/molecules/ButtonRow/ButtonRow";
 import { ToastType } from "@/types/toast";
 import type { Room } from "@/types/room";
 import { useToastsDispatch } from "@/context/ToastContext";
 import { RoomDataFetcher } from "@/services/RoomDataFetcher.ts/RoomDataFetcher";
-import { useQuery } from "@tanstack/react-query";
-import { MonsterDataFetcher } from "@/services/MonsterDataFetcher/MonsterDataFetcher";
-import { DropdownOption } from "@/components/atoms/Dropdown/Dropdown";
-import { TrapDataFetcher } from "@/services/TrapDataFetcher/TrapDataFetcher";
 import { RoomForm } from "@/components/organisms/Forms/RoomForm/RoomForm";
+import { MonsterWithQuantity } from "@/types/monster";
 
 type Props = {
   selectedDungeonId?: string;
@@ -19,8 +17,6 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
   const toastDispatch = useToastsDispatch();
 
   const roomDataFetcher = new RoomDataFetcher();
-  const monsterDataFetcher = new MonsterDataFetcher();
-  const trapDataFetcher = new TrapDataFetcher();
 
   const {
     data: dungeonRooms,
@@ -147,10 +143,13 @@ const formatRoomFields = (room: Room) => {
       fieldValue: `${entry[1]}`,
     }));
 
+  const calculateTotalMonsterXp = (monster: MonsterWithQuantity) =>
+    monster.xp ? parseInt(monster.xp) * monster.quantity : -1;
+
   const monsterFields = room.monsters?.map((monster) => {
     return {
       fieldName: monster.name,
-      fieldValue: `${monster.xp}xp each; ${monster.quantity} in room. (${parseInt(monster.xp) * monster.quantity}xp total)`,
+      fieldValue: `${monster.xp}xp each; ${monster.quantity} in room. (${calculateTotalMonsterXp(monster)}xp total)`,
     };
   });
 
@@ -163,7 +162,7 @@ const formatRoomFields = (room: Room) => {
 
   const totalXp = room.monsters.length
     ? room.monsters
-        .map((monster) => parseInt(monster.xp) * monster.quantity)
+        .map((monster) => calculateTotalMonsterXp(monster))
         .reduce(
           (accumulator, currentMonsterXp) => accumulator + currentMonsterXp,
         )

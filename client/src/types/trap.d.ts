@@ -1,4 +1,4 @@
-export type TrapId = string | number;
+export type TrapId = string;
 
 export type Trap = {
   id: TrapId;

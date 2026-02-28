@@ -1,13 +1,5 @@
-import type {
-  AddRoom,
-  Room,
-  RoomId,
-  RoomWithStringifiedFields,
-  UpsertRoom,
-  UpsertRoomMonster,
-} from "@/types/room";
+import type { Room, RoomWithStringifiedFields } from "@/types/room";
 import { DataFetcher } from "../DataFetcher/DataFetcher";
-import type { AddOrEditDungeon, Dungeon, ServerDungeon } from "@/types/dungeon";
 
 export class RoomDataFetcher extends DataFetcher<Room> {
   readonly requestEndpoint: string;
@@ -33,58 +25,22 @@ export class RoomDataFetcher extends DataFetcher<Room> {
     return json.filter((room) => room.dungeon === dungeonId);
   };
 
-  // addSingle = async (
-  //   room: Room,
-  // ): Promise<{ entity: Room | undefined; httpCode: number }> => {
-  //   // THIS SHOULD NOT BE USED!
-  //   const response = await fetch(this.requestEndpoint, {
-  //     method: "POST",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //     },
-  //     body: JSON.stringify(this.mapRoomToUpsertFormat(room)),
-  //   });
+  addSingle = async (
+    room: Room,
+  ): Promise<{ entity: Room | undefined; httpCode: number }> => {
+    throw new Error(
+      "This should not be used; instead use RoomUpserter.upsertRoom()",
+    );
+  };
 
-  //   if (!this.isSuccessfulHTTPCode(response.status)) {
-  //     return {
-  //       entity: undefined,
-  //       httpCode: response.status,
-  //     };
-  //   } else {
-  //     const responseJson = (await response.json()) as Room;
-  //     return {
-  //       entity: responseJson,
-  //       httpCode: response.status,
-  //     };
-  //   }
-  // };
-
-  // editSingle = async (
-  //   room: Room,
-  // ): Promise<{ entity: Room | undefined; httpCode: number }> => {
-  //   // THIS SHOULD NOT BE USED!
-  //   const response = await fetch(`${this.requestEndpoint}/${room.id}`, {
-  //     method: "PUT",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //     },
-  //     body: JSON.stringify(this.mapRoomToUpsertFormat(room)),
-  //   });
-
-  //   if (!this.isSuccessfulHTTPCode(response.status)) {
-  //     return {
-  //       entity: undefined,
-  //       httpCode: response.status,
-  //     };
-  //   } else {
-  //     const responseJson = (await response.json()) as Room;
-
-  //     return {
-  //       entity: responseJson,
-  //       httpCode: response.status,
-  //     };
-  //   }
-  // };
+  editSingle = async (): Promise<{
+    entity: Room | undefined;
+    httpCode: number;
+  }> => {
+    throw new Error(
+      "This should not be used; instead use RoomUpserter.upsertRoom()",
+    );
+  };
 
   async deleteSingle(id: string): Promise<{ httpCode: number }> {
     const response = await fetch(`${this.requestEndpoint}/${id}`, {

@@ -1,4 +1,4 @@
-import { Room } from "@/types/room";
+import { Room, UpsertRoomTrap } from "@/types/room";
 import { FormTextInput } from "@/components/molecules/FormTextInput/FormTextInput";
 import { ButtonRow } from "@/components/molecules/ButtonRow/ButtonRow";
 import { useReducer } from "react";
@@ -69,6 +69,8 @@ export const RoomForm = ({
       })),
   });
 
+  console.log({ traps, monsters });
+
   const validateInputs = () => {
     let errorsPresent = false;
     const roomNameRegex = /(\w|\s){1,}/;
@@ -100,9 +102,10 @@ export const RoomForm = ({
       });
     }
 
+    console.log({ state });
     if (
       state.monsters.some(
-        (monster) => !monster.monster || parseInt(monster.quantity) <= 0,
+        (monster) => !monster.monster || monster.quantity <= 0,
       )
     ) {
       dispatch({
@@ -119,8 +122,7 @@ export const RoomForm = ({
 
     if (
       state.traps.some(
-        (trap) =>
-          (!trap.trap && trap.trap !== "") || parseInt(trap.quantity) < 0,
+        (trap) => (!trap.trap && trap.trap !== "") || trap.quantity < 0,
       )
     ) {
       dispatch({
@@ -213,7 +215,7 @@ export const RoomForm = ({
               textInputFormName="monster-quantity"
               initialValue={state.monsters.map((monsterIdQuantityPair) => ({
                 itemValue: monsterIdQuantityPair.monster,
-                quantity: monsterIdQuantityPair.quantity,
+                quantity: `${monsterIdQuantityPair.quantity}`,
               }))}
               dropdownConfig={{
                 placeholder: isLoadingMonsters
@@ -228,7 +230,7 @@ export const RoomForm = ({
                 const mappedMonsterQuantityPairs = itemQuantityPair.map(
                   (iqPair: ItemQuantityPair) => {
                     const selecterMonsterId = iqPair.itemValue;
-                    const quantity = iqPair.quantity || "0";
+                    const quantity = parseInt(iqPair.quantity) || 0;
 
                     return {
                       monster: selecterMonsterId,
@@ -272,22 +274,21 @@ export const RoomForm = ({
               initialValue={state.traps.map((trapQuantityPair) => {
                 return {
                   itemValue: trapQuantityPair.trap,
-                  quantity: trapQuantityPair.quantity,
+                  quantity: `${trapQuantityPair.quantity}`,
                 };
               })}
               isRequired={false}
               onItemQuantityChangeCallback={(itemQuantityPair) => {
-                const mappedTrapQuantityPairs = itemQuantityPair.map(
-                  (iqPair: ItemQuantityPair) => {
+                const mappedTrapQuantityPairs: UpsertRoomTrap[] =
+                  itemQuantityPair.map((iqPair: ItemQuantityPair) => {
                     const selectedTrapId = iqPair.itemValue;
-                    const quantity = iqPair.quantity || "0";
+                    const quantity = parseInt(iqPair.quantity) || 0;
 
                     return {
                       trap: selectedTrapId,
                       quantity,
                     };
-                  },
-                );
+                  });
 
                 dispatch({
                   type: RoomFormActionTypes.UPDATE_TRAPS,
