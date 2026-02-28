@@ -1,11 +1,6 @@
 "use client";
 import { useState } from "react";
 import { NavDrawer } from "@/components/molecules/NavDrawer/NavDrawer";
-import {
-  FormInputField,
-  InputMode,
-  InputType,
-} from "@/components/organisms/FormBuilder/FormBuilder";
 import { MonsterDataFetcher } from "@/services/MonsterDataFetcher/MonsterDataFetcher";
 import { useQuery } from "@tanstack/react-query";
 import { FieldTextDisplayGroup } from "@/components/molecules/FieldTextDisplayGroup/FieldTextDisplayGroup";
@@ -14,7 +9,7 @@ import { type Monster as MonsterType } from "@/types/monster";
 import { ToastList } from "@/components/organisms/ToastList/ToastList";
 import { useToasts, useToastsDispatch } from "@/context/ToastContext";
 import { ToastType } from "@/types/toast";
-import { FormBuilder } from "@/components/organisms/FormBuilder/FormBuilder";
+import { MonsterForm } from "@/components/organisms/Forms/MonsterForm/MonsterForm";
 
 export default function Monster() {
   const [selectedMonsterId, setSelectedMonsterId] = useState<string>();
@@ -45,41 +40,10 @@ export default function Monster() {
     monsterList?.find((monster) => monster.id === selectedId);
 
   const renderMonsterDisplay = () => {
-    const MonsterForm = FormBuilder<MonsterType>;
-    const formFields: FormInputField[] = [
-      {
-        inputType: InputType.Text,
-        id: "monster-name",
-        formInputName: "name",
-        ariaLabel: "Monster name",
-        formLabelText: "Name",
-        placeholder: "e.g. Goblin",
-        pattern: `(\\w|\\s){1,}`,
-        patternMessage: "Alphanumeric characters",
-        initialValue: undefined,
-        isRequired: true,
-      },
-      {
-        inputType: InputType.Text,
-        id: "monster-xp",
-        formInputName: "xp",
-        ariaLabel: "Monster XP value",
-        formLabelText: "XP Value",
-        placeholder: "e.g. 50",
-        pattern: "[0-9]{1,}",
-        patternMessage: "Numeric values",
-        initialValue: undefined,
-        isRequired: true,
-      },
-    ];
-
     if (!selectedMonsterId) {
       return (
         <>
-          <p>Please select a monster or create a new one below</p>
           <MonsterForm
-            dataFetcher={monsterDataFetcher}
-            inputMode={InputMode.NEW}
             onCancelCallback={() => {
               return;
             }}
@@ -87,7 +51,6 @@ export default function Monster() {
               await refetch();
               setSelectedMonsterId(monster?.id);
             }}
-            fields={formFields}
           />
         </>
       );
@@ -98,16 +61,13 @@ export default function Monster() {
         if (isEditing) {
           return (
             <MonsterForm
-              dataFetcher={new MonsterDataFetcher()}
-              inputMode={InputMode.EDIT}
-              existingEntity={selectedMonster}
+              existingMonster={selectedMonster}
               onSubmitCallback={async (monster) => {
                 await refetch();
                 setIsEditing(false);
                 setSelectedMonsterId(monster?.id);
               }}
               onCancelCallback={() => setIsEditing(false)}
-              fields={formFields}
             />
           );
         }
@@ -118,6 +78,7 @@ export default function Monster() {
             fieldValue: `${e[1]}`,
           };
         });
+
         return (
           <div className="flex flex-col gap-4">
             <FieldTextDisplayGroup fields={monsterFields} />

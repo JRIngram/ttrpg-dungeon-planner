@@ -1,7 +1,7 @@
 import type {
-  AddMonster,
+  AddOrEditMonster,
+  EditMonster,
   Monster,
-  MonsterId,
   ServerMonster,
 } from "@/types/monster";
 import { DataFetcher } from "../DataFetcher/DataFetcher";
@@ -20,7 +20,7 @@ export class MonsterDataFetcher extends DataFetcher<Monster> {
     return {
       id,
       name,
-      xp,
+      xp: `${xp}`,
       isDeletable: IS_DELETABLE,
     };
   };
@@ -33,7 +33,7 @@ export class MonsterDataFetcher extends DataFetcher<Monster> {
   };
 
   addSingle = async (
-    monster: AddMonster,
+    monster: AddOrEditMonster,
   ): Promise<{ entity: Monster | undefined; httpCode: number }> => {
     const response = await fetch(this.requestEndpoint, {
       method: "POST",
@@ -61,7 +61,7 @@ export class MonsterDataFetcher extends DataFetcher<Monster> {
   };
 
   editSingle = async (
-    monster: Monster,
+    monster: EditMonster,
   ): Promise<{ entity: Monster | undefined; httpCode: number }> => {
     const response = await fetch(`${this.requestEndpoint}/${monster.id}`, {
       method: "PUT",

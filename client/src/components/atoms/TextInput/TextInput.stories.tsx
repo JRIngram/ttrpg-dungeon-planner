@@ -19,6 +19,7 @@ export const Primary: Story = {
     placeholder: "Some test placeholder text",
     pattern: "[a-zA-Z]{1,}",
     patternMessage: "Alphabetical characters only",
+    onChangeCallback: () => {},
   },
 };
 
@@ -28,8 +29,9 @@ export const WithInitialValue: Story = {
     formInputName: "test-input",
     ariaLabel: "A Test TextInput",
     placeholder: "Some test placeholder text",
-    initialValue: "I am an initial value",
+    value: "I am an initial value",
     pattern: "[a-zA-Z]{1,}",
     patternMessage: "Alphabetical characters only",
+    onChangeCallback: () => {},
   },
 };

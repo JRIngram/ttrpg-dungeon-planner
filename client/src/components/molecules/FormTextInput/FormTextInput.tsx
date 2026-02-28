@@ -1,4 +1,5 @@
 import { TextInput } from "@/components/atoms/TextInput/TextInput";
+import { useState } from "react";
 
 export type FormTextInputProps = {
   id: string;
@@ -7,9 +8,11 @@ export type FormTextInputProps = {
   formLabelText: string;
   placeholder: string;
   pattern: string;
+  onChangeCallback: (formInputValue: string) => void;
+  value: string;
   patternMessage?: string;
+  errorMessage: string;
   isRequired?: boolean;
-  initialValue?: string;
 };
 
 export const FormTextInput = ({
@@ -20,9 +23,13 @@ export const FormTextInput = ({
   formInputName,
   pattern,
   patternMessage,
+  onChangeCallback,
+  value,
+  errorMessage,
   isRequired = false,
-  initialValue = "",
 }: FormTextInputProps) => {
+  const [formInputValue, setformInputValue] = useState<string>(value);
+
   return (
     <>
       <label className="text-typograph-500 font-semibold" htmlFor={id}>
@@ -33,11 +40,16 @@ export const FormTextInput = ({
         ariaLabel={ariaLabel}
         placeholder={placeholder}
         formInputName={formInputName}
-        initialValue={initialValue}
+        value={formInputValue}
         pattern={pattern}
         patternMessage={patternMessage}
+        onChangeCallback={(value) => {
+          setformInputValue(value);
+          onChangeCallback(value);
+        }}
         isRequired
       />
+      {errorMessage.length > 0 && <p>{errorMessage}</p>}
     </>
   );
 };

@@ -1,21 +1,15 @@
 import { it, describe, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
+import { userEvent } from "@testing-library/user-event";
+import { vi } from "vitest";
 import { composeStory } from "@storybook/react";
-import Meta, { Primary } from "./TextInput.stories";
+import Meta, { Primary, WithInitialValue } from "./TextInput.stories";
 
 describe("TextInput", () => {
   it("renders TextInput with correct aria-label and placeholder text", () => {
     const TextInput = composeStory(Primary, Meta);
-    const ariaLabel = "A Test TextInput";
-    const placeholderText = "Some test placeholder text";
 
-    render(
-      <TextInput
-        id="test-id"
-        ariaLabel={ariaLabel}
-        placeholder={placeholderText}
-      />,
-    );
+    render(<TextInput />);
 
     const textInput = screen.getByRole("textbox", { name: "A Test TextInput" });
 
@@ -25,16 +19,7 @@ describe("TextInput", () => {
 
   it("renders TextInput with initial value with correct aria-label and placeholder text", () => {
     const TextInput = composeStory(Primary, Meta);
-    const ariaLabel = "A Test TextInput";
-    const placeholderText = "Some test placeholder text";
-    render(
-      <TextInput
-        id="test-id"
-        ariaLabel={ariaLabel}
-        placeholder={placeholderText}
-        initialValue="Test Iniital Value"
-      />,
-    );
+    render(<TextInput />);
 
     const textInput = screen.getByRole("textbox", { name: "A Test TextInput" });
 
@@ -44,17 +29,46 @@ describe("TextInput", () => {
 
   it("makes TextInput required if passed isRequired", () => {
     const TextInput = composeStory(Primary, Meta);
-    const ariaLabel = "A Test TextInput";
-    const placeholderText = "Some test placeholder text";
-    render(
-      <TextInput
-        id="test-id"
-        ariaLabel={ariaLabel}
-        placeholder={placeholderText}
-        isRequired={true}
-      />,
-    );
+    render(<TextInput isRequired={true} />);
 
     expect(screen.getByRole("textbox")).toBeRequired();
   });
+
+  it.each([
+    {
+      storyPrefix: "Without initial value",
+      component: Primary,
+      clearBeforeTyping: false,
+    },
+    {
+      storyPrefix: "With initial value",
+      component: WithInitialValue,
+      clearBeforeTyping: true,
+    },
+  ])(
+    "$storyPrefix > calls onChangeCallback when a user changes the value",
+    async ({ component, clearBeforeTyping }) => {
+      const onChangeCallbackSpy = vi.fn();
+      const TextInput = composeStory(component, Meta);
+      render(
+        <TextInput
+          onChangeCallback={(value: string) => onChangeCallbackSpy(value)}
+        />,
+      );
+
+      const textBox = screen.getByRole("textbox");
+      const stringToInput = "Hello world!";
+      if (clearBeforeTyping) {
+        await userEvent.clear(textBox);
+      }
+      await userEvent.type(textBox, stringToInput);
+
+      const changeCount = clearBeforeTyping
+        ? stringToInput.length + 1
+        : stringToInput.length;
+      expect(onChangeCallbackSpy).toHaveBeenCalledTimes(changeCount);
+      expect(onChangeCallbackSpy).toHaveBeenLastCalledWith(stringToInput);
+      expect(textBox).toHaveValue(stringToInput);
+    },
+  );
 });

@@ -1,16 +1,11 @@
 import { useState } from "react";
 import { FieldTextDisplayGroup } from "@/components/molecules/FieldTextDisplayGroup/FieldTextDisplayGroup";
-import {
-  FormBuilder,
-  FormInputField,
-  InputType,
-} from "@/components/organisms/FormBuilder/FormBuilder";
-import { InputMode } from "@/components/organisms/FormBuilder/FormBuilder";
 import { ButtonRow } from "@/components/molecules/ButtonRow/ButtonRow";
 import { ToastType } from "@/types/toast";
-import type { Dungeon, Dungeon as DungeonType } from "@/types/dungeon";
+import type { Dungeon } from "@/types/dungeon";
 import { DungeonDataFetcher } from "@/services/DungeonDataFetcher/DungeonDataFetcher";
 import { useToastsDispatch } from "@/context/ToastContext";
+import { DungeonForm } from "@/components/organisms/Forms/DungeonForm/DungeonForm";
 
 type Props = {
   selectedDungeon?: Dungeon;
@@ -26,77 +21,11 @@ export const DungeonTab = ({
   const toastDispatch = useToastsDispatch();
 
   const dungeonDataFetcher = new DungeonDataFetcher();
-  const DungeonForm = FormBuilder<DungeonType>;
-  const formFields: FormInputField[] = [
-    {
-      inputType: InputType.Text,
-      id: "dungeon-name",
-      formInputName: "name",
-      ariaLabel: "Dungeon name",
-      formLabelText: "Name",
-      placeholder: "e.g. The Lost Ruins",
-      pattern: `(\\w|\\s){1,}`,
-      patternMessage: "Alphanumeric characters",
-      initialValue: undefined,
-      isRequired: true,
-    },
-    {
-      inputType: InputType.Text,
-      id: "dungeon-summary",
-      formInputName: "summary",
-      ariaLabel: "Dungeon summary",
-      formLabelText: "Summary",
-      placeholder: "e.g. Shadowy ruins of an old Dwarvern mining outpost",
-      pattern: `(\\w|\\s){1,}`,
-      patternMessage: "Alphanumeric characters",
-      initialValue: undefined,
-      isRequired: true,
-    },
-    {
-      inputType: InputType.Text,
-      id: "dungeon-level-min",
-      formInputName: "levelMin",
-      ariaLabel: "Dungeon Minimum Level",
-      formLabelText: "Minimum Level",
-      placeholder: "1",
-      pattern: `(\\d){1,}`,
-      patternMessage: "Numerical characters",
-      initialValue: undefined,
-      isRequired: true,
-    },
-    {
-      inputType: InputType.Text,
-      id: "dungeon-level-max",
-      formInputName: "levelMax",
-      ariaLabel: "Dungeon Maximum Level",
-      formLabelText: "Maximum Level",
-      placeholder: "3",
-      pattern: `(\\d){1,}`,
-      patternMessage: "Numerical characters",
-      initialValue: undefined,
-      isRequired: true,
-    },
-    {
-      inputType: InputType.Text,
-      id: "dungeon-player-count",
-      formInputName: "playerCount",
-      ariaLabel: "Dungeon Player Count",
-      formLabelText: "Intended Player Count",
-      placeholder: "4",
-      pattern: `(\\d){1,}`,
-      patternMessage: "Numerical characters",
-      initialValue: undefined,
-      isRequired: true,
-    },
-  ];
 
   if (!selectedDungeon?.id) {
     return (
       <>
-        <p>Please select a dungeon or create a new one below</p>
         <DungeonForm
-          dataFetcher={dungeonDataFetcher}
-          inputMode={InputMode.NEW}
           onCancelCallback={() => {
             return;
           }}
@@ -104,7 +33,6 @@ export const DungeonTab = ({
             await refetchDungeonCallback();
             setSelectedDungeonCallback(dungeon?.id);
           }}
-          fields={formFields}
         />
       </>
     );
@@ -113,16 +41,13 @@ export const DungeonTab = ({
       if (isEditing) {
         return (
           <DungeonForm
-            dataFetcher={new DungeonDataFetcher()}
-            inputMode={InputMode.EDIT}
-            existingEntity={selectedDungeon}
+            existingDungeon={selectedDungeon}
             onSubmitCallback={async (dungeon) => {
               await refetchDungeonCallback();
               setIsEditing(false);
               setSelectedDungeonCallback(dungeon?.id);
             }}
             onCancelCallback={() => setIsEditing(false)}
-            fields={formFields}
           />
         );
       }

@@ -86,7 +86,9 @@ export default function Dungeon() {
                 setSelectedDungeonCallback={setSelectedDungeonId}
               />
             ) : (
-              <RoomTab selectedDungeonId={selectedDungeonId} />
+              <>
+                <RoomTab selectedDungeonId={selectedDungeonId} />
+              </>
             )}
           </div>
           <ToastList toastList={toasts} />

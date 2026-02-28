@@ -1,6 +1,5 @@
-import type { AddRoom, Room, ServerRoom } from "@/types/room";
+import type { Room, RoomWithStringifiedFields } from "@/types/room";
 import { DataFetcher } from "../DataFetcher/DataFetcher";
-import type { AddDungeon, Dungeon, ServerDungeon } from "@/types/dungeon";
 
 export class RoomDataFetcher extends DataFetcher<Room> {
   readonly requestEndpoint: string;
@@ -12,96 +11,35 @@ export class RoomDataFetcher extends DataFetcher<Room> {
     this.dungeonId = "1";
   }
 
-  mapServerRoomToRoom = (room: ServerRoom): Room => {
-    const { id, name, description, dungeon, monsters, traps } = room;
-
-    return {
-      id,
-      name,
-      description,
-      dungeonId: dungeon,
-      traps,
-      monsters,
-    };
-  };
-
-  mapRoomToServerRoom = (room: Room): Omit<ServerRoom, "id"> => {
-    const { name, description, dungeonId, traps, monsters } = room;
-
-    return {
-      name,
-      description,
-      traps,
-      monsters,
-      dungeon: dungeonId,
-    };
-  };
-
   getList = async (): Promise<Room[]> => {
     const responseJson = await fetch(this.requestEndpoint);
-    const json = (await responseJson.json()) as ServerRoom[];
+    const json = (await responseJson.json()) as Room[];
 
-    return json.map((serverRoom) => this.mapServerRoomToRoom(serverRoom));
+    return json;
   };
 
   getListForDungeon = async (dungeonId: string): Promise<Room[]> => {
     const responseJson = await fetch(this.requestEndpoint);
-    const json = (await responseJson.json()) as ServerRoom[];
+    const json = (await responseJson.json()) as Room[];
 
-    return json
-      .filter((room) => room.dungeon === dungeonId)
-      .map((serverRoom) => this.mapServerRoomToRoom(serverRoom));
+    return json.filter((room) => room.dungeon === dungeonId);
   };
 
   addSingle = async (
-    room: AddRoom,
-  ): Promise<{ entity: Room | undefined; httpCode: number }> => {
-    const response = await fetch(this.requestEndpoint, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(this.mapRoomToServerRoom(room)),
-    });
-
-    if (!this.isSuccessfulHTTPCode(response.status)) {
-      return {
-        entity: undefined,
-        httpCode: response.status,
-      };
-    } else {
-      const responseJson = (await response.json()) as ServerRoom;
-      return {
-        entity: this.mapServerRoomToRoom(responseJson),
-        httpCode: response.status,
-      };
-    }
-  };
-
-  editSingle = async (
     room: Room,
   ): Promise<{ entity: Room | undefined; httpCode: number }> => {
-    const response = await fetch(`${this.requestEndpoint}/${room.id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(this.mapRoomToServerRoom(room)),
-    });
+    throw new Error(
+      "This should not be used; instead use RoomUpserter.upsertRoom()",
+    );
+  };
 
-    if (!this.isSuccessfulHTTPCode(response.status)) {
-      return {
-        entity: undefined,
-        httpCode: response.status,
-      };
-    } else {
-      const responseJson = (await response.json()) as ServerRoom;
-
-      return {
-        entity: this.mapServerRoomToRoom(responseJson),
-        httpCode: response.status,
-      };
-    }
+  editSingle = async (): Promise<{
+    entity: Room | undefined;
+    httpCode: number;
+  }> => {
+    throw new Error(
+      "This should not be used; instead use RoomUpserter.upsertRoom()",
+    );
   };
 
   async deleteSingle(id: string): Promise<{ httpCode: number }> {
@@ -110,5 +48,34 @@ export class RoomDataFetcher extends DataFetcher<Room> {
     });
 
     return { httpCode: response.status };
+  }
+
+  /**
+   * Stringifies the object keys of a room and the key-values of a monster and trap
+   * @param room
+   * @returns
+   */
+  stringifyRoomFields(room: Room): RoomWithStringifiedFields {
+    const entries = Object.entries(room);
+    const stringifiedFields = entries.map((entry) => {
+      const [k, v] = entry;
+      if (Array.isArray(v)) {
+        const stringifiedValueArray = v.map((arrayObject) => {
+          const arrayObjectEntries = Object.entries(arrayObject);
+          const stringifiedArrayObjectEntries = arrayObjectEntries.map(
+            (entry) => {
+              const [arrayK, arrayV] = entry;
+              return [arrayK, `${arrayV}`];
+            },
+          );
+          return Object.fromEntries(stringifiedArrayObjectEntries);
+        });
+
+        return [k, stringifiedValueArray];
+      }
+
+      return [k, `${v}`];
+    });
+    return Object.fromEntries(stringifiedFields);
   }
 }
