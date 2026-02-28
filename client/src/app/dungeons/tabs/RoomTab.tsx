@@ -58,7 +58,7 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
     queryFn: async (): Promise<DropdownOption[]> =>
       (await trapDataFetcher.getList()).map((trap) => ({
         label: `${trap.name}`,
-        value: trap.id,
+        value: `${trap.id}`,
       })),
   });
 
@@ -86,7 +86,7 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
         />
       </ListItemContainer>
 
-      {/* {dungeonRooms?.map((room) => {
+      {dungeonRooms?.map((room) => {
         const stringifiedRoom = roomDataFetcher.stringifyRoomFields(room);
         if (stringifiedRoom.id === selectedRoomId) {
           return (
@@ -123,7 +123,7 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
                     text: "Delete",
                     onClick: async () => {
                       const { httpCode } = await roomDataFetcher.deleteSingle(
-                        room.id,
+                        `${room.id}`,
                       );
                       if (!roomDataFetcher.isSuccessfulHTTPCode(httpCode)) {
                         toastDispatch({
@@ -153,7 +153,7 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
             </ListItemContainer>
           );
         }
-      })} */}
+      })}
     </div>
   );
 };

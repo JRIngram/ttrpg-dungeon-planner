@@ -18,15 +18,25 @@ export class RoomUpserter {
   upsertRoom = async (
     room: UpsertRoom,
   ): Promise<{ entity: Room | undefined; httpCode: number }> => {
-    console.log({ room });
     const roomAlreadyExists = room.id;
-    const response = await fetch(this.requestEndpoint, {
-      method: roomAlreadyExists ? "PUT" : "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(room),
-    });
+    let response: Response;
+    if (roomAlreadyExists) {
+      response = await fetch(`${this.requestEndpoint}/${room.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(room),
+      });
+    } else {
+      response = await fetch(this.requestEndpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(room),
+      });
+    }
 
     if (!this.isSuccessfulHTTPCode(response.status)) {
       return {
@@ -44,7 +54,7 @@ export class RoomUpserter {
 
   mapRoomToUpsertFormat(room: Room): UpsertRoom {
     return {
-      id: `${room.id}`,
+      id: room?.id ? `${room.id}` : undefined,
       name: room.name,
       description: room.description,
       dungeon: room.dungeon,

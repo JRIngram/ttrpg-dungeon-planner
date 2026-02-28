@@ -1,5 +1,4 @@
-import { AddRoom, Room } from "@/types/room";
-import { RoomDataFetcher } from "@/services/RoomDataFetcher.ts/RoomDataFetcher";
+import { Room } from "@/types/room";
 import { FormTextInput } from "@/components/molecules/FormTextInput/FormTextInput";
 import { ButtonRow } from "@/components/molecules/ButtonRow/ButtonRow";
 import { useReducer } from "react";
@@ -32,14 +31,17 @@ export const RoomForm = ({
   onSubmitCallback,
   existingRoom,
 }: Props) => {
+  const monsterDataFetcher = new MonsterDataFetcher();
+  const roomUpserter = new RoomUpserter();
+  const trapDataFetcher = new TrapDataFetcher();
+  const existingRoomInUpsertFormat = existingRoom
+    ? roomUpserter.mapRoomToUpsertFormat(existingRoom)
+    : undefined;
   const [state, dispatch] = useReducer(
     roomFormReducer,
-    getInitialState(existingRoom, dungeonId),
+    getInitialState(existingRoomInUpsertFormat, dungeonId),
   );
   const toastsDispatch = useToastsDispatch();
-
-  const monsterDataFetcher = new MonsterDataFetcher();
-  const trapDataFetcher = new TrapDataFetcher();
 
   const {
     data: monsters = [],
@@ -63,7 +65,7 @@ export const RoomForm = ({
     queryFn: async (): Promise<DropdownOption[]> =>
       (await trapDataFetcher.getList()).map((trap) => ({
         label: `${trap.name}`,
-        value: trap.id,
+        value: `${trap.id}`,
       })),
   });
 
@@ -139,19 +141,7 @@ export const RoomForm = ({
   const submitForm = async () => {
     if (validateInputs()) return;
 
-    const roomUpserter = new RoomUpserter();
-
-    const roomData: AddRoom = {
-      id: state.id,
-      name: state.name,
-      description: state.description,
-      dungeon: dungeonId,
-      monsters: state.monsters,
-      traps: state.traps,
-    };
-
-    const roomToUpsert = roomFormToUpsertFormat(roomData);
-    console.log({ state, roomToUpsert });
+    const roomToUpsert = roomFormToUpsertFormat(state);
     const { entity, httpCode } = await roomUpserter.upsertRoom(roomToUpsert);
 
     if (entity === undefined) {
