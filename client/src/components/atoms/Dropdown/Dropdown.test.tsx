@@ -1,4 +1,4 @@
-import { it, describe, expect } from "vitest";
+import { it, describe, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { composeStory } from "@storybook/react";
 import Meta, { Default } from "./Dropdown.stories";
@@ -71,7 +71,7 @@ describe("Dropdown", () => {
     ).toBeVisible();
   });
 
-  it("allow user to select an otpion", async () => {
+  it("allow user to select an option", async () => {
     const DropdownComponent = composeStory(Default, Meta);
     const ariaLabel = "A test Dropdown";
     const placeholder = "Some placeholder text";
@@ -148,4 +148,45 @@ describe("Dropdown", () => {
       }
     },
   );
+
+  it("calls onChangeCallback when value is changed", async () => {
+    const DropdownComponent = composeStory(Default, Meta);
+    const ariaLabel = "A test Dropdown";
+    const placeholder = "Some placeholder text";
+    const options = [
+      {
+        value: "1",
+        label: "option-1",
+      },
+
+      {
+        value: "2",
+        label: "option-2",
+      },
+      {
+        value: "3",
+        label: "option-3",
+      },
+    ];
+    const onChangeSpy = vi.fn();
+
+    render(
+      <DropdownComponent
+        ariaLabel={ariaLabel}
+        options={options}
+        placeholder={placeholder}
+        onChangeCallback={(option) => onChangeSpy(option)}
+      />,
+    );
+    const dropdown = screen.getByRole("combobox", { name: ariaLabel });
+    await userEvent.selectOptions(
+      dropdown,
+      screen.getByRole("option", {
+        name: options[2].label,
+      }),
+    );
+
+    expect(onChangeSpy).toHaveBeenCalledOnce();
+    expect(onChangeSpy).toHaveBeenCalledWith(options[2]);
+  });
 });

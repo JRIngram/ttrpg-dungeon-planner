@@ -7,9 +7,14 @@ export type Trap = {
   isDeletable?: boolean;
 };
 
-export type AddTrap = Exclude<Trap, "id" | "isDeletable">;
+export type AddOrEditTrap = AddTrap | EditTrap;
 
-export interface TrapWithQuantity extends Trap {
+export type AddTrap = Omit<Trap, "id" | "isDeletable">;
+
+export type EditTrap = Omit<Trap, "isDeletable">;
+
+export interface TrapWithQuantity extends Partial<Trap> {
+  id: string;
   quantity: number;
 }
 

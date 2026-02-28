@@ -3,13 +3,18 @@ export type MonsterId = string;
 export type Monster = {
   id: MonsterId;
   name: string;
-  xp: number;
+  xp: string;
   isDeletable?: boolean;
 };
 
-export type AddMonster = Exclude<Monster, "id" | "isDeletable">;
+export type AddOrEditMonster = AddMonster | EditMonster;
 
-export interface MonsterWithQuantity extends Monster {
+export type AddMonster = Omit<Monster, "id" | "isDeletable">;
+
+export type EditMonster = Omit<Monster, "isDeletable">;
+
+export interface MonsterWithQuantity extends Partial<Monster> {
+  id: MonsterId;
   quantity: number;
 }
 
