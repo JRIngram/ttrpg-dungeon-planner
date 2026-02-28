@@ -1,5 +1,10 @@
 import { MonsterWithQuantity } from "@/types/monster";
-import { Room } from "@/types/room";
+import {
+  Room,
+  UpsertRoom,
+  UpsertRoomMonster,
+  UpsertRoomTrap,
+} from "@/types/room";
 import { TrapWithQuantity } from "@/types/trap";
 
 export enum RoomFormActionTypes {
@@ -37,12 +42,12 @@ type SetDescriptionError = {
 
 type UpdateMonsters = {
   type: RoomFormActionTypes.UPDATE_MONSTERS;
-  payload: MonsterWithQuantity[];
+  payload: UpsertRoomMonster[];
 };
 
 type UpdateTraps = {
   type: RoomFormActionTypes.UPDATE_TRAPS;
-  payload: TrapWithQuantity[];
+  payload: UpsertRoomTrap[];
 };
 
 type SetMonsterIdError = {
@@ -77,7 +82,7 @@ type RoomFormAction =
   | SetTrapIdError
   | SetTrapQuantityError;
 
-type RoomForm = Room & {
+export type RoomForm = UpsertRoom & {
   roomNameInputError: string;
   roomDescriptionInputError: string;
   monsterIdError: string;
@@ -143,12 +148,15 @@ export const roomFormReducer = (state: RoomForm, action: RoomFormAction) => {
   }
 };
 
-export const getInitialState = (existingRoom: Room | undefined): RoomForm => {
+export const getInitialState = (
+  existingRoom: UpsertRoom | undefined,
+  dungeonId: string,
+): RoomForm => {
   const baseInitialValue = {
     id: "",
     name: "",
     description: "",
-    dungeonId: "",
+    dungeon: dungeonId,
     monsters: [],
     traps: [],
     roomNameInputError: "",
@@ -159,16 +167,21 @@ export const getInitialState = (existingRoom: Room | undefined): RoomForm => {
     trapQuantityError: "",
   };
 
-  return existingRoom
-    ? {
-        ...baseInitialValue,
-        ...existingRoom,
-        roomNameInputError: "",
-        roomDescriptionInputError: "",
-        monsterIdError: "",
-        monsterQuantityError: "",
-        trapIdError: "",
-        trapQuantityError: "",
-      }
-    : baseInitialValue;
+  if (existingRoom) {
+    const formattedExistingRoom: UpsertRoom = {
+      id: existingRoom?.id ?? "",
+      name: existingRoom?.name ?? "",
+      description: existingRoom?.description ?? "",
+      dungeon: existingRoom?.dungeon ?? "",
+      monsters: existingRoom?.monsters ?? [],
+      traps: existingRoom?.traps ?? [],
+    };
+
+    return {
+      ...baseInitialValue,
+      ...formattedExistingRoom,
+    };
+  }
+
+  return baseInitialValue;
 };

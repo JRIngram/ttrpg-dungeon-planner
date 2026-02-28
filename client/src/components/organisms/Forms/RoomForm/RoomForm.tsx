@@ -16,6 +16,8 @@ import { TrapDataFetcher } from "@/services/TrapDataFetcher/TrapDataFetcher";
 import { DropdownOption } from "@/components/atoms/Dropdown/Dropdown";
 import { ItemQuantityPair } from "@/components/molecules/ItemQuantitySelector/ItemQuantitySelector";
 import { ItemQuantitySelectorGroup } from "../../ItemQuantitySelectorGroup/ItemQuantitySelectorGroup";
+import { RoomUpserter } from "@/services/RoomUpserter/RoomUpserter";
+import { roomFormToUpsertFormat } from "@/services/RoomUpserter/util/roomFormToUpsertFormat";
 
 type Props = {
   dungeonId: string;
@@ -32,7 +34,7 @@ export const RoomForm = ({
 }: Props) => {
   const [state, dispatch] = useReducer(
     roomFormReducer,
-    getInitialState(existingRoom),
+    getInitialState(existingRoom, dungeonId),
   );
   const toastsDispatch = useToastsDispatch();
 
@@ -70,6 +72,8 @@ export const RoomForm = ({
     const roomNameRegex = /(\w|\s){1,}/;
     const roomDescriptionRegex = /(\w|\s){1,}/;
 
+    console.log({ state });
+
     if (!state.name.match(roomNameRegex)) {
       dispatch({
         type: RoomFormActionTypes.SET_NAME_ERROR,
@@ -98,7 +102,7 @@ export const RoomForm = ({
 
     if (
       state.monsters.some(
-        (monster) => !monster.monster || monster.quantity <= 0,
+        (monster) => !monster.monster || parseInt(monster.quantity) <= 0,
       )
     ) {
       dispatch({
@@ -113,7 +117,10 @@ export const RoomForm = ({
       });
     }
 
-    if (state.traps.some((trap) => !trap.trap || trap.quantity <= 0)) {
+    if (
+      state.traps.some((trap) => !trap.trap || parseInt(trap.quantity) <= 0)
+    ) {
+      state.traps.forEach((t) => console.log(parseInt(t.quantity)));
       dispatch({
         type: RoomFormActionTypes.SET_TRAP_ID_ERROR,
         payload: "Please select valid traps with quantity > 0",
@@ -132,24 +139,20 @@ export const RoomForm = ({
   const submitForm = async () => {
     if (validateInputs()) return;
 
-    const dataFetcher = new RoomDataFetcher();
+    const roomUpserter = new RoomUpserter();
 
     const roomData: AddRoom = {
+      id: state.id,
       name: state.name,
       description: state.description,
-      dungeonId: dungeonId,
+      dungeon: dungeonId,
       monsters: state.monsters,
       traps: state.traps,
     };
 
-    const roomToEdit: Room = {
-      ...roomData,
-      id: state.id,
-    };
-
-    const { entity, httpCode } = state.id
-      ? await dataFetcher.editSingle(roomToEdit)
-      : await dataFetcher.addSingle(roomData);
+    const roomToUpsert = roomFormToUpsertFormat(roomData);
+    console.log({ state, roomToUpsert });
+    const { entity, httpCode } = await roomUpserter.upsertRoom(roomToUpsert);
 
     if (entity === undefined) {
       toastsDispatch({
@@ -218,9 +221,9 @@ export const RoomForm = ({
               id="room-monster-selector"
               itemName="monsters"
               textInputFormName="monster-quantity"
-              initialValue={state.monsters.map((monster) => ({
-                itemValue: monster.id,
-                quantity: monster.quantity,
+              initialValue={state.monsters.map((monsterIdQuantityPair) => ({
+                itemValue: monsterIdQuantityPair.monster,
+                quantity: monsterIdQuantityPair.quantity,
               }))}
               dropdownConfig={{
                 placeholder: isLoadingMonsters
@@ -235,7 +238,7 @@ export const RoomForm = ({
                 const mappedMonsterQuantityPairs = itemQuantityPair.map(
                   (iqPair: ItemQuantityPair) => {
                     const selecterMonsterId = iqPair.itemValue;
-                    const quantity = parseInt(iqPair.quantity) || 0;
+                    const quantity = iqPair.quantity || "0";
 
                     return {
                       monster: selecterMonsterId,
@@ -276,16 +279,16 @@ export const RoomForm = ({
                     : "Select trap",
                 options: traps,
               }}
-              initialValue={state.traps.map((trap) => ({
-                itemValue: trap.id,
-                quantity: trap.quantity,
+              initialValue={state.traps.map((trapQuantityPair) => ({
+                itemValue: trapQuantityPair.trap,
+                quantity: trapQuantityPair.quantity,
               }))}
               isRequired={false}
               onItemQuantityChangeCallback={(itemQuantityPair) => {
                 const mappedTrapQuantityPairs = itemQuantityPair.map(
                   (iqPair: ItemQuantityPair) => {
                     const selectedTrapId = iqPair.itemValue;
-                    const quantity = parseInt(iqPair.quantity) || 0;
+                    const quantity = iqPair.quantity || "0";
 
                     return {
                       trap: selectedTrapId,

@@ -1,34 +1,60 @@
 import { vi, it, describe, expect } from "vitest";
-import { DungeonDataFetcher } from "../DungeonDataFetcher/DungeonDataFetcher";
+import { Room, RoomWithStringifiedFields } from "@/types/room";
+import { RoomDataFetcher } from "./RoomDataFetcher";
 
-describe("MonsterDataFetcher", () => {
-  describe("mapServerMonsterToMonster", () => {
-    it.each([
-      [
-        {
-          id: "1",
-          name: "The Hidden Temple of Dave",
-          summary:
-            "Explore the hidden ruins of the Temple of Dave, and find the hidden crystal of Daveth ",
-          level_min: 1,
-          level_max: 3,
-          player_count: 4,
-        },
-        {
-          id: "1",
-          name: "The Hidden Temple of Dave",
-          summary:
-            "Explore the hidden ruins of the Temple of Dave, and find the hidden crystal of Daveth ",
-          levelMin: 1,
-          levelMax: 3,
-          playerCount: 4,
-        },
-      ],
-    ])("maps %o correctly to %o", (serverDungeon, expectedMapping) => {
-      const dungeonDataFetcher = new DungeonDataFetcher();
-      expect(
-        dungeonDataFetcher.mapServerDungeonToDungeon(serverDungeon),
-      ).toEqual(expectedMapping);
+describe("RoomDataFetcher", () => {
+  describe("stringifyRoomFields", () => {
+    it("successfully stringifies room fields", () => {
+      const roomDataFetcher = new RoomDataFetcher();
+      const room: Room = {
+        id: 283,
+        name: "a",
+        description: "b",
+        traps: [
+          {
+            id: 37,
+            name: "Hidden Pits",
+            effect: "1d4 bludgeoning damage",
+            quantity: 20,
+          },
+        ],
+        monsters: [
+          {
+            id: 127,
+            name: "Davee",
+            xp: 500,
+            quantity: 10,
+          },
+        ],
+        dungeon: 74,
+      };
+
+      const stringifiedRoom: RoomWithStringifiedFields = {
+        id: "283",
+        name: "a",
+        description: "b",
+        traps: [
+          {
+            id: "37",
+            name: "Hidden Pits",
+            effect: "1d4 bludgeoning damage",
+            quantity: "20",
+          },
+        ],
+        monsters: [
+          {
+            id: "127",
+            name: "Davee",
+            xp: "500",
+            quantity: "10",
+          },
+        ],
+        dungeon: "74",
+      };
+
+      expect(roomDataFetcher.stringifyRoomFields(room)).toEqual(
+        stringifiedRoom,
+      );
     });
   });
 });

@@ -1,4 +1,11 @@
-import type { AddRoom, Room, ServerRoom, ApiRoomData } from "@/types/room";
+import type {
+  AddRoom,
+  Room,
+  RoomId,
+  RoomWithStringifiedFields,
+  UpsertRoom,
+  UpsertRoomMonster,
+} from "@/types/room";
 import { DataFetcher } from "../DataFetcher/DataFetcher";
 import type { AddOrEditDungeon, Dungeon, ServerDungeon } from "@/types/dungeon";
 
@@ -12,120 +19,72 @@ export class RoomDataFetcher extends DataFetcher<Room> {
     this.dungeonId = "1";
   }
 
-  mapServerRoomToRoom = (room: ServerRoom): Room => {
-    const { id, name, description, dungeon, monsters, traps } = room;
-
-    return {
-      id,
-      name,
-      description,
-      dungeonId: dungeon,
-      traps,
-      monsters,
-    };
-  };
-
-  mapRoomToServerRoom = (room: Room | AddRoom): Omit<ServerRoom, "id"> => {
-    const { name, description, dungeonId, traps, monsters } = room;
-
-    return {
-      name,
-      description,
-      traps,
-      monsters,
-      dungeon: dungeonId,
-    };
-  };
-
-  mapRoomToApiFormat = (room: Room | AddRoom): ApiRoomData => {
-    const { name, description, dungeonId, traps, monsters } = room;
-
-    // Transform monsters and traps to API format
-    const apiMonsters = monsters.map((monster) => ({
-      quantity: monster.quantity.toString(),
-      monster: monster.monster,
-    }));
-
-    const apiTraps = traps.map((trap) => ({
-      quantity: trap.quantity.toString(),
-      trap: trap.trap,
-    }));
-
-    return {
-      name,
-      description,
-      dungeon: dungeonId,
-      monsters: apiMonsters,
-      traps: apiTraps,
-    };
-  };
-
   getList = async (): Promise<Room[]> => {
     const responseJson = await fetch(this.requestEndpoint);
-    const json = (await responseJson.json()) as ServerRoom[];
+    const json = (await responseJson.json()) as Room[];
 
-    return json.map((serverRoom) => this.mapServerRoomToRoom(serverRoom));
+    return json;
   };
 
   getListForDungeon = async (dungeonId: string): Promise<Room[]> => {
     const responseJson = await fetch(this.requestEndpoint);
-    const json = (await responseJson.json()) as ServerRoom[];
+    const json = (await responseJson.json()) as Room[];
 
-    return json
-      .filter((room) => room.dungeon === dungeonId)
-      .map((serverRoom) => this.mapServerRoomToRoom(serverRoom));
+    return json.filter((room) => room.dungeon === dungeonId);
   };
 
-  addSingle = async (
-    room: AddRoom,
-  ): Promise<{ entity: Room | undefined; httpCode: number }> => {
-    const response = await fetch(this.requestEndpoint, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(this.mapRoomToApiFormat(room)),
-    });
+  // addSingle = async (
+  //   room: Room,
+  // ): Promise<{ entity: Room | undefined; httpCode: number }> => {
+  //   // THIS SHOULD NOT BE USED!
+  //   const response = await fetch(this.requestEndpoint, {
+  //     method: "POST",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     },
+  //     body: JSON.stringify(this.mapRoomToUpsertFormat(room)),
+  //   });
 
-    if (!this.isSuccessfulHTTPCode(response.status)) {
-      return {
-        entity: undefined,
-        httpCode: response.status,
-      };
-    } else {
-      const responseJson = (await response.json()) as ServerRoom;
-      return {
-        entity: this.mapServerRoomToRoom(responseJson),
-        httpCode: response.status,
-      };
-    }
-  };
+  //   if (!this.isSuccessfulHTTPCode(response.status)) {
+  //     return {
+  //       entity: undefined,
+  //       httpCode: response.status,
+  //     };
+  //   } else {
+  //     const responseJson = (await response.json()) as Room;
+  //     return {
+  //       entity: responseJson,
+  //       httpCode: response.status,
+  //     };
+  //   }
+  // };
 
-  editSingle = async (
-    room: Room,
-  ): Promise<{ entity: Room | undefined; httpCode: number }> => {
-    const response = await fetch(`${this.requestEndpoint}/${room.id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(this.mapRoomToApiFormat(room)),
-    });
+  // editSingle = async (
+  //   room: Room,
+  // ): Promise<{ entity: Room | undefined; httpCode: number }> => {
+  //   // THIS SHOULD NOT BE USED!
+  //   const response = await fetch(`${this.requestEndpoint}/${room.id}`, {
+  //     method: "PUT",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     },
+  //     body: JSON.stringify(this.mapRoomToUpsertFormat(room)),
+  //   });
 
-    if (!this.isSuccessfulHTTPCode(response.status)) {
-      return {
-        entity: undefined,
-        httpCode: response.status,
-      };
-    } else {
-      const responseJson = (await response.json()) as ServerRoom;
+  //   if (!this.isSuccessfulHTTPCode(response.status)) {
+  //     return {
+  //       entity: undefined,
+  //       httpCode: response.status,
+  //     };
+  //   } else {
+  //     const responseJson = (await response.json()) as Room;
 
-      return {
-        entity: this.mapServerRoomToRoom(responseJson),
-        httpCode: response.status,
-      };
-    }
-  };
+  //     return {
+  //       entity: responseJson,
+  //       httpCode: response.status,
+  //     };
+  //   }
+  // };
 
   async deleteSingle(id: string): Promise<{ httpCode: number }> {
     const response = await fetch(`${this.requestEndpoint}/${id}`, {
@@ -133,5 +92,34 @@ export class RoomDataFetcher extends DataFetcher<Room> {
     });
 
     return { httpCode: response.status };
+  }
+
+  /**
+   * Stringifies the object keys of a room and the key-values of a monster and trap
+   * @param room
+   * @returns
+   */
+  stringifyRoomFields(room: Room): RoomWithStringifiedFields {
+    const entries = Object.entries(room);
+    const stringifiedFields = entries.map((entry) => {
+      const [k, v] = entry;
+      if (Array.isArray(v)) {
+        const stringifiedValueArray = v.map((arrayObject) => {
+          const arrayObjectEntries = Object.entries(arrayObject);
+          const stringifiedArrayObjectEntries = arrayObjectEntries.map(
+            (entry) => {
+              const [arrayK, arrayV] = entry;
+              return [arrayK, `${arrayV}`];
+            },
+          );
+          return Object.fromEntries(stringifiedArrayObjectEntries);
+        });
+
+        return [k, stringifiedValueArray];
+      }
+
+      return [k, `${v}`];
+    });
+    return Object.fromEntries(stringifiedFields);
   }
 }

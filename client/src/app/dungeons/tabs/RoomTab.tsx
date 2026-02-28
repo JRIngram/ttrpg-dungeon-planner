@@ -1,11 +1,5 @@
 import { PropsWithChildren, useState } from "react";
 import { FieldTextDisplayGroup } from "@/components/molecules/FieldTextDisplayGroup/FieldTextDisplayGroup";
-import {
-  FormBuilder,
-  FormInputField,
-  InputType,
-} from "@/components/organisms/FormBuilder/FormBuilder";
-import { InputMode } from "@/components/organisms/FormBuilder/FormBuilder";
 import { ButtonRow } from "@/components/molecules/ButtonRow/ButtonRow";
 import { ToastType } from "@/types/toast";
 import type { Room } from "@/types/room";
@@ -15,7 +9,6 @@ import { useQuery } from "@tanstack/react-query";
 import { MonsterDataFetcher } from "@/services/MonsterDataFetcher/MonsterDataFetcher";
 import { DropdownOption } from "@/components/atoms/Dropdown/Dropdown";
 import { TrapDataFetcher } from "@/services/TrapDataFetcher/TrapDataFetcher";
-import { Monster, MonsterWithQuantity } from "@/types/monster";
 import { RoomForm } from "@/components/organisms/Forms/RoomForm/RoomForm";
 
 type Props = {
@@ -30,7 +23,7 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
   const trapDataFetcher = new TrapDataFetcher();
 
   const {
-    data,
+    data: dungeonRooms,
     isLoading: isLoadingDungeonRooms,
     isError: errorLoadingDungeonRooms,
     refetch,
@@ -69,20 +62,6 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
       })),
   });
 
-  const getPlacerholderMessage = (
-    category: string,
-    isLoading: boolean,
-    isError: Boolean,
-  ) => {
-    if (isLoading) {
-      return `Loading ${category}`;
-    } else if (isError) {
-      return `Error loading ${category}`;
-    } else {
-      return `No ${category}`;
-    }
-  };
-
   if (selectedDungeonId === undefined)
     return <p>Error: dungeon must be selected!</p>;
 
@@ -107,8 +86,9 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
         />
       </ListItemContainer>
 
-      {data?.map((room) => {
-        if (room.id === selectedRoomId) {
+      {/* {dungeonRooms?.map((room) => {
+        const stringifiedRoom = roomDataFetcher.stringifyRoomFields(room);
+        if (stringifiedRoom.id === selectedRoomId) {
           return (
             <ListItemContainer key={room.id}>
               <RoomForm
@@ -126,7 +106,7 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
           );
         }
 
-        if (room.id !== selectedRoomId) {
+        if (stringifiedRoom.id !== selectedRoomId) {
           const roomFields = formatRoomFields(room);
 
           return (
@@ -136,7 +116,7 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
                 buttons={[
                   {
                     text: "Edit",
-                    onClick: () => setSelectedRoomId(room.id),
+                    onClick: () => setSelectedRoomId(stringifiedRoom.id),
                     variant: "secondaryOutline",
                   },
                   {
@@ -173,7 +153,7 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
             </ListItemContainer>
           );
         }
-      })}
+      })} */}
     </div>
   );
 };
