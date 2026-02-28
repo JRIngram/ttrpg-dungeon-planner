@@ -13,7 +13,8 @@ export type AddMonster = Omit<Monster, "id" | "isDeletable">;
 
 export type EditMonster = Omit<Monster, "isDeletable">;
 
-export interface MonsterWithQuantity extends Monster {
+export interface MonsterWithQuantity extends Partial<Monster> {
+  id: MonsterId;
   quantity: number;
 }
 

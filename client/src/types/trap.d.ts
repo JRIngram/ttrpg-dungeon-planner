@@ -1,4 +1,4 @@
-export type TrapId = string;
+export type TrapId = string | number;
 
 export type Trap = {
   id: TrapId;
@@ -13,7 +13,8 @@ export type AddTrap = Omit<Trap, "id" | "isDeletable">;
 
 export type EditTrap = Omit<Trap, "isDeletable">;
 
-export interface TrapWithQuantity extends Trap {
+export interface TrapWithQuantity extends Partial<Trap> {
+  id: string;
   quantity: number;
 }
 
