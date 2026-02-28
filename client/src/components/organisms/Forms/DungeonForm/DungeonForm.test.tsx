@@ -70,10 +70,18 @@ describe("Dungeon Form", () => {
       render(<DungeonForm />);
 
       const nameInput = screen.getByRole("textbox", { name: "Dungeon name" });
-      const summaryInput = screen.getByRole("textbox", { name: "Dungeon summary" });
-      const levelMinInput = screen.getByRole("textbox", { name: "Dungeon Minimum Level" });
-      const levelMaxInput = screen.getByRole("textbox", { name: "Dungeon Maximum Level" });
-      const playerCountInput = screen.getByRole("textbox", { name: "Dungeon Player Count" });
+      const summaryInput = screen.getByRole("textbox", {
+        name: "Dungeon summary",
+      });
+      const levelMinInput = screen.getByRole("textbox", {
+        name: "Dungeon Minimum Level",
+      });
+      const levelMaxInput = screen.getByRole("textbox", {
+        name: "Dungeon Maximum Level",
+      });
+      const playerCountInput = screen.getByRole("textbox", {
+        name: "Dungeon Player Count",
+      });
       const saveButton = screen.getByRole("button", { name: "Save" });
       const cancelButton = screen.getByRole("button", { name: "Cancel" });
 
@@ -92,7 +100,9 @@ describe("Dungeon Form", () => {
       render(<DungeonForm />);
 
       const populatedNameInput = screen.getByDisplayValue("The Lost Ruins");
-      const populatedSummaryInput = screen.getByDisplayValue("Shadowy ruins of an old Dwarvern mining outpost");
+      const populatedSummaryInput = screen.getByDisplayValue(
+        "Shadowy ruins of an old Dwarvern mining outpost",
+      );
       const populatedLevelMinInput = screen.getByDisplayValue("1");
       const populatedLevelMaxInput = screen.getByDisplayValue("3");
       const populatedPlayerCountInput = screen.getByDisplayValue("4");
@@ -129,13 +139,24 @@ describe("Dungeon Form", () => {
     render(<DungeonForm onSubmitCallback={submitSpy} />);
 
     const nameInput = screen.getByRole("textbox", { name: "Dungeon name" });
-    const summaryInput = screen.getByRole("textbox", { name: "Dungeon summary" });
-    const levelMinInput = screen.getByRole("textbox", { name: "Dungeon Minimum Level" });
-    const levelMaxInput = screen.getByRole("textbox", { name: "Dungeon Maximum Level" });
-    const playerCountInput = screen.getByRole("textbox", { name: "Dungeon Player Count" });
+    const summaryInput = screen.getByRole("textbox", {
+      name: "Dungeon summary",
+    });
+    const levelMinInput = screen.getByRole("textbox", {
+      name: "Dungeon Minimum Level",
+    });
+    const levelMaxInput = screen.getByRole("textbox", {
+      name: "Dungeon Maximum Level",
+    });
+    const playerCountInput = screen.getByRole("textbox", {
+      name: "Dungeon Player Count",
+    });
 
     await userEvent.type(nameInput, "The Lost Ruins");
-    await userEvent.type(summaryInput, "Shadowy ruins of an old Dwarvern mining outpost");
+    await userEvent.type(
+      summaryInput,
+      "Shadowy ruins of an old Dwarvern mining outpost",
+    );
     await userEvent.type(levelMinInput, "1");
     await userEvent.type(levelMaxInput, "3");
     await userEvent.type(playerCountInput, "4");
