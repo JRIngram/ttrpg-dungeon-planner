@@ -69,8 +69,6 @@ export const RoomForm = ({
       })),
   });
 
-  console.log({ traps, monsters });
-
   const validateInputs = () => {
     let errorsPresent = false;
     const roomNameRegex = /(\w|\s){1,}/;
@@ -102,7 +100,6 @@ export const RoomForm = ({
       });
     }
 
-    console.log({ state });
     if (
       state.monsters.some(
         (monster) => !monster.monster || monster.quantity <= 0,

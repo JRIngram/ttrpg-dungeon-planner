@@ -75,10 +75,6 @@ export const ItemQuantitySelectorGroup = ({
             onClick: () => {
               if (inputRowCount !== 1) {
                 setInputRowCount(inputRowCount - 1);
-                console.log({
-                  itemQuantityPairs,
-                  u: itemQuantityPairs.slice(0, itemQuantityPairs.length - 1),
-                });
 
                 const updatedItemQuantityPairs = itemQuantityPairs.slice(
                   0,

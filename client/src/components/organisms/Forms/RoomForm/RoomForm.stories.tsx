@@ -29,14 +29,3 @@ export const Default: Story = {
     onCancelCallback: () => console.log("Cancelled"),
   },
 };
-
-// export const ExistingMonster: Story = {
-//   args: {
-//     ...Default.args,
-//     existingMonster: {
-//       id: "1",
-//       name: "Test Mob",
-//       xp: "50",
-//     },
-//   },
-// };

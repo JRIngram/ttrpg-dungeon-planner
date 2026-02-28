@@ -39,7 +39,6 @@ export const TextInput = ({
           setInputValue(event.target.value);
           onChangeCallback(event.target.value);
         }}
-        // pattern={pattern}
         title={patternMessage}
         {...(isRequired ? { required: true } : {})}
       />
