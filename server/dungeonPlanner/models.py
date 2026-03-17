@@ -81,3 +81,12 @@ class RoomTrap(models.Model):
                 fields=["room", "trap"], name="unique_room_trap"
             )
         ]
+
+class EncounterMultiplierConfigRow(models.Model):
+    """
+    Model for Encounter Multiplier Configs, 
+    which controls the multiplying of an encounter's XP based on the number of monsters
+    """
+    min = models.PositiveSmallIntegerField()
+    max = models.PositiveSmallIntegerField()
+    multiplier = models.FloatField()
