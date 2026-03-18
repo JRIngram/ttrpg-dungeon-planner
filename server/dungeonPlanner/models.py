@@ -88,5 +88,5 @@ class EncounterMultiplierConfigRow(models.Model):
     which controls the multiplying of an encounter's XP based on the number of monsters
     """
     min = models.PositiveSmallIntegerField()
-    max = models.PositiveSmallIntegerField()
+    max = models.PositiveSmallIntegerField(null=True)
     multiplier = models.FloatField()

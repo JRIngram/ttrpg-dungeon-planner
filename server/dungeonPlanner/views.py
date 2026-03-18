@@ -105,3 +105,13 @@ class EncounterMultiplierConfigRowList(generics.ListCreateAPIView):
     queryset = EncounterMultiplierConfigRow.objects.all()
     serializer_class = EncounterMultiplierConfigRowSerializer
     lookup_field = "id"
+
+class EncounterMultiplierConfigRowSingle(generics.RetrieveDestroyAPIView):
+    """
+    Defines interactions on singular traps
+
+    Allows for retrieving, updating and destroying
+    """
+    queryset = EncounterMultiplierConfigRow.objects.all()
+    serializer_class = EncounterMultiplierConfigRowSerializer
+    lookup_field = "id"

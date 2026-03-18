@@ -226,8 +226,8 @@ class EncounterMultiplierConfigRowSerializer(serializers.ModelSerializer):
     which controls the multiplying of an encounter's XP based on the number of monsters
     """
 
-    max = serializers.IntegerField(min_value=0, max_value=32767, required=True)
     min = serializers.IntegerField(min_value=0, max_value=32767, required=True)
+    max = serializers.IntegerField(min_value=0, max_value=32767, required=False, allow_null=True)
     multiplier = serializers.FloatField(required=True)
 
     class Meta:
