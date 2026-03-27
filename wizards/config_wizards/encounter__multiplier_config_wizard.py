@@ -1,4 +1,5 @@
 import questionary
+import requests
 from validators import mandatory_numerical_validator, numerical_validator
 
 def intro() -> None:
@@ -16,7 +17,7 @@ def intro() -> None:
     print("Prompting will continue until you create an entry with no max value. Once this has happened, the previously entered config will be wiped and replaced with the new config.")
     print("Please enter only numerical values.")
 
-def create_entry_row():
+def create_entry_row() -> dict[str, int | None]:
     multiplier = questionary.text("What is the multiplier for this row?", validate=mandatory_numerical_validator).ask()
     min = questionary.text("What is the minimum monster count for this multiplier?", validate=mandatory_numerical_validator).ask()
     max = handle_max()
@@ -46,8 +47,80 @@ def confirm_empty_max() -> str:
 
     return exit_confirm
 
+def build_config():
+    """
+    Builds a list of config rows, built from entry rows
+    """
+    exit_config_builder = False
+    config_rows = []
+    while exit_config_builder is False:
+        print("\n## ROW ", len(config_rows) + 1, " ##")
+        config_row = create_entry_row()
+        config_rows.append(config_row)
+        row_max = config_row.get("max")
+        if not row_max:
+            exit_config_builder = True;
+    return config_rows
+
+def confirm_deletion() -> bool:
+    selected_wizard = questionary.select(
+        "Continuing will delete existing Encounter Multiplier Configs. Are you happy to confinue?",
+        choices=["Yes", "No"]
+    ).ask()
+
+    if selected_wizard == "Yes":
+        return True
+    if selected_wizard == "No":
+        return False
+
+        
+# TODO - DO IT PROPERLY
+url = 'http://localhost:8000/dungeonPlanner/encounterMultiplierConfigRow'
+
+def handle_response_status_code(response: requests.Response):
+    """
+    Throws an error if status code is 4xx or 5xx
+    """
+    if response.ok == False:
+        print("Throwing", response.status_code,  " error for ", response.url)
+        response.raise_for_status()
+
+def get_existing_configs():
+    get_response = requests.get(url=url)
+    handle_response_status_code(get_response)
+
+    response_json = get_response.json()
+    return response_json
+
+def delete_existing_config_rows(existing_config_rows: list[dict[str, int]]):
+    print("Deleting existing config...")
+    for row in existing_config_rows:
+        url_with_delete_id = str(url) + "/" + str(row.get("id"))
+        delete_response = requests.delete(url=url_with_delete_id)
+        handle_response_status_code(delete_response)
+
+    print("Existing config deleted!")
+
+
+
+def post_config(config_row: list[dict[str, int]]):
+    print("Uploading config...")
+    for row in config_row:
+        payload = row
+        post_response = requests.post(url=url, data=payload)
+        handle_response_status_code(post_response)
+    print("Config uploaded!")
+
 def main():
     intro()
     questionary.press_any_key_to_continue().ask()
-    config_row = create_entry_row()
-    print(config_row)
+    encounter_multiplier_config_rows = build_config()
+    # TODO ADD VALIDATION
+    # i.e. ensure that there are no row conflicts
+    confirmed_deletion = confirm_deletion()
+    if confirmed_deletion is True:
+        existing_config_rows = get_existing_configs()
+        delete_existing_config_rows(existing_config_rows)
+        post_config(encounter_multiplier_config_rows)
+    else:
+        print("Config update cancelled")
