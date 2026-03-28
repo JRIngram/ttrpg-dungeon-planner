@@ -28,6 +28,10 @@ const navBarLinks = [
     title: "Traps",
     url: "/traps",
   },
+  {
+    title: "Configs",
+    url: "/configs",
+  },
 ];
 
 export default function RootLayout({
