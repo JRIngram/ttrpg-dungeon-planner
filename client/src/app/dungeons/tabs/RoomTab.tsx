@@ -8,6 +8,8 @@ import { useToastsDispatch } from "@/context/ToastContext";
 import { RoomDataFetcher } from "@/services/RoomDataFetcher.ts/RoomDataFetcher";
 import { RoomForm } from "@/components/organisms/Forms/RoomForm/RoomForm";
 import { MonsterWithQuantity } from "@/types/monster";
+import { EncounterMultiplierService } from "@/services/EncounterMultiplierService/EncounterMultiplierService";
+import { EncounterMultiplierConfigRow } from "@/types/configs";
 
 type Props = {
   selectedDungeonId?: string;
@@ -17,6 +19,7 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
   const toastDispatch = useToastsDispatch();
 
   const roomDataFetcher = new RoomDataFetcher();
+  const encounterMultiplierService = new EncounterMultiplierService();
 
   const {
     data: dungeonRooms,
@@ -31,6 +34,30 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
         : [];
     },
   });
+
+  const {
+    data: multiplierConfigRows,
+    isLoading: isLoadingMultiplierConfigRows,
+    isError: errorLoadingMultiplierConfigRows,
+  } = useQuery({
+    queryKey: ["encounter-multiplier-config"],
+    queryFn: (): Promise<EncounterMultiplierConfigRow[]> => {
+      return encounterMultiplierService.getList();
+    },
+  });
+
+  const displayMultiplierConfigRowsMessage = () => {
+    if (isLoadingMultiplierConfigRows) {
+      return <p>Loading multiplier config rows</p>;
+    } else if (errorLoadingMultiplierConfigRows) {
+      return (
+        <>
+          <p>Error loading config rows, room XP will be inaccurate.</p>
+          <p>Check the network tab for details of the failure.</p>
+        </>
+      );
+    }
+  };
 
   if (selectedDungeonId === undefined)
     return <p>Error: dungeon must be selected!</p>;
@@ -55,7 +82,7 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
           }}
         />
       </ListItemContainer>
-
+      <div>{displayMultiplierConfigRowsMessage()}</div>
       {dungeonRooms?.map((room) => {
         const stringifiedRoom = roomDataFetcher.stringifyRoomFields(room);
         if (stringifiedRoom.id === selectedRoomId) {
@@ -77,7 +104,7 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
         }
 
         if (stringifiedRoom.id !== selectedRoomId) {
-          const roomFields = formatRoomFields(room);
+          const roomFields = formatRoomFields(room, multiplierConfigRows);
 
           return (
             <ListItemContainer key={room.id}>
@@ -132,14 +159,18 @@ const ListItemContainer = ({ children }: PropsWithChildren) => {
   return <div className="border-b-2 border-primary-50 pb-4">{children}</div>;
 };
 
-const formatRoomFields = (room: Room) => {
+const formatRoomFields = (
+  room: Room,
+  multiplierConfigRows: EncounterMultiplierConfigRow[] | undefined,
+) => {
   const isSimpleField = (value: unknown): value is string | number =>
     typeof value === "string" || typeof value === "number";
 
   const simpleFields = Object.entries(room)
     .filter((e) => isSimpleField(e[1]))
+    .filter((e) => e[0] !== "id")
     .map((entry) => ({
-      fieldName: entry[0],
+      fieldName: entry[0].charAt(0).toLocaleUpperCase() + entry[0].slice(1),
       fieldValue: `${entry[1]}`,
     }));
 
@@ -167,10 +198,44 @@ const formatRoomFields = (room: Room) => {
           (accumulator, currentMonsterXp) => accumulator + currentMonsterXp,
         )
     : 0;
-  const totalXpField = {
-    fieldName: "Total Room XP",
+
+  const calculateAdjustedTotalXp = (
+    totalXp: number,
+    roomMonsters: MonsterWithQuantity[],
+  ) => {
+    if (!multiplierConfigRows) return;
+
+    const monsterCount = roomMonsters.reduce((accumulator, currentMonster) => {
+      return accumulator + currentMonster.quantity;
+    }, 0);
+
+    const getEncounterMultiplier = () =>
+      multiplierConfigRows.find(
+        (row) => monsterCount >= row.min && monsterCount <= row.max,
+      )?.multiplier ?? 1;
+
+    return totalXp * getEncounterMultiplier();
+  };
+
+  const adjustedXpByMultiplier = multiplierConfigRows
+    ? calculateAdjustedTotalXp(totalXp, room.monsters)
+    : totalXp;
+
+  const xpBeforeAdjustment = {
+    fieldName: "XP before adjustment",
     fieldValue: `${totalXp}xp`,
   };
 
-  return [simpleFields, monsterFields, trapFields, totalXpField].flat();
+  const totalXpField = {
+    fieldName: "Total Room XP",
+    fieldValue: `${adjustedXpByMultiplier}xp`,
+  };
+
+  return [
+    simpleFields,
+    monsterFields,
+    trapFields,
+    xpBeforeAdjustment,
+    totalXpField,
+  ].flat();
 };

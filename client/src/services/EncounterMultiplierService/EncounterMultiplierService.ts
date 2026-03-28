@@ -1,5 +1,4 @@
 import { EncounterMultiplierConfigRow } from "@/types/configs";
-import { Room, UpsertRoom } from "@/types/room";
 
 export class EncounterMultiplierService {
   readonly requestEndpoint: string;
@@ -18,7 +17,21 @@ export class EncounterMultiplierService {
 
   getList = async (): Promise<EncounterMultiplierConfigRow[]> => {
     const response = await fetch(this.requestEndpoint);
-    const json = await response.json();
-    return json;
+    const json = (await response.json()) as EncounterMultiplierConfigRow[];
+
+    const compareRows = (
+      a: EncounterMultiplierConfigRow,
+      b: EncounterMultiplierConfigRow,
+    ) => {
+      if (a.min < b.min) {
+        return -1;
+      } else if (a.min > b.min) {
+        return 1;
+      } else {
+        return 0;
+      }
+    };
+
+    return json.sort(compareRows);
   };
 }
