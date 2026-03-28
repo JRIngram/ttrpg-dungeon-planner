@@ -91,7 +91,6 @@ def handle_response_status_code(response: requests.Response):
         response.raise_for_status()
 
 def get_existing_configs():
-    print(URL)
     get_response = requests.get(url=URL)
     handle_response_status_code(get_response)
 
