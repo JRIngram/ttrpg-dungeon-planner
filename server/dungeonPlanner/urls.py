@@ -23,5 +23,15 @@ urlpatterns = [
         "encounterMultiplierConfigRow/<int:id>",
         views.EncounterMultiplierConfigRowSingle.as_view(),
         name="encounterMultiplierConfig"
+    ),
+    path(
+        "encounterRatingConfigRow",
+        views.EncounterRatingConfigRowList.as_view(),
+        name="encounterRatingConfig"
+    ),
+    path(
+        "encounterRatingConfigRow/<int:id>",
+        views.EncounterRatingConfigRowSingle.as_view(),
+        name="encounterRatingConfig"
     )
 ]

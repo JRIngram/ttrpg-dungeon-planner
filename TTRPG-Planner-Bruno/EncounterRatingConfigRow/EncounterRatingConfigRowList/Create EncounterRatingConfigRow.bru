@@ -1,0 +1,25 @@
+meta {
+  name: Create EncounterRatingConfigRow
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:8000/dungeonPlanner/encounterRatingConfigRow
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "level": 1,
+    "easy": 50,
+    "medium": 75,
+    "hard": 100,
+    "extreme": 125
+  }
+}
+
+settings {
+  encodeUrl: true
+}

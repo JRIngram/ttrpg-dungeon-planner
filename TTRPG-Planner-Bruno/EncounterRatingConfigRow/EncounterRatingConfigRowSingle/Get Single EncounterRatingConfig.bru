@@ -1,0 +1,15 @@
+meta {
+  name: Get Single EncounterRatingConfig
+  type: http
+  seq: 2
+}
+
+get {
+  url: http://localhost:8000/dungeonPlanner/encounterRatingConfigRow/1
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}

@@ -6,6 +6,7 @@ from rest_framework import serializers
 from dungeonPlanner.models import (
     Dungeon,
     EncounterMultiplierConfigRow,
+    EncounterRatingConfigRow,
     Monster,
     Room,
     RoomMonster,
@@ -252,3 +253,30 @@ class EncounterMultiplierConfigRowSerializer(serializers.ModelSerializer):
         """
 
         return EncounterMultiplierConfigRow.objects.create(**validated_data)
+    
+class EncounterRatingConfigRowSerializer(serializers.ModelSerializer):
+    """
+    Serializer for EncounterRatiingConfigRow model, 
+    which controls the rating of an encounter based on player levels and adjusted xp
+    """
+
+    level = serializers.IntegerField(min_value=0, max_value=32767, required=True)
+    easy = serializers.IntegerField(min_value=0, max_value=32767, required=True)
+    medium = serializers.IntegerField(min_value=0, max_value=32767, required=True)
+    hard = serializers.IntegerField(min_value=0, max_value=32767, required=True)
+    extreme = serializers.IntegerField(min_value=0, max_value=32767, required=True)
+
+    class Meta:
+        """
+        Define serializer fields
+        """
+
+        model = EncounterRatingConfigRow
+        fields = ['id', 'level', 'easy', 'medium', 'hard', 'extreme']
+
+    def create(self, validated_data):
+        """
+        Creates a EncounterMultiplierConfig from validated data
+        """
+
+        return EncounterRatingConfigRow.objects.create(**validated_data)

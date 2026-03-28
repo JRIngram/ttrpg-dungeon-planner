@@ -90,3 +90,15 @@ class EncounterMultiplierConfigRow(models.Model):
     min = models.PositiveSmallIntegerField()
     max = models.PositiveSmallIntegerField(null=True)
     multiplier = models.FloatField()
+
+class EncounterRatingConfigRow(models.Model):
+    """
+    Model for Encounter Rating Configs, 
+    which controls the rating of an encounter based on player levels and adjusted xp
+    """
+
+    level = models.PositiveSmallIntegerField()
+    easy = models.PositiveSmallIntegerField(null=True)
+    medium = models.PositiveSmallIntegerField(null=True)
+    hard = models.PositiveSmallIntegerField(null=True)
+    extreme = models.PositiveSmallIntegerField(null=True)
