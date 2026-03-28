@@ -3,7 +3,15 @@ Defines serializers for the dungeonPlanner app
 """
 
 from rest_framework import serializers
-from dungeonPlanner.models import Dungeon, Monster, Room, RoomMonster, RoomTrap, Trap, EncounterMultiplierConfigRow
+from dungeonPlanner.models import (
+    Dungeon,
+    EncounterMultiplierConfigRow,
+    Monster,
+    Room,
+    RoomMonster,
+    RoomTrap,
+    Trap
+)
 
 class DungeonSerializer(serializers.ModelSerializer):
     """

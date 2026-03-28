@@ -14,6 +14,14 @@ urlpatterns = [
     path("room/<int:id>", views.RoomSingle.as_view(), name="room"),
     path("trap", views.TrapList.as_view(), name="trap"),
     path("trap/<int:id>", views.TrapSingle.as_view(), name="trap"),
-    path("encounterMultiplierConfigRow", views.EncounterMultiplierConfigRowList.as_view(), name="encounterMultiplierConfig"),
-    path("encounterMultiplierConfigRow/<int:id>", views.EncounterMultiplierConfigRowSingle.as_view(), name="encounterMultiplierConfig")
+    path(
+        "encounterMultiplierConfigRow", 
+        views.EncounterMultiplierConfigRowList.as_view(), 
+        name="encounterMultiplierConfig"
+    ),
+    path(
+        "encounterMultiplierConfigRow/<int:id>",
+        views.EncounterMultiplierConfigRowSingle.as_view(),
+        name="encounterMultiplierConfig"
+    )
 ]
