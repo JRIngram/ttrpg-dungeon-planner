@@ -16,7 +16,7 @@ urlpatterns = [
     path("trap/<int:id>", views.TrapSingle.as_view(), name="trap"),
     path(
         "encounterMultiplierConfigRow", 
-        views.EncounterMultiplierConfigRowList.as_view(), 
+        views.EncounterMultiplierConfigRowList.as_view(),
         name="encounterMultiplierConfig"
     ),
     path(
