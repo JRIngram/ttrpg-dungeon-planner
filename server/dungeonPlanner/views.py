@@ -8,9 +8,10 @@ from dungeonPlanner.serializers import (
     DungeonSerializer,
     MonsterSerializer,
     RoomSerializer,
-    TrapSerializer
+    TrapSerializer,
+    EncounterMultiplierConfigRowSerializer,
 )
-from .models import Monster, Trap, Room, Dungeon
+from .models import Monster, Trap, Room, Dungeon, EncounterMultiplierConfigRow
 
 
 def index(request):
@@ -93,4 +94,24 @@ class TrapSingle(generics.RetrieveUpdateDestroyAPIView):
     """
     queryset = Trap.objects.all()
     serializer_class = TrapSerializer
+    lookup_field = "id"
+
+class EncounterMultiplierConfigRowList(generics.ListCreateAPIView):
+    """
+    Lists all traps, or allows the creation of a new traps
+
+    Uses generic ListCreateAPIView to handle get and post requests
+    """
+    queryset = EncounterMultiplierConfigRow.objects.all()
+    serializer_class = EncounterMultiplierConfigRowSerializer
+    lookup_field = "id"
+
+class EncounterMultiplierConfigRowSingle(generics.RetrieveDestroyAPIView):
+    """
+    Defines interactions on singular traps
+
+    Allows for retrieving, updating and destroying
+    """
+    queryset = EncounterMultiplierConfigRow.objects.all()
+    serializer_class = EncounterMultiplierConfigRowSerializer
     lookup_field = "id"

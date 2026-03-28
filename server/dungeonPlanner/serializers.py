@@ -3,7 +3,15 @@ Defines serializers for the dungeonPlanner app
 """
 
 from rest_framework import serializers
-from dungeonPlanner.models import Dungeon, Monster, Room, RoomMonster, RoomTrap, Trap
+from dungeonPlanner.models import (
+    Dungeon,
+    EncounterMultiplierConfigRow,
+    Monster,
+    Room,
+    RoomMonster,
+    RoomTrap,
+    Trap
+)
 
 class DungeonSerializer(serializers.ModelSerializer):
     """
@@ -219,3 +227,28 @@ class RoomSerializer(serializers.ModelSerializer):
                 if room_trap['trap'] == trap['id']:
                     trap['quantity'] = room_trap['quantity']
         return traps
+
+class EncounterMultiplierConfigRowSerializer(serializers.ModelSerializer):
+    """
+    Serializer for EncounterMultiplierConfigRow model, 
+    which controls the multiplying of an encounter's XP based on the number of monsters
+    """
+
+    min = serializers.IntegerField(min_value=0, max_value=32767, required=True)
+    max = serializers.IntegerField(min_value=0, max_value=32767, required=False, allow_null=True)
+    multiplier = serializers.FloatField(required=True)
+
+    class Meta:
+        """
+        Define serializer fields
+        """
+
+        model = EncounterMultiplierConfigRow
+        fields = ['id', 'min', 'max', 'multiplier']
+
+    def create(self, validated_data):
+        """
+        Creates a EncounterMultiplierConfig from validated data
+        """
+
+        return EncounterMultiplierConfigRow.objects.create(**validated_data)
