@@ -1,6 +1,15 @@
 import questionary
 import requests
+from dotenv import load_dotenv
+import os
+from string import Template
 from validators import mandatory_numerical_validator, numerical_validator
+
+load_dotenv()
+
+SERVER_HOST = os.getenv('SERVER_HOST')
+SERVER_PORT = os.getenv('SERVER_PORT')
+URL = f"http://{SERVER_HOST}:{SERVER_PORT}/dungeonPlanner/encounterMultiplierConfigRow"
 
 def intro() -> None:
     """
@@ -21,7 +30,7 @@ def create_entry_row() -> dict[str, int | None]:
     multiplier = questionary.text("What is the multiplier for this row?", validate=mandatory_numerical_validator).ask()
     min = questionary.text("What is the minimum monster count for this multiplier?", validate=mandatory_numerical_validator).ask()
     max = handle_max()
-    config_row = {"min": min, "max": max, "multiplier": multiplier}
+    config_row = {"min": int(min), "max": int(max) if max is not "" else None, "multiplier": float(multiplier)}
     return config_row
 
 def handle_max() -> str:
@@ -54,7 +63,7 @@ def build_config():
     exit_config_builder = False
     config_rows = []
     while exit_config_builder is False:
-        print("\n## ROW ", len(config_rows) + 1, " ##")
+        print(f"\n## ROW {len(config_rows) + 1} ##")
         config_row = create_entry_row()
         config_rows.append(config_row)
         row_max = config_row.get("max")
@@ -73,20 +82,17 @@ def confirm_deletion() -> bool:
     if selected_wizard == "No":
         return False
 
-        
-# TODO - DO IT PROPERLY
-url = 'http://localhost:8000/dungeonPlanner/encounterMultiplierConfigRow'
-
 def handle_response_status_code(response: requests.Response):
     """
     Throws an error if status code is 4xx or 5xx
     """
     if response.ok == False:
-        print("Throwing", response.status_code,  " error for ", response.url)
+        print(f"Throwing {response.status_code} error for {response.url}")
         response.raise_for_status()
 
 def get_existing_configs():
-    get_response = requests.get(url=url)
+    print(URL)
+    get_response = requests.get(url=URL)
     handle_response_status_code(get_response)
 
     response_json = get_response.json()
@@ -95,7 +101,7 @@ def get_existing_configs():
 def delete_existing_config_rows(existing_config_rows: list[dict[str, int]]):
     print("Deleting existing config...")
     for row in existing_config_rows:
-        url_with_delete_id = str(url) + "/" + str(row.get("id"))
+        url_with_delete_id = str(URL) + "/" + str(row.get("id"))
         delete_response = requests.delete(url=url_with_delete_id)
         handle_response_status_code(delete_response)
 
@@ -106,7 +112,7 @@ def post_config(config_rows: list[dict[str, int]]):
     print("Uploading config...")
     for row in config_rows:
         payload = row
-        post_response = requests.post(url=url, data=payload)
+        post_response = requests.post(url=URL, data=payload)
         handle_response_status_code(post_response)
     print("Config uploaded!")
 
@@ -143,27 +149,29 @@ def config_has_conflicts(config_rows: list[dict[str, int]]) -> bool:
                 largest_max = row["max"]
                 largest_max_index = idx
         else:
-            largest_max = row["min"]
+            largest_max = row["max"]
             largest_max_index = idx
     
-    print("The following conflicts are present")
-    for conflict in conflict_list:
-        def format_conflict(conflict):
-            return str(conflict["min"]) + " -> " + str(conflict["max"])
-        print(format_conflict(conflict[0]), " conflicts with ", format_conflict(conflict[1]))
-
-
-    return len(conflict_list) > 0
+    conflicts_present = len(conflict_list) > 0
+    if conflicts_present:
+        print("The following conflicts are present")
+        for conflict in conflict_list:
+            def format_conflict(conflict):
+                return f"{conflict["min"]} -> {conflict["max"]}"
+            print(format_conflict(conflict[0]), " conflicts with ", format_conflict(conflict[1]))
+    return conflicts_present
 
 def main():
     intro()
     questionary.press_any_key_to_continue().ask()
     encounter_multiplier_config_rows = build_config()
     confirmed_deletion = confirm_deletion()
-    if confirmed_deletion is True:
-        existing_config_rows = get_existing_configs()
-        config_has_conflicts(existing_config_rows)
-        delete_existing_config_rows(existing_config_rows)
-        post_config(encounter_multiplier_config_rows)
+    if  config_has_conflicts(encounter_multiplier_config_rows) == False:
+        if confirmed_deletion is True:
+            existing_config_rows = get_existing_configs()
+            delete_existing_config_rows(existing_config_rows)
+            post_config(encounter_multiplier_config_rows)
+        else:
+            print("Config update cancelled")
     else:
-        print("Config update cancelled")
+        print("Aborting config update due to conflicts.")
