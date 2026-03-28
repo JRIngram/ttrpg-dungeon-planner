@@ -102,24 +102,67 @@ def delete_existing_config_rows(existing_config_rows: list[dict[str, int]]):
     print("Existing config deleted!")
 
 
-
-def post_config(config_row: list[dict[str, int]]):
+def post_config(config_rows: list[dict[str, int]]):
     print("Uploading config...")
-    for row in config_row:
+    for row in config_rows:
         payload = row
         post_response = requests.post(url=url, data=payload)
         handle_response_status_code(post_response)
     print("Config uploaded!")
 
+def config_has_conflicts(config_rows: list[dict[str, int]]) -> bool:
+    """
+    Detects conflicts in config rows and returns True if conflicts are present.
+
+    A conflict is defined as two rows affecting the same number of monsters.
+
+    e.g. Say we had two rows: 
+        - { min: 1, max: 5, multiplier: 5}
+        - { min: 2, max: 3, multiplier: 2}
+    This would class as a confllict, as a monster count of 2 and 3 are affected by two different multipliers.
+
+    The following would result in no conflicts:
+        - { min: 1, max: 1, multiplier: 5}
+        - { min: 2, max: 3, multiplier: 2}
+        - { min: 4, max: 5, multiplier: 5}
+    """
+    def sort_by_min(row):
+        return row["min"]
+    config_rows.sort(key=sort_by_min)
+    
+    conflict_list = []
+    largest_max_index = None
+    largest_max = None
+
+    for idx, row in enumerate(config_rows):
+        if idx != 0:
+            if row["min"] <= largest_max:
+                conflict_list.append([config_rows[idx], config_rows[largest_max_index]])
+
+            if row["max"] is not None and row["max"] > largest_max:
+                largest_max = row["max"]
+                largest_max_index = idx
+        else:
+            largest_max = row["min"]
+            largest_max_index = idx
+    
+    print("The following conflicts are present")
+    for conflict in conflict_list:
+        def format_conflict(conflict):
+            return str(conflict["min"]) + " -> " + str(conflict["max"])
+        print(format_conflict(conflict[0]), " conflicts with ", format_conflict(conflict[1]))
+
+
+    return len(conflict_list) > 0
+
 def main():
     intro()
     questionary.press_any_key_to_continue().ask()
     encounter_multiplier_config_rows = build_config()
-    # TODO ADD VALIDATION
-    # i.e. ensure that there are no row conflicts
     confirmed_deletion = confirm_deletion()
     if confirmed_deletion is True:
         existing_config_rows = get_existing_configs()
+        config_has_conflicts(existing_config_rows)
         delete_existing_config_rows(existing_config_rows)
         post_config(encounter_multiplier_config_rows)
     else:

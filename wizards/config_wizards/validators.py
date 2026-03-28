@@ -4,7 +4,7 @@ def numerical_validator(answer: str):
     """
     Checks that an answer contains only numerical characters
     """
-    if re.search("^[0-9]*$", answer) is None:
+    if re.search("^[0-9.]*$", answer) is None:
         return "Please enter numerical values only."
     return True
 
