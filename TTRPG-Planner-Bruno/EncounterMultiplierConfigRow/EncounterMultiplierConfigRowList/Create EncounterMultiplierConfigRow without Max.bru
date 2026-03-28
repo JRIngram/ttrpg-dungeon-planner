@@ -1,0 +1,22 @@
+meta {
+  name: Create EncounterMultiplierConfigRow without Max
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://localhost:8000/dungeonPlanner/encounterMultiplierConfigRow
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "min": 1,
+    "multiplier": 5
+  }
+}
+
+settings {
+  encodeUrl: true
+}
