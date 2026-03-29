@@ -12,7 +12,14 @@ from dungeonPlanner.serializers import (
     EncounterMultiplierConfigRowSerializer,
     EncounterRatingConfigRowSerializer
 )
-from .models import Monster, Trap, Room, Dungeon, EncounterMultiplierConfigRow, EncounterRatingConfigRow
+from .models import (
+    Dungeon, 
+    EncounterMultiplierConfigRow, 
+    EncounterRatingConfigRow,
+    Monster, 
+    Room, 
+    Trap, 
+)
 
 
 def index(request):
@@ -99,7 +106,8 @@ class TrapSingle(generics.RetrieveUpdateDestroyAPIView):
 
 class EncounterMultiplierConfigRowList(generics.ListCreateAPIView):
     """
-    Lists all EncounterMultiplierConfigRow, or allows the creation of a new EncounterMultiplierConfigRow
+    Lists all EncounterMultiplierConfigRow, 
+    or allows the creation of a new EncounterMultiplierConfigRow
 
     Uses generic ListCreateAPIView to handle get and post requests
     """
@@ -121,7 +129,8 @@ class EncounterMultiplierConfigRowSingle(generics.RetrieveDestroyAPIView):
 
 class EncounterRatingConfigRowList(generics.ListCreateAPIView):
     """
-    Lists all EncounterRatingConfigRow, or allows the creation of a new EncounterRatingConfigRow
+    Lists all EncounterRatingConfigRow, 
+    or allows the creation of a new EncounterRatingConfigRow
 
     Uses generic ListCreateAPIView to handle get and post requests
     """

@@ -253,7 +253,7 @@ class EncounterMultiplierConfigRowSerializer(serializers.ModelSerializer):
         """
 
         return EncounterMultiplierConfigRow.objects.create(**validated_data)
-    
+
 class EncounterRatingConfigRowSerializer(serializers.ModelSerializer):
     """
     Serializer for EncounterRatiingConfigRow model, 
