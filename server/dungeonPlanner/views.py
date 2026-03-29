@@ -13,17 +13,20 @@ from dungeonPlanner.serializers import (
     EncounterRatingConfigRowSerializer
 )
 from .models import (
-    Dungeon, 
-    EncounterMultiplierConfigRow, 
+    Dungeon,
+    EncounterMultiplierConfigRow,
     EncounterRatingConfigRow,
-    Monster, 
-    Room, 
+    Monster,
+    Room,
     Trap, 
 )
 
 
 def index(request):
     """
+    Defines interactions on singular room
+
+    Allows for retrieving, updating and d
     Defines the index for the dungeon app
     """
     return HttpResponse("Hello world!")
@@ -32,6 +35,9 @@ class DungeonList(generics.ListCreateAPIView):
     """
     Lists all dungeons, or allows the creation of a new dungeons
 
+    Defines interactions on singular room
+
+    Allows for retrieving, updating and d
     Uses generic ListCreateAPIView to handle get and post requests
     """
     queryset = Dungeon.objects.all()
