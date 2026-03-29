@@ -18,7 +18,7 @@ from .models import (
     EncounterRatingConfigRow,
     Monster,
     Room,
-    Trap, 
+    Trap,
 )
 
 
