@@ -14,10 +14,13 @@ import {
   EncounterRatingConfigRow,
 } from "@/types/configs";
 import { EncounterRatingService } from "@/services/EncounterRatingService/EncounterRatingService";
+import { Dungeon } from "@/types/dungeon";
+
 type Props = {
-  selectedDungeonId?: string;
+  selectedDungeon?: Dungeon;
 };
-export const RoomTab = ({ selectedDungeonId }: Props) => {
+
+export const RoomTab = ({ selectedDungeon }: Props) => {
   const [selectedRoomId, setSelectedRoomId] = useState<string>();
   const toastDispatch = useToastsDispatch();
 
@@ -31,10 +34,10 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
     isError: errorLoadingDungeonRooms,
     refetch,
   } = useQuery({
-    queryKey: [`dungeon-${selectedDungeonId}-room-list`],
+    queryKey: [`dungeon-${selectedDungeon?.id}-room-list`],
     queryFn: (): Promise<Room[]> | [] => {
-      return selectedDungeonId
-        ? roomDataFetcher.getListForDungeon(selectedDungeonId)
+      return selectedDungeon
+        ? roomDataFetcher.getListForDungeon(selectedDungeon?.id)
         : [];
     },
   });
@@ -92,7 +95,7 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
     }
   };
 
-  if (selectedDungeonId === undefined)
+  if (selectedDungeon === undefined)
     return <p>Error: dungeon must be selected!</p>;
 
   if (isLoadingDungeonRooms) {
@@ -106,7 +109,7 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
       <ListItemContainer>
         <p>Create a new room or edit an existing one below</p>
         <RoomForm
-          dungeonId={selectedDungeonId}
+          dungeonId={selectedDungeon.id}
           onCancelCallback={() => {
             return;
           }}
@@ -125,7 +128,7 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
           return (
             <ListItemContainer key={room.id}>
               <RoomForm
-                dungeonId={selectedDungeonId}
+                dungeonId={selectedDungeon.id}
                 onCancelCallback={() => {
                   setSelectedRoomId("");
                   return;

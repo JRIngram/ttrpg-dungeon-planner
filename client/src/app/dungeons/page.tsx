@@ -81,7 +81,7 @@ export default function Dungeon() {
               />
             ) : (
               <>
-                <RoomTab selectedDungeonId={selectedDungeonId} />
+                <RoomTab selectedDungeon={selectedDungeon} />
               </>
             )}
           </div>
