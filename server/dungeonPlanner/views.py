@@ -10,12 +10,23 @@ from dungeonPlanner.serializers import (
     RoomSerializer,
     TrapSerializer,
     EncounterMultiplierConfigRowSerializer,
+    EncounterRatingConfigRowSerializer
 )
-from .models import Monster, Trap, Room, Dungeon, EncounterMultiplierConfigRow
+from .models import (
+    Dungeon,
+    EncounterMultiplierConfigRow,
+    EncounterRatingConfigRow,
+    Monster,
+    Room,
+    Trap,
+)
 
 
 def index(request):
     """
+    Defines interactions on singular room
+
+    Allows for retrieving, updating and d
     Defines the index for the dungeon app
     """
     return HttpResponse("Hello world!")
@@ -24,6 +35,9 @@ class DungeonList(generics.ListCreateAPIView):
     """
     Lists all dungeons, or allows the creation of a new dungeons
 
+    Defines interactions on singular room
+
+    Allows for retrieving, updating and d
     Uses generic ListCreateAPIView to handle get and post requests
     """
     queryset = Dungeon.objects.all()
@@ -98,7 +112,8 @@ class TrapSingle(generics.RetrieveUpdateDestroyAPIView):
 
 class EncounterMultiplierConfigRowList(generics.ListCreateAPIView):
     """
-    Lists all traps, or allows the creation of a new traps
+    Lists all EncounterMultiplierConfigRow, 
+    or allows the creation of a new EncounterMultiplierConfigRow
 
     Uses generic ListCreateAPIView to handle get and post requests
     """
@@ -108,10 +123,33 @@ class EncounterMultiplierConfigRowList(generics.ListCreateAPIView):
 
 class EncounterMultiplierConfigRowSingle(generics.RetrieveDestroyAPIView):
     """
-    Defines interactions on singular traps
+    Defines interactions on singular EncounterMultiplierConfigRow
 
     Allows for retrieving, updating and destroying
     """
     queryset = EncounterMultiplierConfigRow.objects.all()
     serializer_class = EncounterMultiplierConfigRowSerializer
+    lookup_field = "id"
+
+# EncounterRatingConfigRowSerializer
+
+class EncounterRatingConfigRowList(generics.ListCreateAPIView):
+    """
+    Lists all EncounterRatingConfigRow, 
+    or allows the creation of a new EncounterRatingConfigRow
+
+    Uses generic ListCreateAPIView to handle get and post requests
+    """
+    queryset = EncounterRatingConfigRow.objects.all()
+    serializer_class = EncounterRatingConfigRowSerializer
+    lookup_field = "id"
+
+class EncounterRatingConfigRowSingle(generics.RetrieveDestroyAPIView):
+    """
+    Defines interactions on singular EncounterRatingConfigRow
+
+    Allows for retrieving, updating and destroying
+    """
+    queryset = EncounterRatingConfigRow.objects.all()
+    serializer_class = EncounterRatingConfigRowSerializer
     lookup_field = "id"

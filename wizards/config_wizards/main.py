@@ -1,4 +1,5 @@
-from encounter__multiplier_config_wizard import main
+from encounter__multiplier_config_wizard import main as encounter_multiplier_main
+from encounter_rating_config_wizard import main as encounter_rating_main
 
 import questionary
 
@@ -11,6 +12,6 @@ selected_wizard = questionary.select(
 ).ask()
 
 if selected_wizard == encounter_multiplier_wizard:
-    main()
+    encounter_multiplier_main()
 if selected_wizard == encounter_rating_wizard:
-    print("Still to be built...")
+    encounter_rating_main()

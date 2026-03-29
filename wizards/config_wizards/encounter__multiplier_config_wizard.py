@@ -25,6 +25,7 @@ def intro() -> None:
     print("For example, { min: 2, max: 4, multiplier: 2}, means that if there are 2 - 4 monsters (inclusive) in an encounter, then the overall xp for that encounter will be multiplied by 2.")
     print("Prompting will continue until you create an entry with no max value. Once this has happened, the previously entered config will be wiped and replaced with the new config.")
     print("Please enter only numerical values.")
+    print("\f")
 
 def create_entry_row() -> dict[str, int | None]:
     multiplier = questionary.text("What is the multiplier for this row?", validate=mandatory_numerical_validator).ask()

@@ -12,36 +12,36 @@ jobs:
       run:
         working-directory: ./client
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
-      with:
-        node-version: 18
-    - run: npm i
-    - run: npm run prettier
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm i
+      - run: npm run prettier
   lint:
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: ./client
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
-      with:
-        node-version: 18
-    - run: npm i
-    - run: npm run lint
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm i
+      - run: npm run lint
   unit-test:
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: ./client
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
-      with:
-        node-version: 18
-    - run: npm i
-    - run: npm run test
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm i
+      - run: npm run test
   build:
     needs: [formatting, lint, unit-test]
     runs-on: ubuntu-latest
@@ -49,10 +49,10 @@ jobs:
       run:
         working-directory: ./client
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
-      with:
-        node-version: 18
-    - run: npm i
-    - run: npm run tailwind:build
-    - run: npm run build
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm i
+      - run: npm run tailwind:build
+      - run: npm run build
