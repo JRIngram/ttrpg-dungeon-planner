@@ -9,8 +9,11 @@ import { RoomDataFetcher } from "@/services/RoomDataFetcher.ts/RoomDataFetcher";
 import { RoomForm } from "@/components/organisms/Forms/RoomForm/RoomForm";
 import { MonsterWithQuantity } from "@/types/monster";
 import { EncounterMultiplierService } from "@/services/EncounterMultiplierService/EncounterMultiplierService";
-import { EncounterMultiplierConfigRow } from "@/types/configs";
-
+import {
+  EncounterMultiplierConfigRow,
+  EncounterRatingConfigRow,
+} from "@/types/configs";
+import { EncounterRatingService } from "@/services/EncounterRatingService/EncounterRatingService";
 type Props = {
   selectedDungeonId?: string;
 };
@@ -20,6 +23,7 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
 
   const roomDataFetcher = new RoomDataFetcher();
   const encounterMultiplierService = new EncounterMultiplierService();
+  const encounterRatingService = new EncounterRatingService();
 
   const {
     data: dungeonRooms,
@@ -46,13 +50,42 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
     },
   });
 
+  const {
+    data: encounterRatingConfigRows,
+    isLoading: isLoadingEncounterRatingConfigRows,
+    isError: errorLoadingEncounterRatingConfigRows,
+  } = useQuery({
+    queryKey: ["encounter-rating-config"],
+    queryFn: (): Promise<EncounterRatingConfigRow[]> => {
+      return encounterRatingService.getList();
+    },
+  });
+
   const displayMultiplierConfigRowsMessage = () => {
     if (isLoadingMultiplierConfigRows) {
       return <p>Loading multiplier config rows</p>;
     } else if (errorLoadingMultiplierConfigRows) {
       return (
         <>
-          <p>Error loading config rows, room XP will be inaccurate.</p>
+          <p>
+            Error loading multiplier config rows, room XP will be inaccurate.
+          </p>
+          <p>Check the network tab for details of the failure.</p>
+        </>
+      );
+    }
+  };
+
+  const displayEncounterRatingConfigRows = () => {
+    if (isLoadingEncounterRatingConfigRows) {
+      return <p>Loading encounter rating config rows</p>;
+    } else if (errorLoadingEncounterRatingConfigRows) {
+      return (
+        <>
+          <p>
+            Error loading encounter rating config rows; room encounter rating
+            will not be available.
+          </p>
           <p>Check the network tab for details of the failure.</p>
         </>
       );
@@ -82,7 +115,10 @@ export const RoomTab = ({ selectedDungeonId }: Props) => {
           }}
         />
       </ListItemContainer>
-      <div>{displayMultiplierConfigRowsMessage()}</div>
+      <div>
+        {displayMultiplierConfigRowsMessage()}
+        {displayEncounterRatingConfigRows()}
+      </div>
       {dungeonRooms?.map((room) => {
         const stringifiedRoom = roomDataFetcher.stringifyRoomFields(room);
         if (stringifiedRoom.id === selectedRoomId) {

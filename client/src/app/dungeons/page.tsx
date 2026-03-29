@@ -1,7 +1,7 @@
 "use client";
 import { NavDrawer } from "@/components/molecules/NavDrawer/NavDrawer";
 import { ToastList } from "@/components/organisms/ToastList/ToastList";
-import type { Dungeon as DungeonType } from "@/types/dungeon";
+import { type Dungeon as DungeonType } from "@/types/dungeon";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { useToasts, useToastsDispatch } from "@/context/ToastContext";
@@ -15,12 +15,15 @@ type PageTabs = "Dungeon" | "Rooms";
 export default function Dungeon() {
   const [openPageTab, setOpenPageTab] = useState<PageTabs>("Dungeon");
   const [selectedDungeonId, setSelectedDungeonId] = useState<string>();
+  const [selectedDungeon, setSelectedDungeon] = useState<
+    DungeonType | undefined
+  >();
   const toasts = useToasts();
   const TabOptions: PageTabs[] = ["Dungeon", "Rooms"];
   const dungeonDataFetcher = new DungeonDataFetcher();
 
   const {
-    data,
+    data: dungeons,
     isLoading: isLoadingDungeons,
     isError: errorLoadingDungeons,
     refetch,
@@ -31,16 +34,10 @@ export default function Dungeon() {
     },
   });
 
-  const dungeons = data?.map((dungeon) => ({
+  const navBarDungeons = dungeons?.map((dungeon) => ({
     label: dungeon.name,
     id: dungeon.id,
   }));
-
-  const getSelectedDungeon = (
-    dungeonList: DungeonType[],
-    selectedId?: string,
-  ): DungeonType | undefined =>
-    dungeonList?.find((dungeon) => dungeon.id === selectedId);
 
   const defaultNavDrawerLabel = isLoadingDungeons
     ? "Loading"
@@ -48,15 +45,15 @@ export default function Dungeon() {
       ? "Error"
       : "+ Create a new dungeon";
 
-  const pageTitle = selectedDungeonId
-    ? getSelectedDungeon(data ?? [], selectedDungeonId)?.name
-    : "Dungeon";
+  const pageTitle = selectedDungeon?.name ?? "Dungeon";
 
   return (
     <div className="flex">
       <NavDrawer
-        items={dungeons ?? []}
+        items={navBarDungeons ?? []}
         onSelect={(id) => {
+          const dungeon = dungeons?.find((dungeon) => dungeon.id === id);
+          setSelectedDungeon(dungeon);
           setSelectedDungeonId(id);
         }}
         defaultItem={{
@@ -78,10 +75,7 @@ export default function Dungeon() {
             <p className="text-lg font-semibold">{pageTitle}</p>
             {openPageTab === "Dungeon" ? (
               <DungeonTab
-                selectedDungeon={getSelectedDungeon(
-                  data ?? [],
-                  selectedDungeonId,
-                )}
+                selectedDungeon={selectedDungeon}
                 refetchDungeonCallback={() => refetch()}
                 setSelectedDungeonCallback={setSelectedDungeonId}
               />
