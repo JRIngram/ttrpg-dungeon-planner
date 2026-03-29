@@ -143,7 +143,12 @@ export const RoomTab = ({ selectedDungeon }: Props) => {
         }
 
         if (stringifiedRoom.id !== selectedRoomId) {
-          const roomFields = formatRoomFields(room, multiplierConfigRows);
+          const roomFields = formatRoomFields(
+            room,
+            selectedDungeon,
+            multiplierConfigRows,
+            encounterRatingConfigRows,
+          );
 
           return (
             <ListItemContainer key={room.id}>
@@ -200,7 +205,9 @@ const ListItemContainer = ({ children }: PropsWithChildren) => {
 
 const formatRoomFields = (
   room: Room,
+  selectedDungeon: Dungeon,
   multiplierConfigRows: EncounterMultiplierConfigRow[] | undefined,
+  ratingConfigRows: EncounterRatingConfigRow[] | undefined,
 ) => {
   const isSimpleField = (value: unknown): value is string | number =>
     typeof value === "string" || typeof value === "number";
@@ -215,6 +222,73 @@ const formatRoomFields = (
 
   const calculateTotalMonsterXp = (monster: MonsterWithQuantity) =>
     monster.xp ? parseInt(monster.xp) * monster.quantity : -1;
+
+  const calculateAdjustedTotalXp = (
+    totalXp: number,
+    roomMonsters: MonsterWithQuantity[],
+  ) => {
+    if (!multiplierConfigRows) return;
+
+    const monsterCount = roomMonsters.reduce((accumulator, currentMonster) => {
+      return accumulator + currentMonster.quantity;
+    }, 0);
+
+    const getEncounterMultiplier = () =>
+      multiplierConfigRows.find(
+        (row) => monsterCount >= row.min && monsterCount <= row.max,
+      )?.multiplier ?? 1;
+
+    return totalXp * getEncounterMultiplier();
+  };
+
+  const calculateRoomRatings = (
+    adjustedXp: number,
+    levelMin: number,
+    levelMax: number,
+    roomRatingConfig: EncounterRatingConfigRow[] | undefined,
+  ) => {
+    if (roomRatingConfig === undefined)
+      return [
+        { fieldName: "Room Ratings", fieldValue: "No room rating config" },
+      ];
+
+    const minPlayerLevel = levelMin;
+    const maxPlayerLevel = levelMax;
+    const meanPlayLevel = (levelMin + levelMax) / 2;
+
+    const roomRatingForLevel = (level: number, encounterXp: number): string => {
+      const ratingForLevel = roomRatingConfig.find(
+        (rating) => rating.level === level,
+      );
+
+      if (ratingForLevel === undefined) return "No rating for level";
+
+      const { easy, medium, hard, extreme } = ratingForLevel;
+
+      if (encounterXp < easy) return "Trivial";
+      if (encounterXp >= easy && encounterXp < medium) return "Easy";
+      if (encounterXp >= medium && encounterXp < hard) return "Medium";
+      if (encounterXp >= hard && encounterXp < extreme) return "Hard";
+      if (encounterXp >= extreme) return "Extreme";
+
+      return "Error calculating rating. No matching Rating.";
+    };
+
+    return [
+      {
+        fieldName: "Min Level Rating",
+        fieldValue: roomRatingForLevel(minPlayerLevel, adjustedXp),
+      },
+      {
+        fieldName: "Average Level Rating",
+        fieldValue: roomRatingForLevel(meanPlayLevel, adjustedXp),
+      },
+      {
+        fieldName: "Max Level Rating",
+        fieldValue: roomRatingForLevel(maxPlayerLevel, adjustedXp),
+      },
+    ];
+  };
 
   const monsterFields = room.monsters?.map((monster) => {
     return {
@@ -238,26 +312,13 @@ const formatRoomFields = (
         )
     : 0;
 
-  const calculateAdjustedTotalXp = (
-    totalXp: number,
-    roomMonsters: MonsterWithQuantity[],
-  ) => {
-    if (!multiplierConfigRows) return;
+  const adjustedXpByMultiplier = calculateAdjustedTotalXp(
+    totalXp,
+    room.monsters,
+  );
 
-    const monsterCount = roomMonsters.reduce((accumulator, currentMonster) => {
-      return accumulator + currentMonster.quantity;
-    }, 0);
-
-    const getEncounterMultiplier = () =>
-      multiplierConfigRows.find(
-        (row) => monsterCount >= row.min && monsterCount <= row.max,
-      )?.multiplier ?? 1;
-
-    return totalXp * getEncounterMultiplier();
-  };
-
-  const adjustedXpByMultiplier = multiplierConfigRows
-    ? calculateAdjustedTotalXp(totalXp, room.monsters)
+  const totalAdjustedXp = adjustedXpByMultiplier
+    ? adjustedXpByMultiplier
     : totalXp;
 
   const xpBeforeAdjustment = {
@@ -267,7 +328,7 @@ const formatRoomFields = (
 
   const totalXpField = {
     fieldName: "Total Room XP",
-    fieldValue: `${adjustedXpByMultiplier}xp`,
+    fieldValue: `${totalAdjustedXp}xp`,
   };
 
   return [
@@ -276,5 +337,11 @@ const formatRoomFields = (
     trapFields,
     xpBeforeAdjustment,
     totalXpField,
+    ...calculateRoomRatings(
+      totalAdjustedXp,
+      selectedDungeon.levelMin,
+      selectedDungeon.levelMax,
+      ratingConfigRows,
+    ),
   ].flat();
 };
