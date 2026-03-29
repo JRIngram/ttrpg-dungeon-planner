@@ -1,0 +1,15 @@
+meta {
+  name: Delete EncounterRatingConfigRow
+  type: http
+  seq: 1
+}
+
+delete {
+  url: http://localhost:8000/dungeonPlanner/encounterRatingConfigRow/1
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}
