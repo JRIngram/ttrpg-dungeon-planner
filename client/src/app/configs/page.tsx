@@ -15,7 +15,7 @@ export default function Configs() {
         <p className="mb-4">
           Instead, updating these are performed by &quot;wizards&quot;.
         </p>
-        <p>
+        <p className="mb-4">
           Configs are prepopulated with data upon creation of the server, to
           ensure that the application can run out of the box. However the data
           is limited and so it is recommended to use the wizards before
