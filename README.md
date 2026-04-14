@@ -48,6 +48,80 @@ python3 manage.py runserver
 1. Run `npm run tailwind:build`
 2. Run `npm run dev` for a non-production build and `NEXT_DEBUG=true npm run build && npm run start` for a production build.
 
+## API Endpoints
+
+The server provides the following main API endpoints:
+
+### Dungeon Endpoints
+- `GET /dungeon` - List all dungeons
+- `POST /dungeon` - Create a new dungeon
+- `GET /dungeon/<id>` - Get a specific dungeon
+- `PUT /dungeon/<id>` - Update a dungeon
+- `DELETE /dungeon/<id>` - Delete a dungeon
+- `GET /dungeon/<id>/export/json` - Export a dungeon as JSON with all rooms, monsters, and traps
+
+### Room Endpoints
+- `GET /room` - List all rooms
+- `POST /room` - Create a new room
+- `GET /room/<id>` - Get a specific room
+- `PUT /room/<id>` - Update a room
+- `DELETE /room/<id>` - Delete a room
+
+### Monster Endpoints
+- `GET /monster` - List all monsters
+- `POST /monster` - Create a new monster
+- `GET /monster/<id>` - Get a specific monster
+- `PUT /monster/<id>` - Update a monster
+- `DELETE /monster/<id>` - Delete a monster
+
+### Trap Endpoints
+- `GET /trap` - List all traps
+- `POST /trap` - Create a new trap
+- `GET /trap/<id>` - Get a specific trap
+- `PUT /trap/<id>` - Update a trap
+- `DELETE /trap/<id>` - Delete a trap
+
+### JSON Export Format
+
+The `/dungeon/<id>/export/json` endpoint returns a comprehensive JSON structure:
+
+```json
+{
+  "dungeon": {
+    "id": 1,
+    "name": "Dungeon Name",
+    "summary": "Dungeon description",
+    "level_min": 1,
+    "level_max": 5,
+    "player_count": 4
+  },
+  "rooms": [
+    {
+      "id": 1,
+      "name": "Room Name",
+      "description": "Room description",
+      "dungeon": 1,
+      "monsters": [
+        {
+          "id": 1,
+          "name": "Goblin",
+          "xp": 50,
+          "quantity": 3
+        }
+      ],
+      "traps": [
+        {
+          "id": 1,
+          "name": "Pit Trap",
+          "effect": "1d6 damage",
+          "quantity": 1
+        }
+      ]
+    }
+  ]
+}
+```
+
 ## Tests
 
 ### Server

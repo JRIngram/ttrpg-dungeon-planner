@@ -6,6 +6,8 @@ import type { Dungeon } from "@/types/dungeon";
 import { DungeonDataFetcher } from "@/services/DungeonDataFetcher/DungeonDataFetcher";
 import { useToastsDispatch } from "@/context/ToastContext";
 import { DungeonForm } from "@/components/organisms/Forms/DungeonForm/DungeonForm";
+import { Button } from "@/components/atoms/Button/Button";
+import { DungeonExporter } from "@/services/DungeonExporter/DungeonExporter";
 
 type Props = {
   selectedDungeon?: Dungeon;
@@ -67,7 +69,7 @@ export const DungeonTab = ({
               {
                 text: "Edit",
                 onClick: () => setIsEditing(true),
-                variant: "secondaryOutline",
+                variant: "primaryFilled",
               },
               {
                 text: "Delete",
@@ -95,9 +97,39 @@ export const DungeonTab = ({
                     });
                   }
                 },
-                variant: "tertiaryOutline",
+                variant: "primaryOutline",
                 // Dungeons will always be deletable as they're the root data type.
                 disabled: false,
+              },
+            ]}
+          />
+          <ButtonRow
+            buttons={[
+              {
+                text: "Export JSON",
+                onClick: async () => {
+                  const isSuccessfulExport =
+                    await new DungeonExporter().exportJson(selectedDungeon.id);
+
+                  if (isSuccessfulExport) {
+                    toastDispatch({
+                      type: "add",
+                      toast: {
+                        type: ToastType.SUCCESS,
+                        message: `JSON Export Successful`,
+                      },
+                    });
+                  } else {
+                    toastDispatch({
+                      type: "add",
+                      toast: {
+                        type: ToastType.WARNING,
+                        message: "Could not export JSON",
+                      },
+                    });
+                  }
+                },
+                variant: "secondaryOutline",
               },
             ]}
           />
