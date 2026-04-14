@@ -3,6 +3,7 @@ Defines the views for the dungeon planner app
 """
 from django.http import HttpResponse
 from rest_framework import generics
+from rest_framework.response import Response
 
 from dungeonPlanner.serializers import (
     DungeonSerializer,
@@ -153,3 +154,47 @@ class EncounterRatingConfigRowSingle(generics.RetrieveDestroyAPIView):
     queryset = EncounterRatingConfigRow.objects.all()
     serializer_class = EncounterRatingConfigRowSerializer
     lookup_field = "id"
+
+class DungeonExportJSON(generics.RetrieveAPIView):
+    """
+    Exports a dungeon as JSON including all rooms, monsters, and traps
+    """
+    queryset = Dungeon.objects.all()
+    serializer_class = DungeonSerializer
+    lookup_field = "id"
+
+    def get_serializer_class(self):
+        """
+        Use a custom serializer for JSON export that includes nested data
+        """
+        return DungeonSerializer
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        Custom retrieve method to include rooms with their monsters and traps
+        """
+        instance = self.get_object()
+        
+        # Get all rooms for this dungeon with prefetched monsters and traps
+        rooms = Room.objects.filter(dungeon=instance).prefetch_related(
+            'monsters', 'traps', 
+            'roommonster_set__monster', 
+            'roomtrap_set__trap'
+        )
+        
+        # Serialize the dungeon
+        dungeon_data = DungeonSerializer(instance).data
+        
+        # Serialize rooms with their monsters and traps
+        rooms_data = []
+        for room in rooms:
+            room_serializer = RoomSerializer(room)
+            rooms_data.append(room_serializer.data)
+        
+        # Combine all data
+        export_data = {
+            'dungeon': dungeon_data,
+            'rooms': rooms_data
+        }
+        
+        return Response(export_data)
