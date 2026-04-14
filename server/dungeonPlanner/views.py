@@ -3,8 +3,6 @@ Defines the views for the dungeon planner app
 """
 from django.http import HttpResponse, JsonResponse
 from rest_framework import generics
-from rest_framework.response import Response
-import json
 
 from dungeonPlanner.serializers import (
     DungeonSerializer,
