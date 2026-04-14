@@ -8,8 +8,8 @@ from . import views
 urlpatterns = [
     path("dungeon", views.DungeonList.as_view(), name="dungeon"),
     path("dungeon/<int:id>", views.DungeonSingle.as_view(), name="dungeon"),
-    path("dungeon/<int:id>/export/json", 
-         views.DungeonExportJSON.as_view(), 
+    path("dungeon/<int:id>/export/json",
+         views.DungeonExportJSON.as_view(),
          name="dungeon-export-json"
     ),
 

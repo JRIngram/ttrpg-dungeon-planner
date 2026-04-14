@@ -173,23 +173,23 @@ class DungeonExportJSON(generics.RetrieveAPIView):
         Custom retrieve method to include rooms with their monsters and traps
         """
         instance = self.get_object()
-        
+
         # Get all rooms for this dungeon with prefetched monsters and traps
         rooms = Room.objects.filter(dungeon=instance).prefetch_related(
-            'monsters', 'traps', 
-            'roommonster_set__monster', 
+            'monsters', 'traps',
+            'roommonster_set__monster',
             'roomtrap_set__trap'
         )
-        
+
         # Serialize the dungeon
         dungeon_data = DungeonSerializer(instance).data
-        
+
         # Serialize rooms with their monsters and traps
         rooms_data = []
         for room in rooms:
             room_serializer = RoomSerializer(room)
             rooms_data.append(room_serializer.data)
-        
+
         # Combine all data
         export_data = {
             'dungeon': dungeon_data,
@@ -198,5 +198,5 @@ class DungeonExportJSON(generics.RetrieveAPIView):
 
         response = JsonResponse(export_data)
         response['Content-Disposition'] = f'attachment; filename="{dungeon_data["name"]}.json"'
-        
+
         return response

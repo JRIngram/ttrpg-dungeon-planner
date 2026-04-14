@@ -3,9 +3,7 @@ Defines Django tests for the dungeonPlanner app
 """
 
 from django.test import TestCase
-from django.urls import reverse
-from rest_framework.test import APIClient
-from dungeonPlanner.models import Monster, Dungeon, Room, Trap, RoomMonster, RoomTrap
+from dungeonPlanner.models import Monster
 
 class MonsterTestCase(TestCase):
     """
