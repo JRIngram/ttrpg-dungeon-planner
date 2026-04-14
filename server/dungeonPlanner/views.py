@@ -1,9 +1,10 @@
 """
 Defines the views for the dungeon planner app
 """
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from rest_framework import generics
 from rest_framework.response import Response
+import json
 
 from dungeonPlanner.serializers import (
     DungeonSerializer,
@@ -196,5 +197,8 @@ class DungeonExportJSON(generics.RetrieveAPIView):
             'dungeon': dungeon_data,
             'rooms': rooms_data
         }
+
+        response = JsonResponse(export_data)
+        response['Content-Disposition'] = f'attachment; filename="{dungeon_data["name"]}.json"'
         
-        return Response(export_data)
+        return response
