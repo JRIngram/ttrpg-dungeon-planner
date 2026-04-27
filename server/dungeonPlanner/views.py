@@ -3,6 +3,7 @@ Defines the views for the dungeon planner app
 """
 from django.http import HttpResponse, JsonResponse
 from rest_framework import generics
+import copy
 
 from dungeonPlanner.serializers import (
     DungeonSerializer,
@@ -209,6 +210,8 @@ class DungeonExportMarkdown(generics.RetrieveAPIView):
         markdown_string = ""
         dungeon_header = dungeon_json["header"]
         dungeon_rooms = dungeon_json["rooms"];
+        monster_set = set()
+        trap_set = set()
 
         dungeon_header = f"# {dungeon_header["name"]}" \
         "\n## Summary" \
@@ -217,7 +220,6 @@ class DungeonExportMarkdown(generics.RetrieveAPIView):
 
         room_strings = ["\n## Rooms"]
         for room in dungeon_rooms:
-            print("r", room)
             room_markdown = ""
             room_header = f"\n### {room["name"]}" \
             f"\n{room["description"]}"
@@ -228,14 +230,31 @@ class DungeonExportMarkdown(generics.RetrieveAPIView):
             trap_strings = ["\n\nThe room contains the following traps:"] 
             for trap in traps:
                 trap_strings.append(f"- {trap["quantity"]} {trap["name"]}s")
+
+                # Copy trap to set for later use in appendicies generation
+                # Remove quantity to allow for accurate de-duping
+                trap_copy = copy.deepcopy(trap)
+                trap_copy.pop('quantity') 
+
+
+                # Frozen set ensures the trap is immutable and thus hashable, which allows adding to set
+                trap_set.add(frozenset(trap_copy.items())) 
             trap_markdown = "\n".join(trap_strings)
 
             monster_strings = ["\n\nThe room contains the following monsters:"] 
             raw_total_xp = 0
             for monster in monsters:
                 monster_quantity = monster["quantity"]
-                monster_strings.append(f"- {monster["quantity"]} {monster["name"]}s.")
+                monster_strings.append(f"- {monster["quantity"]} {monster["name"]}s")
                 raw_total_xp = raw_total_xp + (monster["xp"]*monster_quantity)
+
+                # Copy monster to set for later use in appendicies generation
+                # Remove quantity to allow for accurate de-duping
+                monster_copy = copy.deepcopy(monster)
+                monster_copy.pop('quantity') 
+
+                # Frozen set ensures the trap is immutable and thus hashable, which allows adding to set
+                monster_set.add(frozenset(monster_copy.items()))
             monster_strings.append(f"Total monster XP: {raw_total_xp}xp")
 
             monster_markdown = "\n".join(monster_strings)
@@ -245,7 +264,25 @@ class DungeonExportMarkdown(generics.RetrieveAPIView):
             room_strings.append(room_markdown)
         joined_room_strings = "\n".join(room_strings)
 
-        markdown_string = markdown_string + dungeon_header + joined_room_strings
+        appendicies = ["\n\n## Appendicies"]
+        monster_appendix = ["\n### Monsters"]
+        print(trap_set)
+        for monster in monster_set:
+            unfrozen_monster = dict(monster)
+            monster_appendix.append(f"- {unfrozen_monster["name"]} - {unfrozen_monster["xp"]}")
+        monster_appendix_markdown = "\n".join(monster_appendix)
+        appendicies.append(monster_appendix_markdown)
+
+        trap_appendix = ["\n### Traps"]
+        for trap in trap_set:
+            unfrozen_trap = dict(trap)
+            trap_appendix.append(f"- {unfrozen_trap["name"]} - {unfrozen_trap["effect"]}")
+        trap_appendix_markdown = "\n".join(trap_appendix)
+        appendicies.append(trap_appendix_markdown)
+
+        appendicies_markdown = "\n".join(appendicies)
+
+        markdown_string = markdown_string + dungeon_header + joined_room_strings + appendicies_markdown
 
         return markdown_string
 
