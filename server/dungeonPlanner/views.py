@@ -217,24 +217,23 @@ class DungeonExportMarkdown(generics.RetrieveAPIView):
         else:
             first_config = multiplier_configs.first()
             return total_xp * first_config.multiplier
-
+    
     """
-    Builds the markdown string to export
+    Builds the headeer section of the markdown. Summary information about the dungeon.
     """
-    def build_markdown_string(self, dungeon_json):
-        print("printing dungeon_json:")
-        print(dungeon_json)
-        markdown_string = ""
+    def build_dungeon_header(self, dungeon_json):
         dungeon_header = dungeon_json["header"]
+        dungeon_header_markdown = f"# {dungeon_header["name"]}" \
+            "\n## Summary" \
+            f"\n{dungeon_header["summary"]}" \
+            f"\nFor {dungeon_header["player_count"]} player characters levels {dungeon_header["level_min"]} - {dungeon_header["level_max"]}.\n"
+        return dungeon_header_markdown
+
+    """
+    Builds the markdown for the rooms of the dungeon
+    """
+    def build_room_markdown(self, dungeon_json):
         dungeon_rooms = dungeon_json["rooms"];
-        monster_set = set()
-        trap_set = set()
-
-        dungeon_header = f"# {dungeon_header["name"]}" \
-        "\n## Summary" \
-        f"\n{dungeon_header["summary"]}" \
-        f"\nFor {dungeon_header["player_count"]} player characters levels {dungeon_header["level_min"]} - {dungeon_header["level_max"]}.\n"
-
         room_strings = ["\n## Rooms"]
         for room in dungeon_rooms:
             room_markdown = ""
@@ -247,14 +246,6 @@ class DungeonExportMarkdown(generics.RetrieveAPIView):
             trap_strings = ["\n\nThe room contains the following traps:"] 
             for trap in traps:
                 trap_strings.append(f"- {trap["quantity"]} {trap["name"]}s")
-
-                # Copy trap to set for later use in appendicies generation
-                # Remove quantity to allow for accurate de-duping
-                trap_copy = copy.deepcopy(trap)
-                trap_copy.pop('quantity') 
-
-                # Frozen set ensures the trap is immutable and thus hashable, which allows adding to set
-                trap_set.add(frozenset(trap_copy.items())) 
             trap_markdown = "\n".join(trap_strings)
 
             monster_strings = ["\n\nThe room contains the following monsters:"] 
@@ -263,14 +254,6 @@ class DungeonExportMarkdown(generics.RetrieveAPIView):
                 monster_quantity = monster["quantity"]
                 monster_strings.append(f"- {monster["quantity"]} {monster["name"]}s")
                 raw_total_xp = raw_total_xp + (monster["xp"]*monster_quantity)
-
-                # Copy monster to set for later use in appendicies generation
-                # Remove quantity to allow for accurate de-duping
-                monster_copy = copy.deepcopy(monster)
-                monster_copy.pop('quantity') 
-
-                # Frozen set ensures the trap is immutable and thus hashable, which allows adding to set
-                monster_set.add(frozenset(monster_copy.items()))
             monster_strings.append(f"Total monster XP: raw: {raw_total_xp}xp / adjusted {self.multiply_room_xp(raw_total_xp, len(monsters))}xp")
 
             monster_markdown = "\n".join(monster_strings)
@@ -279,23 +262,68 @@ class DungeonExportMarkdown(generics.RetrieveAPIView):
 
             room_strings.append(room_markdown)
         joined_room_strings = "\n".join(room_strings)
+        return joined_room_strings
 
+    """
+    Builds appendicies information: summary information about monsters and traps included within the dungeon
+    """
+    def build_appendicies_markdown(self, dungeon_json):
+        monster_set = set()
+        trap_set = set()
+        rooms = dungeon_json["rooms"]
         appendicies = ["\n\n## Appendicies"]
+
+        for room in rooms:
+            traps = room["traps"]
+            monsters = room["monsters"]
+
+            for trap in traps:
+                # Copy trap to set for later use in appendicies generation
+                # Remove quantity to allow for accurate de-duping
+                trap_copy = copy.deepcopy(trap)
+                trap_copy.pop('quantity') 
+
+                # Frozen set ensures the trap is immutable and thus hashable, which allows adding to set
+                trap_set.add(frozenset(trap_copy.items())) 
+
+            for monster in monsters:
+                # Copy monster to set for later use in appendicies generation
+                # Remove quantity to allow for accurate de-duping
+                monster_copy = copy.deepcopy(monster)
+                monster_copy.pop('quantity') 
+
+                # Frozen set ensures the trap is immutable and thus hashable, which allows adding to set
+                monster_set.add(frozenset(monster_copy.items()))
+
+
         monster_appendix = ["\n### Monsters"]
         for monster in monster_set:
             unfrozen_monster = dict(monster)
-            monster_appendix.append(f"- {unfrozen_monster["name"]} - {unfrozen_monster["xp"]}")
+            monster_appendix.append(f"- {unfrozen_monster["name"]} - {unfrozen_monster["xp"]}xp")
         monster_appendix_markdown = "\n".join(monster_appendix)
         appendicies.append(monster_appendix_markdown)
 
         trap_appendix = ["\n### Traps"]
         for trap in trap_set:
             unfrozen_trap = dict(trap)
-            trap_appendix.append(f"- {unfrozen_trap["name"]} - {unfrozen_trap["effect"]}")
+            trap_appendix.append(f"- {unfrozen_trap["name"]}: {unfrozen_trap["effect"]}")
         trap_appendix_markdown = "\n".join(trap_appendix)
         appendicies.append(trap_appendix_markdown)
 
         appendicies_markdown = "\n".join(appendicies)
+        
+        return appendicies_markdown
+
+    """
+    Builds the markdown string to export
+    """
+    def build_markdown_string(self, dungeon_json):
+        markdown_string = ""
+        dungeon_rooms = dungeon_json["rooms"];
+
+        dungeon_header = self.build_dungeon_header(dungeon_json)
+        joined_room_strings = self.build_room_markdown(dungeon_json)
+        appendicies_markdown = self.build_appendicies_markdown(dungeon_json)
 
         markdown_string = markdown_string + dungeon_header + joined_room_strings + appendicies_markdown
 
