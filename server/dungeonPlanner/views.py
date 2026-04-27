@@ -208,16 +208,44 @@ class DungeonExportMarkdown(generics.RetrieveAPIView):
         print(dungeon_json)
         markdown_string = ""
         dungeon_header = dungeon_json["header"]
-        print("now header")
-        print(dungeon_header)
+        dungeon_rooms = dungeon_json["rooms"];
 
         dungeon_header = f"# {dungeon_header["name"]}" \
         "\n## Summary" \
         f"\n{dungeon_header["summary"]}" \
-        f"\nFor {dungeon_header["player_count"]} player characters levels {dungeon_header["level_min"]} - {dungeon_header["level_max"]}."
+        f"\nFor {dungeon_header["player_count"]} player characters levels {dungeon_header["level_min"]} - {dungeon_header["level_max"]}.\n"
 
-        markdown_string = markdown_string + dungeon_header
+        room_strings = ["\n## Rooms"]
+        for room in dungeon_rooms:
+            print("r", room)
+            room_markdown = ""
+            room_header = f"\n### {room["name"]}" \
+            f"\n{room["description"]}"
 
+            traps = room["traps"]
+            monsters = room["monsters"]
+
+            trap_strings = ["\n\nThe room contains the following traps:"] 
+            for trap in traps:
+                trap_strings.append(f"- {trap["quantity"]} {trap["name"]}s")
+            trap_markdown = "\n".join(trap_strings)
+
+            monster_strings = ["\n\nThe room contains the following monsters:"] 
+            raw_total_xp = 0
+            for monster in monsters:
+                monster_quantity = monster["quantity"]
+                monster_strings.append(f"- {monster["quantity"]} {monster["name"]}s.")
+                raw_total_xp = raw_total_xp + (monster["xp"]*monster_quantity)
+            monster_strings.append(f"Total monster XP: {raw_total_xp}xp")
+
+            monster_markdown = "\n".join(monster_strings)
+
+            room_markdown = room_markdown + room_header + trap_markdown + monster_markdown
+
+            room_strings.append(room_markdown)
+        joined_room_strings = "\n".join(room_strings)
+
+        markdown_string = markdown_string + dungeon_header + joined_room_strings
 
         return markdown_string
 
