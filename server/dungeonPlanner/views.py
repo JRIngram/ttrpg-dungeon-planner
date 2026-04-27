@@ -162,12 +162,6 @@ class DungeonExportJSON(generics.RetrieveAPIView):
     serializer_class = DungeonSerializer
     lookup_field = "id"
 
-    def get_serializer_class(self):
-        """
-        Use a custom serializer for JSON export that includes nested data
-        """
-        return DungeonSerializer
-
     def retrieve(self, request, *args, **kwargs):
         """
         Custom retrieve method to include rooms with their monsters and traps
@@ -200,3 +194,66 @@ class DungeonExportJSON(generics.RetrieveAPIView):
         response['Content-Disposition'] = f'attachment; filename="{dungeon_data["name"]}.json"'
 
         return response
+
+class DungeonExportMarkdown(generics.RetrieveAPIView):
+    """
+    Exports a dungeon as JSON including all rooms, monsters, and traps
+    """
+    queryset = Dungeon.objects.all()
+    serializer_class = DungeonSerializer
+    lookup_field = "id"
+
+    def build_markdown_string(self, dungeon_json):
+        print("printing dungeon_json:")
+        print(dungeon_json)
+        markdown_string = ""
+        dungeon_header = dungeon_json["header"]
+        print("now header")
+        print(dungeon_header)
+
+        dungeon_header = f"# {dungeon_header["name"]}" \
+        "\n## Summary" \
+        f"\n{dungeon_header["summary"]}" \
+        f"\nFor {dungeon_header["player_count"]} player characters levels {dungeon_header["level_min"]} - {dungeon_header["level_max"]}."
+
+        markdown_string = markdown_string + dungeon_header
+
+
+        return markdown_string
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        Custom retrieve method to include rooms with their monsters and traps
+        """
+        instance = self.get_object()
+
+        # Get all rooms for this dungeon with prefetched monsters and traps
+        rooms = Room.objects.filter(dungeon=instance).prefetch_related(
+            'monsters', 'traps',
+            'roommonster_set__monster',
+            'roomtrap_set__trap'
+        )
+
+        # Serialize the dungeon
+        dungeon_data = DungeonSerializer(instance).data
+
+        # Serialize rooms with their monsters and traps
+        rooms_data = []
+        for room in rooms:
+            room_serializer = RoomSerializer(room)
+            rooms_data.append(room_serializer.data)
+
+        # Combine all data
+        dungeon_and_room_data = {
+            'header': dungeon_data,
+            'rooms': rooms_data
+        }
+        
+        dungeon_markdown = self.build_markdown_string(dungeon_and_room_data)
+
+
+
+        response = JsonResponse(dungeon_and_room_data)
+        response['Content-Disposition'] = f'attachment; filename="{dungeon_data["name"]}.md"'
+
+        return HttpResponse(dungeon_markdown)

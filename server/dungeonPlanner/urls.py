@@ -12,6 +12,10 @@ urlpatterns = [
          views.DungeonExportJSON.as_view(),
          name="dungeon-export-json"
     ),
+    path("dungeon/<int:id>/export/markdown",
+         views.DungeonExportMarkdown.as_view(),
+         name="dungeon-export-markdown"
+    ),
 
     path("monster", views.MonsterList.as_view(), name="monster"),
     path("monster/<int:id>", views.MonsterSingle.as_view(), name="monster"),
