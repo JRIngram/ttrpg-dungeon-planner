@@ -204,6 +204,23 @@ class DungeonExportMarkdown(generics.RetrieveAPIView):
     serializer_class = DungeonSerializer
     lookup_field = "id"
 
+    """
+    Multipliers the XP of a room based on total xp, monster count 
+    and user generated encounter multiplier configs
+    """
+    def multiply_room_xp(self, total_xp, monster_count):
+        multiplier_configs = EncounterMultiplierConfigRow.objects.filter(min__lte=monster_count, max__gte=monster_count)
+        if multiplier_configs.count() == 0:
+            return total_xp
+        if multiplier_configs.count() != 1:
+            raise Exception("Multiple matching configs. This suggests an error when creating the configs.") 
+        else:
+            first_config = multiplier_configs.first()
+            return total_xp * first_config.multiplier
+
+    """
+    Builds the markdown string to export
+    """
     def build_markdown_string(self, dungeon_json):
         print("printing dungeon_json:")
         print(dungeon_json)
@@ -236,7 +253,6 @@ class DungeonExportMarkdown(generics.RetrieveAPIView):
                 trap_copy = copy.deepcopy(trap)
                 trap_copy.pop('quantity') 
 
-
                 # Frozen set ensures the trap is immutable and thus hashable, which allows adding to set
                 trap_set.add(frozenset(trap_copy.items())) 
             trap_markdown = "\n".join(trap_strings)
@@ -255,7 +271,7 @@ class DungeonExportMarkdown(generics.RetrieveAPIView):
 
                 # Frozen set ensures the trap is immutable and thus hashable, which allows adding to set
                 monster_set.add(frozenset(monster_copy.items()))
-            monster_strings.append(f"Total monster XP: {raw_total_xp}xp")
+            monster_strings.append(f"Total monster XP: raw: {raw_total_xp}xp / adjusted {self.multiply_room_xp(raw_total_xp, len(monsters))}xp")
 
             monster_markdown = "\n".join(monster_strings)
 
@@ -266,7 +282,6 @@ class DungeonExportMarkdown(generics.RetrieveAPIView):
 
         appendicies = ["\n\n## Appendicies"]
         monster_appendix = ["\n### Monsters"]
-        print(trap_set)
         for monster in monster_set:
             unfrozen_monster = dict(monster)
             monster_appendix.append(f"- {unfrozen_monster["name"]} - {unfrozen_monster["xp"]}")
@@ -315,8 +330,6 @@ class DungeonExportMarkdown(generics.RetrieveAPIView):
         }
         
         dungeon_markdown = self.build_markdown_string(dungeon_and_room_data)
-
-
 
         response = JsonResponse(dungeon_and_room_data)
         response['Content-Disposition'] = f'attachment; filename="{dungeon_data["name"]}.md"'
