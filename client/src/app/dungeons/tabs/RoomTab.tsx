@@ -241,6 +241,7 @@ const formatRoomFields = (
     return totalXp * getEncounterMultiplier();
   };
 
+  // TODO - fix, this should account for player count too!
   const calculateRoomRatings = (
     adjustedXp: number,
     levelMin: number,

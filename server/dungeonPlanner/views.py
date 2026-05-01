@@ -219,6 +219,58 @@ class DungeonExportMarkdown(generics.RetrieveAPIView):
             return total_xp * first_config.multiplier
     
     """
+    Provides a room rating based on passed XP, min_player_level, max_player_level and mean players
+    """
+    def get_room_rating(self, adjusted_xp, player_count, min_player_level, max_player_level):
+        mean_player_level = (min_player_level + max_player_level) / 2
+
+        min_rating_config = EncounterRatingConfigRow.objects.filter(level=min_player_level)
+        mean_rating_config = EncounterRatingConfigRow.objects.filter(level=mean_player_level)
+        max_rating_config =EncounterRatingConfigRow.objects.filter(level=max_player_level)
+
+        ratings_dict = {
+            "min_rating": self.get_rating_from_config(adjusted_xp, player_count, min_rating_config),
+            "mean_rating": self.get_rating_from_config(adjusted_xp, player_count, mean_rating_config),
+            "max_rating": self.get_rating_from_config(adjusted_xp, player_count, max_rating_config)
+        }
+        
+        return ratings_dict
+    
+    def get_xp_per_player(self, xp, player_count):
+        return xp / player_count
+    
+    """
+    Calculates which rating to return from an EncounterRatingConfig based on passed xp
+
+    Used as part of get_room_rating
+    """
+    def get_rating_from_config(self, encounter_xp, player_count, rating_config) -> str:
+        if len(rating_config) == 0:
+            return "No Config Available."
+        
+
+        first_config_entry = rating_config.first()
+        easy = first_config_entry.easy
+        medium = first_config_entry.medium
+        hard = first_config_entry.hard
+        extreme = first_config_entry.extreme
+
+        xp_per_player = self.get_xp_per_player(encounter_xp, player_count)
+
+        if xp_per_player < easy:
+            return "Trivial"
+        elif xp_per_player >= easy and xp_per_player < medium:
+            return "Easy"
+        elif xp_per_player >= medium and xp_per_player < hard:
+            return "Medium"
+        elif xp_per_player >= hard and xp_per_player < extreme:
+            return "Hard"
+        elif xp_per_player >= extreme:
+            return "Extreme"
+        else:
+            raise Exception("No matching encounter config. This suggests an error when creating the configs.") 
+    
+    """
     Builds the headeer section of the markdown. Summary information about the dungeon.
     """
     def build_dungeon_header(self, dungeon_json):
@@ -234,31 +286,46 @@ class DungeonExportMarkdown(generics.RetrieveAPIView):
     """
     def build_room_markdown(self, dungeon_json):
         dungeon_rooms = dungeon_json["rooms"];
+        dungeon_player_count = dungeon_json["header"]["player_count"]
+        dungeon_min_player_level = dungeon_json["header"]["level_min"]
+        dungeon_max_player_level = dungeon_json["header"]["level_min"]
+
         room_strings = ["\n## Rooms"]
         for room in dungeon_rooms:
             room_markdown = ""
-            room_header = f"\n### {room["name"]}" \
+            room_header = f"### {room["name"]}" \
             f"\n{room["description"]}"
 
             traps = room["traps"]
             monsters = room["monsters"]
 
-            trap_strings = ["\n\nThe room contains the following traps:"] 
+            trap_strings = ["\nThe room contains the following traps:"] 
             for trap in traps:
                 trap_strings.append(f"- {trap["quantity"]} {trap["name"]}s")
             trap_markdown = "\n".join(trap_strings)
 
-            monster_strings = ["\n\nThe room contains the following monsters:"] 
+            monster_strings = ["\nThe room contains the following monsters:"] 
             raw_total_xp = 0
             for monster in monsters:
                 monster_quantity = monster["quantity"]
                 monster_strings.append(f"- {monster["quantity"]} {monster["name"]}s")
                 raw_total_xp = raw_total_xp + (monster["xp"]*monster_quantity)
-            monster_strings.append(f"Total monster XP: raw: {raw_total_xp}xp / adjusted {self.multiply_room_xp(raw_total_xp, len(monsters))}xp")
-
             monster_markdown = "\n".join(monster_strings)
+            
+            room_xp_strings = []
+            multiplied_room_xp = self.multiply_room_xp(raw_total_xp, len(monsters))
+            xp_per_player = multiplied_room_xp / dungeon_player_count
+            encounter_rating_dict = self.get_room_rating(multiplied_room_xp, dungeon_player_count, dungeon_min_player_level, dungeon_max_player_level)
+            room_xp_strings.append(f"\nTotal monster XP: raw: {raw_total_xp}xp / adjusted {multiplied_room_xp}xp / {xp_per_player} per player character")
+            room_xp_strings.append("Room Ratings:")
+            room_xp_strings.append(f"- Min Players: {encounter_rating_dict["min_rating"]}")
+            room_xp_strings.append(f"- Mean Players: {encounter_rating_dict["mean_rating"]}")
+            room_xp_strings.append(f"- Max Players: {encounter_rating_dict["max_rating"]}")
+            room_xp_markdown = "\n".join(room_xp_strings)
 
-            room_markdown = room_markdown + room_header + trap_markdown + monster_markdown
+            room_markdown_list = [room_markdown, room_header, trap_markdown, monster_markdown, room_xp_markdown]
+
+            room_markdown = "\n".join(room_markdown_list)
 
             room_strings.append(room_markdown)
         joined_room_strings = "\n".join(room_strings)
@@ -319,7 +386,6 @@ class DungeonExportMarkdown(generics.RetrieveAPIView):
     """
     def build_markdown_string(self, dungeon_json):
         markdown_string = ""
-        dungeon_rooms = dungeon_json["rooms"];
 
         dungeon_header = self.build_dungeon_header(dungeon_json)
         joined_room_strings = self.build_room_markdown(dungeon_json)
