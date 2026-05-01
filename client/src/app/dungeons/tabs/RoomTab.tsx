@@ -241,9 +241,9 @@ const formatRoomFields = (
     return totalXp * getEncounterMultiplier();
   };
 
-  // TODO - fix, this should account for player count too!
   const calculateRoomRatings = (
     adjustedXp: number,
+    playerCount: number,
     levelMin: number,
     levelMax: number,
     roomRatingConfig: EncounterRatingConfigRow[] | undefined,
@@ -265,12 +265,13 @@ const formatRoomFields = (
       if (ratingForLevel === undefined) return "No rating for level";
 
       const { easy, medium, hard, extreme } = ratingForLevel;
+      const xpPerPlayer = adjustedXp / playerCount;
 
-      if (encounterXp < easy) return "Trivial";
-      if (encounterXp >= easy && encounterXp < medium) return "Easy";
-      if (encounterXp >= medium && encounterXp < hard) return "Medium";
-      if (encounterXp >= hard && encounterXp < extreme) return "Hard";
-      if (encounterXp >= extreme) return "Extreme";
+      if (xpPerPlayer < easy) return "Trivial";
+      if (xpPerPlayer >= easy && xpPerPlayer < medium) return "Easy";
+      if (xpPerPlayer >= medium && xpPerPlayer < hard) return "Medium";
+      if (xpPerPlayer >= hard && xpPerPlayer < extreme) return "Hard";
+      if (xpPerPlayer >= extreme) return "Extreme";
 
       return "Error calculating rating. No matching Rating.";
     };
@@ -340,6 +341,7 @@ const formatRoomFields = (
     totalXpField,
     ...calculateRoomRatings(
       totalAdjustedXp,
+      selectedDungeon.playerCount,
       selectedDungeon.levelMin,
       selectedDungeon.levelMax,
       ratingConfigRows,
