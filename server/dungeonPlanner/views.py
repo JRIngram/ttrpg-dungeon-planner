@@ -425,7 +425,7 @@ class DungeonExportMarkdown(generics.RetrieveAPIView):
         
         dungeon_markdown = self.build_markdown_string(dungeon_and_room_data)
 
-        response = JsonResponse(dungeon_and_room_data)
+        response = HttpResponse(dungeon_markdown, content_type="text/markdown")
         response['Content-Disposition'] = f'attachment; filename="{dungeon_data["name"]}.md"'
 
-        return HttpResponse(dungeon_markdown)
+        return response
