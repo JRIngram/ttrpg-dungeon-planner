@@ -3,6 +3,7 @@
 An application for planning dungeons in TTRPGs.
 
 Tech Stack:
+
 - Client: Next.js
 - Server: Python + Django
 - Database: PostgreSQL
@@ -20,31 +21,38 @@ Tech Stack:
 Change directory to the server: `cd server/`
 
 Create a .venv folder:
+
 - On macOS / Linux: `python3 -m venv .venv`
 - On Windows: `py -3 -m venv .venv`
 
 Activate the environment:
+
 - On macOS / Linux: `. .venv/bin/activate`
 - On Windows: `.venv\Scripts\activate`
 
 Install dependencies from requirements.txt:
+
 - `pip install -r requirements.txt`
 
 #### Migrations
+
 If running locally, run the database migrations: `python3 manage.py migrate`.
 
 **Note:** This happens automatically if you are running the app using docker compose.
 
 ## Running
+
 If you are running this application using docker, simply run `docker compose up`.
 
 ### Server
+
 ```bash
 cd ./server
 python3 manage.py runserver
 ```
 
 ### Client
+
 1. Run `npm run tailwind:build`
 2. Run `npm run dev` for a non-production build and `NEXT_DEBUG=true npm run build && npm run start` for a production build.
 
@@ -53,6 +61,7 @@ python3 manage.py runserver
 The server provides the following main API endpoints:
 
 ### Dungeon Endpoints
+
 - `GET /dungeon` - List all dungeons
 - `POST /dungeon` - Create a new dungeon
 - `GET /dungeon/<id>` - Get a specific dungeon
@@ -61,6 +70,7 @@ The server provides the following main API endpoints:
 - `GET /dungeon/<id>/export/json` - Export a dungeon as JSON with all rooms, monsters, and traps
 
 ### Room Endpoints
+
 - `GET /room` - List all rooms
 - `POST /room` - Create a new room
 - `GET /room/<id>` - Get a specific room
@@ -68,6 +78,7 @@ The server provides the following main API endpoints:
 - `DELETE /room/<id>` - Delete a room
 
 ### Monster Endpoints
+
 - `GET /monster` - List all monsters
 - `POST /monster` - Create a new monster
 - `GET /monster/<id>` - Get a specific monster
@@ -75,6 +86,7 @@ The server provides the following main API endpoints:
 - `DELETE /monster/<id>` - Delete a monster
 
 ### Trap Endpoints
+
 - `GET /trap` - List all traps
 - `POST /trap` - Create a new trap
 - `GET /trap/<id>` - Get a specific trap
@@ -131,10 +143,19 @@ The `/dungeon/<id>/export/json` endpoint returns a comprehensive JSON structure:
 Bruno is being used as a tool to test our HTTP end points. The bruno collection can be seen at `TTRPG-Planner-Bruno`.
 
 #### Linter
+
 To run the linter for the server run the following:
+
 ```bash
 cd server # if not already in the server directory
 pylint --rcfile=pylintrc . --recursive=true --load-plugins pylint_django dungeonPlanner
+```
+
+To run autopep8, to automatically fix formatting issues on the server, run:
+
+```bash
+cd server # if not already in the server directory
+autopep8 --in-place --aggressive --recursive --max-line-length 100 dungeonPlanner ttrpgPlanner
 ```
 
 #### Unit tests
@@ -153,6 +174,7 @@ npm run test
 ```
 
 ## Database Migrations
+
 If you want to create additional database migrations within the server, perform the following actions.
 
 Firstly, you will want to update the models within the django application. [See the documentation here](https://docs.djangoproject.com/en/5.2/topics/db/models/).

@@ -4,35 +4,34 @@ from django.db import migrations
 
 rating_prepopulated_dicts = [
     {
-      "level": 1,
-      "easy": 50,
-      "medium": 75,
-      "hard": 100,
-      "extreme": 125
+        "level": 1,
+        "easy": 50,
+        "medium": 75,
+        "hard": 100,
+        "extreme": 125
     },
     {
-      "level": 2,
-      "easy": 100,
-      "medium": 125,
-      "hard": 200,
-      "extreme": 250
+        "level": 2,
+        "easy": 100,
+        "medium": 125,
+        "hard": 200,
+        "extreme": 250
     },
     {
-      "level": 3,
-      "easy": 200,
-      "medium": 250,
-      "hard": 400,
-      "extreme": 500
+        "level": 3,
+        "easy": 200,
+        "medium": 250,
+        "hard": 400,
+        "extreme": 500
     },
     {
-      "level": 4,
-      "easy": 400,
-      "medium": 500,
-      "hard": 800,
-      "extreme": 1000
+        "level": 4,
+        "easy": 400,
+        "medium": 500,
+        "hard": 800,
+        "extreme": 1000
     },
 ]
-
 
 
 def combine_names(apps, schema_editor):
@@ -45,6 +44,7 @@ def combine_names(apps, schema_editor):
             hard=prepopulated_config["hard"],
             extreme=prepopulated_config["extreme"],
         )
+
 
 class Migration(migrations.Migration):
 

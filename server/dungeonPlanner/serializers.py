@@ -14,6 +14,7 @@ from dungeonPlanner.models import (
     Trap
 )
 
+
 class DungeonSerializer(serializers.ModelSerializer):
     """
     Serializer for the Dungeon model
@@ -34,6 +35,7 @@ class DungeonSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         return Dungeon.objects.create(**validated_data)
+
 
 class MonsterSerializer(serializers.ModelSerializer):
     """
@@ -56,6 +58,7 @@ class MonsterSerializer(serializers.ModelSerializer):
         """
 
         return Monster.objects.create(**validated_data)
+
 
 class TrapSerializer(serializers.ModelSerializer):
     """
@@ -80,21 +83,24 @@ class TrapSerializer(serializers.ModelSerializer):
 
         return Trap.objects.create(**validated_data)
 
+
 class RoomMonsterSerializer(serializers.ModelSerializer):
     """
     Serializer for the RoomMonster model
     """
     class Meta:
-        model= RoomMonster
+        model = RoomMonster
         fields = ['monster', 'quantity']
+
 
 class RoomTrapSerializer(serializers.ModelSerializer):
     """
     Serializer for the RoomTrap model
     """
     class Meta:
-        model= RoomTrap
+        model = RoomTrap
         fields = ['trap', 'quantity']
+
 
 class RoomSerializer(serializers.ModelSerializer):
     """
@@ -103,7 +109,7 @@ class RoomSerializer(serializers.ModelSerializer):
 
     name = serializers.CharField(required=True)
     description = serializers.CharField()
-    monsters = RoomMonsterSerializer(source="roommonster_set", many=True, required=False )
+    monsters = RoomMonsterSerializer(source="roommonster_set", many=True, required=False)
     traps = RoomTrapSerializer(source="roomtrap_set", many=True, required=False)
 
     class Meta:
@@ -193,7 +199,7 @@ class RoomSerializer(serializers.ModelSerializer):
 
         Used to return monster data _and_ quantity data taken from RoomMonster models
 
-        e.g. 
+        e.g.
             room_monsters   =   [{'monster': 40, 'quantity': 1}]
             monsters        =   [{'id': 40, 'name': 'Goblin', 'xp': 50}]
             return value    =   [{'id': 40, 'name': 'Goblin', 'xp': 50, 'quantity': 1}]
@@ -213,7 +219,7 @@ class RoomSerializer(serializers.ModelSerializer):
 
         Used to return trap data _and_ quantity data taken from RoomTrap models
 
-        e.g. 
+        e.g.
             room_traps    =   [{'trap': 40, 'quantity': 1}]
             traps         =   [{'id': 40, 'name': 'Hidden Pit', 'effect': '1d4 bludgeoning'}]
             return value  =   [
@@ -229,9 +235,10 @@ class RoomSerializer(serializers.ModelSerializer):
                     trap['quantity'] = room_trap['quantity']
         return traps
 
+
 class EncounterMultiplierConfigRowSerializer(serializers.ModelSerializer):
     """
-    Serializer for EncounterMultiplierConfigRow model, 
+    Serializer for EncounterMultiplierConfigRow model,
     which controls the multiplying of an encounter's XP based on the number of monsters
     """
 
@@ -254,9 +261,10 @@ class EncounterMultiplierConfigRowSerializer(serializers.ModelSerializer):
 
         return EncounterMultiplierConfigRow.objects.create(**validated_data)
 
+
 class EncounterRatingConfigRowSerializer(serializers.ModelSerializer):
     """
-    Serializer for EncounterRatiingConfigRow model, 
+    Serializer for EncounterRatiingConfigRow model,
     which controls the rating of an encounter based on player levels and adjusted xp
     """
 

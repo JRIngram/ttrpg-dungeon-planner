@@ -5,6 +5,7 @@ Defines Django tests for the dungeonPlanner app
 from django.test import TestCase
 from dungeonPlanner.models import Monster
 
+
 class MonsterTestCase(TestCase):
     """
     Tests for the monster model

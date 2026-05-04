@@ -3,12 +3,12 @@
 from django.db import migrations
 
 multiplier_prepopulated_dicts = [
-    { "min": 1, "max": 1, "multiplier": 0.5 },
-    { "min": 2, "max": 2, "multiplier": 1 },
-    { "min": 3, "max": 6, "multiplier": 1.5 },
-    { "min": 7, "max": 10, "multiplier": 2 },
-    { "min": 11, "max": 14, "multiplier": 3 }, 
-    { "min": 15, "max": None, "multiplier": 4 }, 
+    {"min": 1, "max": 1, "multiplier": 0.5},
+    {"min": 2, "max": 2, "multiplier": 1},
+    {"min": 3, "max": 6, "multiplier": 1.5},
+    {"min": 7, "max": 10, "multiplier": 2},
+    {"min": 11, "max": 14, "multiplier": 3},
+    {"min": 15, "max": None, "multiplier": 4},
 ]
 
 
@@ -20,6 +20,7 @@ def combine_names(apps, schema_editor):
             max=prepopulated_config["max"],
             multiplier=prepopulated_config["multiplier"],
         )
+
 
 class Migration(migrations.Migration):
 
