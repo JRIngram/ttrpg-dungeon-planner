@@ -15,7 +15,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Dungeon',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True,
+                 primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField()),
                 ('summary', models.CharField()),
                 ('level_min', models.IntegerField()),
@@ -26,7 +27,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Monster',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True,
+                 primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=256)),
                 ('xp', models.IntegerField()),
             ],
@@ -34,7 +36,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Trap',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True,
+                 primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=256)),
                 ('effect', models.CharField()),
             ],
@@ -42,30 +45,38 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Room',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True,
+                 primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField()),
                 ('description', models.CharField()),
-                ('dungeon', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='dungeonPlanner.dungeon')),
+                ('dungeon', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='dungeonPlanner.dungeon')),
             ],
         ),
         migrations.CreateModel(
             name='RoomMonster',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True,
+                 primary_key=True, serialize=False, verbose_name='ID')),
                 ('quantity', models.SmallIntegerField()),
-                ('monster', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='dungeonPlanner.monster')),
+                ('monster', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='dungeonPlanner.monster')),
                 ('room', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='dungeonPlanner.room')),
             ],
         ),
         migrations.AddField(
             model_name='room',
             name='monsters',
-            field=models.ManyToManyField(blank=True, through='dungeonPlanner.RoomMonster', to='dungeonPlanner.monster'),
+            field=models.ManyToManyField(
+                blank=True,
+                through='dungeonPlanner.RoomMonster',
+                to='dungeonPlanner.monster'),
         ),
         migrations.CreateModel(
             name='RoomTrap',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True,
+                 primary_key=True, serialize=False, verbose_name='ID')),
                 ('quantity', models.SmallIntegerField()),
                 ('room', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='dungeonPlanner.room')),
                 ('trap', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='dungeonPlanner.trap')),
@@ -74,11 +85,15 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='room',
             name='traps',
-            field=models.ManyToManyField(blank=True, through='dungeonPlanner.RoomTrap', to='dungeonPlanner.trap'),
+            field=models.ManyToManyField(
+                blank=True,
+                through='dungeonPlanner.RoomTrap',
+                to='dungeonPlanner.trap'),
         ),
         migrations.AddConstraint(
             model_name='roommonster',
-            constraint=models.UniqueConstraint(fields=('room', 'monster'), name='unique_room_monster'),
+            constraint=models.UniqueConstraint(
+                fields=('room', 'monster'), name='unique_room_monster'),
         ),
         migrations.AddConstraint(
             model_name='roomtrap',

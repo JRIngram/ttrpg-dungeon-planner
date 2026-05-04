@@ -11,11 +11,11 @@ urlpatterns = [
     path("dungeon/<int:id>/export/json",
          views.DungeonExportJSON.as_view(),
          name="dungeon-export-json"
-    ),
+         ),
     path("dungeon/<int:id>/export/markdown",
          views.DungeonExportMarkdown.as_view(),
          name="dungeon-export-markdown"
-    ),
+         ),
 
     path("monster", views.MonsterList.as_view(), name="monster"),
     path("monster/<int:id>", views.MonsterSingle.as_view(), name="monster"),
@@ -27,7 +27,7 @@ urlpatterns = [
     path("trap/<int:id>", views.TrapSingle.as_view(), name="trap"),
 
     path(
-        "encounterMultiplierConfigRow", 
+        "encounterMultiplierConfigRow",
         views.EncounterMultiplierConfigRowList.as_view(),
         name="encounterMultiplierConfig"
     ),

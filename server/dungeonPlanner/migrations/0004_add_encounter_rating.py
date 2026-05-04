@@ -13,7 +13,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='EncounterRatingConfigRow',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True,
+                 primary_key=True, serialize=False, verbose_name='ID')),
                 ('level', models.PositiveSmallIntegerField()),
                 ('easy', models.PositiveSmallIntegerField(null=True)),
                 ('medium', models.PositiveSmallIntegerField(null=True)),
