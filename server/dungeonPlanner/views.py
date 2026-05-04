@@ -1,9 +1,9 @@
 """
 Defines the views for the dungeon planner app
 """
+import copy
 from django.http import HttpResponse, JsonResponse
 from rest_framework import generics
-import copy
 
 from dungeonPlanner.serializers import (
     DungeonSerializer,
@@ -218,32 +218,32 @@ class DungeonExportMarkdown(generics.RetrieveAPIView):
     serializer_class = DungeonSerializer
     lookup_field = "id"
 
-    """
-    Multipliers the XP of a room based on total xp, monster count
-    and user generated encounter multiplier configs
-    """
 
     def multiply_room_xp(self, total_xp, monster_count):
+        """
+        Multiplies the XP of a room based on total xp, monster count
+        and user generated encounter multiplier configs
+        """
         multiplier_configs = EncounterMultiplierConfigRow.objects.filter(
             min__lte=monster_count,
             max__gte=monster_count
         )
+
         if multiplier_configs.count() == 0:
             return total_xp
         if multiplier_configs.count() != 1:
-            raise Exception(
+            raise LookupError(
                 "Multiple matching configs."
                 " This suggests an error when creating the configs."
             )
-        else:
-            first_config = multiplier_configs.first()
-            return total_xp * first_config.multiplier
-
-    """
-    Provides a room rating based on passed XP, min_player_level, max_player_level and mean players
-    """
+        first_config = multiplier_configs.first()
+        return total_xp * first_config.multiplier
 
     def get_room_rating(self, adjusted_xp, player_count, min_player_level, max_player_level):
+        """
+        Provides a room rating based on passed XP,
+        min_player_level, max_player_level and mean players
+        """
         mean_player_level = (min_player_level + max_player_level) / 2
 
         min_rating_config = EncounterRatingConfigRow.objects.filter(level=min_player_level)
@@ -262,15 +262,17 @@ class DungeonExportMarkdown(generics.RetrieveAPIView):
         return ratings_dict
 
     def get_xp_per_player(self, xp, player_count):
+        """
+        Returns xp divided by player count
+        """
         return xp / player_count
 
-    """
-    Calculates which rating to return from an EncounterRatingConfig based on passed xp
-
-    Used as part of get_room_rating
-    """
-
     def get_rating_from_config(self, encounter_xp, player_count, rating_config) -> str:
+        """
+        Calculates which rating to return from an EncounterRatingConfig based on passed xp
+
+        Used as part of get_room_rating
+        """
         if len(rating_config) == 0:
             return "No Config Available."
 
@@ -284,23 +286,24 @@ class DungeonExportMarkdown(generics.RetrieveAPIView):
 
         if xp_per_player < easy:
             return "Trivial"
-        elif xp_per_player >= easy and xp_per_player < medium:
+        if easy <= xp_per_player < medium:
             return "Easy"
-        elif xp_per_player >= medium and xp_per_player < hard:
+        if  medium <= xp_per_player < hard:
             return "Medium"
-        elif xp_per_player >= hard and xp_per_player < extreme:
+        if hard <= xp_per_player < extreme:
             return "Hard"
-        elif xp_per_player >= extreme:
+        if xp_per_player >= extreme:
             return "Extreme"
-        else:
-            raise Exception(
-                "No matching encounter config. This suggests an error when creating the configs.")
 
-    """
-    Builds the headeer section of the markdown. Summary information about the dungeon.
-    """
+        raise LookupError(
+            "No matching encounter config. " \
+            "This suggests an error when creating the configs."
+        )
 
     def build_dungeon_header(self, dungeon_json):
+        """
+        Builds the headeer section of the markdown. Summary information about the dungeon.
+        """
         dungeon_header = dungeon_json["header"]
         dungeon_header_markdown = f"# {dungeon_header["name"]}" \
             "\n## Summary" \
@@ -311,60 +314,43 @@ class DungeonExportMarkdown(generics.RetrieveAPIView):
             dungeon_header["level_max"]}.\n"
         return dungeon_header_markdown
 
-    """
-    Builds the markdown for the rooms of the dungeon
-    """
+    def build_trap_markdown(self, room_traps):
+        """
+        Builds a room's trap markdown from passed room_traps
+        """
+        trap_strings = ["\nThe room contains the following traps:"]
+        for trap in room_traps:
+            trap_strings.append(f"- {trap["quantity"]} {trap["name"]}s")
+        trap_markdown = "\n".join(trap_strings)
+        return trap_markdown
 
     def build_room_markdown(self, dungeon_json):
+        """
+        Builds the markdown for the rooms of the dungeon
+        """
         dungeon_rooms = dungeon_json["rooms"]
-        dungeon_player_count = dungeon_json["header"]["player_count"]
-        dungeon_min_player_level = dungeon_json["header"]["level_min"]
-        dungeon_max_player_level = dungeon_json["header"]["level_min"]
+        dungeon_header = dungeon_json["header"]
 
         room_strings = ["\n## Rooms"]
+
         for room in dungeon_rooms:
             room_markdown = ""
             room_header = f"### {room["name"]}" \
                 f"\n{room["description"]}"
 
-            traps = room["traps"]
             monsters = room["monsters"]
 
-            trap_strings = ["\nThe room contains the following traps:"]
-            for trap in traps:
-                trap_strings.append(f"- {trap["quantity"]} {trap["name"]}s")
-            trap_markdown = "\n".join(trap_strings)
-
-            monster_strings = ["\nThe room contains the following monsters:"]
-            raw_total_xp = 0
-            for monster in monsters:
-                monster_quantity = monster["quantity"]
-                monster_strings.append(f"- {monster["quantity"]} {monster["name"]}s")
-                raw_total_xp = raw_total_xp + (monster["xp"] * monster_quantity)
-            monster_markdown = "\n".join(monster_strings)
-
-            room_xp_strings = []
-            multiplied_room_xp = self.multiply_room_xp(raw_total_xp, len(monsters))
-            xp_per_player = multiplied_room_xp / dungeon_player_count
-            encounter_rating_dict = self.get_room_rating(
-                multiplied_room_xp,
-                dungeon_player_count,
-                dungeon_min_player_level,
-                dungeon_max_player_level)
-            room_xp_strings.append(
-                f"\nTotal monster XP: raw: {raw_total_xp}xp / adjusted {multiplied_room_xp}xp / {xp_per_player} per player character")
-            room_xp_strings.append("Room Ratings:")
-            room_xp_strings.append(f"- Min Players: {encounter_rating_dict["min_rating"]}")
-            room_xp_strings.append(f"- Mean Players: {encounter_rating_dict["mean_rating"]}")
-            room_xp_strings.append(f"- Max Players: {encounter_rating_dict["max_rating"]}")
-            room_xp_markdown = "\n".join(room_xp_strings)
+            trap_markdown = self.build_trap_markdown(room["traps"])
+            monster_markdown = self.build_monster_markdown(monsters)
+            room_xp_markdown = self.build_room_xp_markdown(dungeon_header, monsters)
 
             room_markdown_list = [
                 room_markdown,
                 room_header,
                 trap_markdown,
                 monster_markdown,
-                room_xp_markdown]
+                room_xp_markdown
+            ]
 
             room_markdown = "\n".join(room_markdown_list)
 
@@ -372,39 +358,95 @@ class DungeonExportMarkdown(generics.RetrieveAPIView):
         joined_room_strings = "\n".join(room_strings)
         return joined_room_strings
 
-    """
-    Builds appendicies information: summary information about monsters and traps included within the dungeon
-    """
+    def build_monster_markdown(self, monsters) -> str:
+        """
+        Builds a room's monster markdown from passed room_monsters
+        """
+        monster_strings = ["\nThe room contains the following monsters:"]
+        for monster in monsters:
+            monster_strings.append(f"- {monster["quantity"]} {monster["name"]}s")
+        monster_markdown = "\n".join(monster_strings)
+        return monster_markdown
+
+    def get_room_total_raw_xp(self, monsters) -> float:
+        """
+        Gets a room's total, adjusted, xp from the passed monster data
+        """
+        raw_total_xp = 0
+        for monster in monsters:
+            monster_quantity = monster["quantity"]
+            raw_total_xp = raw_total_xp + (monster["xp"] * monster_quantity)
+        return raw_total_xp
+
+    def build_room_xp_markdown(self, dungeon_header, monsters):
+        """
+        Builds markdown for information on a room's XP values
+        """
+        raw_total_xp = self.get_room_total_raw_xp(monsters)
+        room_xp_strings = []
+        multiplied_room_xp = self.multiply_room_xp(raw_total_xp, len(monsters))
+        encounter_rating_dict = self.get_room_rating(
+                multiplied_room_xp,
+                dungeon_header["player_count"],
+                dungeon_header["level_min"],
+                dungeon_header["level_max"])
+        xp_per_player = self.get_xp_per_player(multiplied_room_xp, dungeon_header["player_count"])
+        room_xp_strings.append(
+                f"\nTotal monster XP: raw: {raw_total_xp}xp /" \
+                f"adjusted {multiplied_room_xp}xp / {xp_per_player} per player character")
+        room_xp_strings.append("Room Ratings:")
+        room_xp_strings.append(f"- Min Players: {encounter_rating_dict["min_rating"]}")
+        room_xp_strings.append(f"- Mean Players: {encounter_rating_dict["mean_rating"]}")
+        room_xp_strings.append(f"- Max Players: {encounter_rating_dict["max_rating"]}")
+        room_xp_markdown = "\n".join(room_xp_strings)
+        return room_xp_markdown
+
+    def build_deduped_set_for_room_data(self, room_data, source_key, key_to_delete: str):
+        """
+        Creates a set from a source key in the room_data
+        Deletes key from source data to enable accurate deduping
+        """
+        new_set = set()
+        for room in room_data:
+            list_data_to_dedupe = room[source_key]
+
+            for item in list_data_to_dedupe:
+                self.add_copy_to_set(item, new_set, key_to_delete)
+        return new_set
+
+
+    def add_copy_to_set(self, item_to_copy: dict, set_to_add: set, key_to_delete: str):
+        """
+        Adds a copy to set and removes passed key_to_delete
+        to allow for accurate deduping
+
+        Frozen set ensures the item is immutable 
+        and thus hashable, which allowsadding to set
+        """
+        copied_item = copy.deepcopy(item_to_copy)
+        copied_item.pop(key_to_delete)
+        set_to_add.add(frozenset(copied_item.items()))
 
     def build_appendicies_markdown(self, dungeon_json):
-        monster_set = set()
-        trap_set = set()
+        """
+        Builds appendicies information: summary information about 
+        monsters and traps included within the dungeon
+        """
         rooms = dungeon_json["rooms"]
+        monster_set = self.build_deduped_set_for_room_data(rooms, "monsters", "quantity")
+        trap_set = self.build_deduped_set_for_room_data(rooms, "traps", "quantity")
         appendicies = ["\n\n## Appendicies"]
+        print("monster_set", monster_set)
 
-        for room in rooms:
-            traps = room["traps"]
-            monsters = room["monsters"]
+        # for room in rooms:
+        #     traps = room["traps"]
+        #     monsters = room["monsters"]
 
-            for trap in traps:
-                # Copy trap to set for later use in appendicies generation
-                # Remove quantity to allow for accurate de-duping
-                trap_copy = copy.deepcopy(trap)
-                trap_copy.pop('quantity')
+        #     for trap in traps:
+        #         self.add_copy_to_set(trap, trap_set, 'quantity')
 
-                # Frozen set ensures the trap is immutable and thus hashable, which allows
-                # adding to set
-                trap_set.add(frozenset(trap_copy.items()))
-
-            for monster in monsters:
-                # Copy monster to set for later use in appendicies generation
-                # Remove quantity to allow for accurate de-duping
-                monster_copy = copy.deepcopy(monster)
-                monster_copy.pop('quantity')
-
-                # Frozen set ensures the trap is immutable and thus hashable, which allows
-                # adding to set
-                monster_set.add(frozenset(monster_copy.items()))
+        #     for monster in monsters:
+        #         self.add_copy_to_set(monster, monster_set, 'quantity')
 
         monster_appendix = ["\n### Monsters"]
         for monster in monster_set:
@@ -424,18 +466,18 @@ class DungeonExportMarkdown(generics.RetrieveAPIView):
 
         return appendicies_markdown
 
-    """
-    Builds the markdown string to export
-    """
-
     def build_markdown_string(self, dungeon_json):
+        """
+        Builds the markdown string to export
+        """
         markdown_string = ""
 
         dungeon_header = self.build_dungeon_header(dungeon_json)
         joined_room_strings = self.build_room_markdown(dungeon_json)
         appendicies_markdown = self.build_appendicies_markdown(dungeon_json)
 
-        markdown_string = markdown_string + dungeon_header + joined_room_strings + appendicies_markdown
+        markdown_string = (markdown_string + dungeon_header
+                           + joined_room_strings + appendicies_markdown)
 
         return markdown_string
 
