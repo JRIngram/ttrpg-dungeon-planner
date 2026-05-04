@@ -131,6 +131,34 @@ export const DungeonTab = ({
                 },
                 variant: "secondaryOutline",
               },
+              {
+                text: "Export Markdown",
+                onClick: async () => {
+                  const isSuccessfulExport =
+                    await new DungeonExporter().exportMarkdown(
+                      selectedDungeon.id,
+                    );
+
+                  if (isSuccessfulExport) {
+                    toastDispatch({
+                      type: "add",
+                      toast: {
+                        type: ToastType.SUCCESS,
+                        message: `Markdown Export Successful`,
+                      },
+                    });
+                  } else {
+                    toastDispatch({
+                      type: "add",
+                      toast: {
+                        type: ToastType.WARNING,
+                        message: "Could not export Markdown",
+                      },
+                    });
+                  }
+                },
+                variant: "secondaryOutline",
+              },
             ]}
           />
         </div>

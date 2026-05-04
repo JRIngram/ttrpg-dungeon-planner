@@ -13,10 +13,19 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='EncounterMultiplierConfigRow',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('min', models.PositiveSmallIntegerField()),
-                ('max', models.PositiveSmallIntegerField(null=True)),
-                ('multiplier', models.FloatField()),
+                ('id',
+                 models.BigAutoField(
+                     auto_created=True,
+                     primary_key=True,
+                     serialize=False,
+                     verbose_name='ID')),
+                ('min',
+                 models.PositiveSmallIntegerField()),
+                ('max',
+                 models.PositiveSmallIntegerField(
+                     null=True)),
+                ('multiplier',
+                 models.FloatField()),
             ],
         ),
     ]

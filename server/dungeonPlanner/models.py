@@ -4,6 +4,7 @@ Defines the models for the dungeon planner app
 
 from django.db import models
 
+
 class Monster(models.Model):
     """
     Model for dungeon monsters
@@ -14,6 +15,7 @@ class Monster(models.Model):
     def __str__(self):
         return str(f"{self.name} - {self.xp}xp")
 
+
 class Trap(models.Model):
     """
     Model for dungeon traps
@@ -23,6 +25,7 @@ class Trap(models.Model):
 
     def __str__(self):
         return str(f"{self.name}")
+
 
 class Dungeon(models.Model):
     """
@@ -37,6 +40,7 @@ class Dungeon(models.Model):
     def __str__(self):
         return str(f"{self.name}")
 
+
 class Room(models.Model):
     """
     Model for dungeon rooms
@@ -49,6 +53,7 @@ class Room(models.Model):
 
     def __str__(self):
         return str(f"{self.name}")
+
 
 class RoomMonster(models.Model):
     """
@@ -66,6 +71,7 @@ class RoomMonster(models.Model):
             )
         ]
 
+
 class RoomTrap(models.Model):
     """
     Model for junction table for room and monsters
@@ -82,18 +88,20 @@ class RoomTrap(models.Model):
             )
         ]
 
+
 class EncounterMultiplierConfigRow(models.Model):
     """
-    Model for Encounter Multiplier Configs, 
+    Model for Encounter Multiplier Configs,
     which controls the multiplying of an encounter's XP based on the number of monsters
     """
     min = models.PositiveSmallIntegerField()
     max = models.PositiveSmallIntegerField(null=True)
     multiplier = models.FloatField()
 
+
 class EncounterRatingConfigRow(models.Model):
     """
-    Model for Encounter Rating Configs, 
+    Model for Encounter Rating Configs,
     which controls the rating of an encounter based on player levels and adjusted xp
     """
 

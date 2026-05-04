@@ -25,17 +25,27 @@ export class DungeonExporter {
 
     const response = await fetch(exportUrl);
     const isSuccessful = this.isSuccessfulHTTPCode(response.status);
-    console.log("hi");
 
     if (isSuccessful) {
       const a = document.createElement("a");
-      a.href = this.buildExportEndpoint(id, "json");
+      a.href = exportUrl;
       a.click();
     }
 
-    const a = document.createElement("a");
-    a.href = this.buildExportEndpoint(id, "json");
-    a.click();
+    return isSuccessful;
+  };
+
+  exportMarkdown = async (id: DungeonId) => {
+    const exportUrl = this.buildExportEndpoint(id, "markdown");
+
+    const response = await fetch(exportUrl);
+    const isSuccessful = this.isSuccessfulHTTPCode(response.status);
+
+    if (isSuccessful) {
+      const a = document.createElement("a");
+      a.href = exportUrl;
+      a.click();
+    }
 
     return isSuccessful;
   };

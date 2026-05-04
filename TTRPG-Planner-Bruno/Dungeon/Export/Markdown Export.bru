@@ -1,0 +1,15 @@
+meta {
+  name: Markdown Export
+  type: http
+  seq: 2
+}
+
+get {
+  url: http://localhost:8000/dungeonPlanner/dungeon/1/export/markdown
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}
