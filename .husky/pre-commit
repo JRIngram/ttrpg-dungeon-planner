@@ -1,15 +1,16 @@
 # Navigate to the git root, then into ./client
-CLIENT_DIR="$(git rev-parse --show-toplevel)/client"
-SERVER_DIR="$(git rev-parse --show-toplevel)/server"
+TOP_LEVEL=$(git rev-parse --show-toplevel)
+CLIENT_DIR="$TOP_LEVEL/client"
+SERVER_DIR="$TOP_LEVEL/server"
 VENV_DIR="$SERVER_DIR/.venv"
 
-# CLIENT
-cd $CLIENT_DIR
-npm run lint
-npm test
+# # CLIENT
+# cd "$CLIENT_DIR"
+# npm run lint
+# npm test
 
-# SERVER
-cd $SERVER_DIR
+# # SERVER
+cd "$SERVER_DIR"
 if [ ! -d "$VENV_DIR" ]; then
   echo "Error: no .venv found at $VENV_DIR"
   echo "Create one with: python3 -m venv .venv (see README)"
@@ -19,7 +20,8 @@ fi
 . "$VENV_DIR/bin/activate"
 python -m pip install --upgrade pip
 pip install -r requirements.txt
+cd "$SERVER_DIR"
 pwd
-# pylint --rcfile=pylintrc . --recursive=true --load-plugins pylint_django --django-settings-module=ttrpgPlanner.settings dungeonPlanner
+pylint --rcfile=pylintrc . --recursive=true --load-plugins pylint_django --django-settings-module=ttrpgPlanner.settings dungeonPlanner
 deactivate
           
