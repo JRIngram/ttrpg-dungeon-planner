@@ -1,0 +1,3 @@
+#!/bin/sh
+# Your pre-commit logic here
+echo "Running pre-commit checks..."
