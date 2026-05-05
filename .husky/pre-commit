@@ -1,0 +1,5 @@
+# Navigate to the git root, then into ./client
+cd "$(git rev-parse --show-toplevel)/client"
+
+npm run lint
+npm test
