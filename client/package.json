@@ -14,7 +14,7 @@
     "storybook": "storybook dev -p 6006",
     "tailwind:build": "npx tailwindcss -i ./src/app/tailwind.css -o ./src/app/tailwind-built.css",
     "tailwind:watch": "npx tailwindcss -i ./src/app/tailwind.css -o ./src/app/tailwind-built.css --watch",
-    "test": "vitest",
+    "test": "vitest run",
     "test:watch": "test --watch"
   },
   "dependencies": {
