@@ -5,9 +5,9 @@ SERVER_DIR="$TOP_LEVEL/server"
 VENV_DIR="$SERVER_DIR/.venv"
 
 # # CLIENT
-# cd "$CLIENT_DIR"
-# npm run lint
-# npm test
+cd "$CLIENT_DIR"
+npm run lint
+npm test
 
 # # SERVER
 cd "$SERVER_DIR"
