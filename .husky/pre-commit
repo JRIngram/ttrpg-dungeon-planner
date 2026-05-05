@@ -1,5 +1,8 @@
 # Navigate to the git root, then into ./client
-cd "$(git rev-parse --show-toplevel)/client"
+CLIENT_DIR="$(git rev-parse --show-toplevel)/client"
+SERVER_DIR="$(git rev-parse --show-toplevel)/server"
+VENV_DIR="$PYTHON_DIR/.venv"
 
+cd $CLIENT_DIR
 npm run lint
 npm test
