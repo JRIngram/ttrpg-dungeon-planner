@@ -8,6 +8,7 @@ import { useToastsDispatch } from "@/context/ToastContext";
 import { DungeonForm } from "@/components/organisms/Forms/DungeonForm/DungeonForm";
 import { Button } from "@/components/atoms/Button/Button";
 import { DungeonExporter } from "@/services/DungeonExporter/DungeonExporter";
+import { DungeonSummary } from "@/components/molecules/DungeonSummary/DungeonSummary";
 
 type Props = {
   selectedDungeon?: Dungeon;
@@ -54,16 +55,9 @@ export const DungeonTab = ({
         );
       }
 
-      const dungeonFields = Object.entries(selectedDungeon).map((e) => {
-        return {
-          fieldName: e[0],
-          fieldValue: `${e[1]}`,
-        };
-      });
-
       return (
         <div className="flex flex-col gap-4">
-          <FieldTextDisplayGroup fields={dungeonFields} />
+          <DungeonSummary dungeon={selectedDungeon} />
           <ButtonRow
             buttons={[
               {

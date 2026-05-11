@@ -72,7 +72,7 @@ export default function Dungeon() {
                 }}
               />
             )}
-            <p className="text-lg font-semibold">{pageTitle}</p>
+            {/* <p className="text-lg font-semibold">{pageTitle}</p> */}
             {openPageTab === "Dungeon" ? (
               <DungeonTab
                 selectedDungeon={selectedDungeon}
