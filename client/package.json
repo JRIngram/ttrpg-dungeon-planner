@@ -15,7 +15,7 @@
     "tailwind:build": "npx tailwindcss -i ./src/app/tailwind.css -o ./src/app/tailwind-built.css",
     "tailwind:watch": "npx tailwindcss -i ./src/app/tailwind.css -o ./src/app/tailwind-built.css --watch",
     "test": "vitest run",
-    "test:watch": "test --watch"
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.40.0",
