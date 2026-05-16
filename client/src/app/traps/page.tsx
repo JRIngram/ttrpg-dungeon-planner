@@ -10,6 +10,7 @@ import { useToasts, useToastsDispatch } from "@/context/ToastContext";
 import { ToastType } from "@/types/toast";
 import { Trap as TrapType } from "@/types/trap";
 import { TrapForm } from "@/components/organisms/Forms/TrapForm/TrapForm";
+import { Text } from "@/components/atoms/Text/Text";
 
 export default function Trap() {
   const [selectedTrapId, setSelectedTrapId] = useState<string>();
@@ -70,16 +71,10 @@ export default function Trap() {
             />
           );
         }
-        const trapFields = Object.entries(selectedTrap).map((e) => {
-          return {
-            fieldName: e[0],
-            fieldValue: `${e[1]}`,
-          };
-        });
 
         return (
           <div className="flex flex-col gap-4">
-            <FieldTextDisplayGroup fields={trapFields} />
+            <TrapDisplay trap={selectedTrap} />
             {!selectedTrap.isDeletable && (
               <p>This trap is in use in a dungeon and so cannot be deleted.</p>
             )}
@@ -132,10 +127,6 @@ export default function Trap() {
       ? "Error"
       : "+ Create a new trap";
 
-  const pageTitle = selectedTrapId
-    ? getSelectedTrap(data ?? [], selectedTrapId)?.name
-    : "Trap";
-
   return (
     <div className="flex">
       <NavDrawer
@@ -151,7 +142,7 @@ export default function Trap() {
       <main className="mx-auto w-3/6">
         <div className="flex flex-col gap-4">
           <div>
-            <p className="text-lg font-semibold">{pageTitle}</p>
+            {!selectedTrapId && <Text text="Trap" textType="header" />}
             {renderTrapDisplay()}
           </div>
           <ToastList toastList={toasts} />
@@ -160,3 +151,19 @@ export default function Trap() {
     </div>
   );
 }
+
+type TrapDisplayProps = {
+  trap: TrapType;
+};
+
+const TrapDisplay = ({ trap }: TrapDisplayProps) => {
+  return (
+    <>
+      <Text text={trap.name} textType="header" />
+      <Text
+        text={`Each ${trap.name} has the following effect: ${trap.effect}`}
+        textType="default"
+      />
+    </>
+  );
+};

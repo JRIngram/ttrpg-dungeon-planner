@@ -10,6 +10,7 @@ import { ToastList } from "@/components/organisms/ToastList/ToastList";
 import { useToasts, useToastsDispatch } from "@/context/ToastContext";
 import { ToastType } from "@/types/toast";
 import { MonsterForm } from "@/components/organisms/Forms/MonsterForm/MonsterForm";
+import { Text } from "@/components/atoms/Text/Text";
 
 export default function Monster() {
   const [selectedMonsterId, setSelectedMonsterId] = useState<string>();
@@ -72,16 +73,9 @@ export default function Monster() {
           );
         }
 
-        const monsterFields = Object.entries(selectedMonster).map((e) => {
-          return {
-            fieldName: e[0],
-            fieldValue: `${e[1]}`,
-          };
-        });
-
         return (
           <div className="flex flex-col gap-4">
-            <FieldTextDisplayGroup fields={monsterFields} />
+            <MonsterDisplay monster={selectedMonster} />
             {!selectedMonster.isDeletable && (
               <p>
                 This monster is in use in a dungeon and so cannot be deleted.
@@ -136,10 +130,6 @@ export default function Monster() {
       ? "Error"
       : "+ Create a new monster";
 
-  const pageTitle = selectedMonsterId
-    ? getSelectedMonster(data ?? [], selectedMonsterId)?.name
-    : "Monster";
-
   return (
     <div className="flex">
       <NavDrawer
@@ -155,7 +145,7 @@ export default function Monster() {
       <main className="mx-auto w-3/6">
         <div className="flex flex-col gap-4">
           <div>
-            <p className="text-lg font-semibold">{pageTitle}</p>
+            {!selectedMonsterId && <Text text="Monster" textType="header" />}
             {renderMonsterDisplay()}
           </div>
           <ToastList toastList={toasts} />
@@ -164,3 +154,19 @@ export default function Monster() {
     </div>
   );
 }
+
+type MonsterDisplayProps = {
+  monster: MonsterType;
+};
+
+const MonsterDisplay = ({ monster }: MonsterDisplayProps) => {
+  return (
+    <>
+      <Text text={monster.name} textType="header" />
+      <Text
+        text={`Each ${monster.name} is worth ${monster.xp}xp.`}
+        textType="default"
+      />
+    </>
+  );
+};
