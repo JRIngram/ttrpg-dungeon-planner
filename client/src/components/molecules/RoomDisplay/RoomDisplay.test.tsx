@@ -3,7 +3,16 @@ import { describe, expect, it } from "vitest";
 import { RoomDisplay } from "./RoomDisplay";
 import { RoomWithStringifiedFields } from "@/types/room";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { beforeEach } from "node:test";
+
+const mockDungeon = {
+  id: "1",
+  name: "The Temple of Davey",
+  summary:
+    "Explore the hidden ruins of the Temple of Dave, and find the hidden crystal of Daveth",
+  levelMin: 1,
+  levelMax: 5,
+  playerCount: 4,
+};
 
 const mockRoom: RoomWithStringifiedFields = {
   id: "10",
@@ -45,7 +54,7 @@ const renderRoomDisplay = () => {
   const queryClient = new QueryClient();
   render(
     <QueryClientProvider client={queryClient}>
-      {<RoomDisplay room={mockRoom} />}
+      {<RoomDisplay dungeon={mockDungeon} room={mockRoom} />}
     </QueryClientProvider>,
   );
 };

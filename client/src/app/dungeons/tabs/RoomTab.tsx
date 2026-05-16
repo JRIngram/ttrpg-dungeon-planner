@@ -144,17 +144,9 @@ export const RoomTab = ({ selectedDungeon }: Props) => {
         }
 
         if (stringifiedRoom.id !== selectedRoomId) {
-          const roomFields = formatRoomFields(
-            room,
-            selectedDungeon,
-            multiplierConfigRows,
-            encounterRatingConfigRows,
-          );
-
           return (
             <ListItemContainer key={room.id}>
-              <FieldTextDisplayGroup fields={roomFields} />
-              <RoomDisplay room={stringifiedRoom} />
+              <RoomDisplay room={stringifiedRoom} dungeon={selectedDungeon} />
               <ButtonRow
                 buttons={[
                   {

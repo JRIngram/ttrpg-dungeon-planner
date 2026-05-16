@@ -3,16 +3,15 @@ export type EncounterRating =
   | "easy"
   | "medium"
   | "hard"
-  | "extreme";
-
-type EncounterRatingOrUnavailable = EncounterRating | "unavailable";
+  | "extreme"
+  | "unavailable";
 
 type Props = {
-  rating: EncounterRatingOrUnavailable;
+  rating: EncounterRating;
 };
 
 export const EncounterRatingPill = ({ rating }: Props) => {
-  const getRatingColor = (rating: EncounterRatingOrUnavailable) => {
+  const getRatingColor = (rating: EncounterRating) => {
     if (rating === "trivial")
       return { bg: "bg-ratings-trivial", font: "text-typography-900" };
     else if (rating === "easy")

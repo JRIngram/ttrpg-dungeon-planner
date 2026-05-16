@@ -12,32 +12,106 @@ import {
 } from "@/types/configs";
 import { EncounterRatingService } from "@/services/EncounterRatingService/EncounterRatingService";
 import { MonsterWithQuantity } from "@/types/monster";
+import { Dungeon } from "@/types/dungeon";
+import {
+  EncounterRating,
+  EncounterRatingPill,
+} from "@/components/atoms/EncounterRatingPill/EncounterRatingPill";
 
 type RoomDisplayProps = {
+  dungeon: Dungeon;
   room: RoomWithStringifiedFields;
 };
 
-export const RoomDisplay = ({ room }: RoomDisplayProps) => {
-  const encounterRatingService = new EncounterRatingService();
+export const RoomDisplay = ({ dungeon, room }: RoomDisplayProps) => {
+  const encounterMultiplierService = new EncounterMultiplierService();
 
   const {
-    data: encounterRatingConfigRows,
-    isLoading: isLoadingEncounterRatingConfigRows,
-    isError: errorLoadingEncounterRatingConfigRows,
+    data: multiplierConfigRows,
+    isLoading: isLoadingMultiplierConfigRows,
+    isError: errorLoadingMultiplierConfigRows,
   } = useQuery({
-    queryKey: ["encounter-rating-config"],
-    queryFn: (): Promise<EncounterRatingConfigRow[]> => {
-      return encounterRatingService.getList();
+    queryKey: ["encounter-multiplier-config"],
+    queryFn: (): Promise<EncounterMultiplierConfigRow[]> => {
+      return encounterMultiplierService.getList();
     },
   });
 
+  const calculateTotalMonsterXp = (monster: MonsterWithQuantity) =>
+    monster.xp ? parseInt(monster.xp) * monster.quantity : -1;
+
+  const calculateAdjustedTotalXp = (
+    totalXp: number,
+    roomMonsters: MonsterWithQuantity[],
+  ) => {
+    if (!multiplierConfigRows) return 0;
+
+    const monsterCount = roomMonsters.reduce((accumulator, currentMonster) => {
+      return accumulator + currentMonster.quantity;
+    }, 0);
+
+    const getEncounterMultiplier = () =>
+      multiplierConfigRows.find(
+        (row) => monsterCount >= row.min && monsterCount <= row.max,
+      )?.multiplier ?? 1;
+
+    return totalXp * getEncounterMultiplier();
+  };
+
+  const monstersWithNumericalQuantity = room.monsters.map((monster) => ({
+    ...monster,
+    // stringify quantity
+    quantity: parseInt(monster.quantity),
+  }));
+
+  const xpPriorToAdjustment = monstersWithNumericalQuantity.reduce(
+    (accumulator, currentValue) =>
+      accumulator + calculateTotalMonsterXp(currentValue),
+    0,
+  );
+
+  const adjustedXp = calculateAdjustedTotalXp(
+    xpPriorToAdjustment,
+    monstersWithNumericalQuantity,
+  );
+
   return (
-    <div className="flex gap-4 flex-col my-4">
+    <div className="flex gap-4 flex-col my-4 px-4">
       <Text text={room.name} textType="header" />
       <Text text={room.description} textType="default" />
       <MonsterList monsters={room.monsters} />
       <TrapList traps={room.traps} />
-      <XpInformation monsters={room.monsters} />
+      <>
+        <Text text="XP Information:" textType="default"></Text>
+        <ul className="pl-4">
+          <li className="list-disc">
+            <Text
+              text={`Pre multiplier adjustment: ${xpPriorToAdjustment}xp`}
+              textType="default"
+            />
+          </li>
+          {isLoadingMultiplierConfigRows && (
+            <li className="list-disc">
+              <Text
+                text="Loading post multiplier adjustment XP..."
+                textType="default"
+              />
+            </li>
+          )}
+        </ul>
+        {!isLoadingMultiplierConfigRows && (
+          <Text
+            text={`Post multiplier adjustment: ${adjustedXp}xp`}
+            textType="default"
+          ></Text>
+        )}
+      </>
+      <RoomRatingsForLevels
+        adjustedXp={adjustedXp}
+        playerCount={dungeon.playerCount}
+        levelMin={dungeon.levelMin}
+        levelMax={dungeon.levelMax}
+      />
     </div>
   );
 };
@@ -84,95 +158,84 @@ const TrapList = ({ traps }: TrapListProps) => {
   );
 };
 
-type XpInformationProps = {
-  monsters: StringifiedRoomMonster[];
+type RoomRatingsProps = {
+  adjustedXp: number;
+  playerCount: number;
+  levelMin: number;
+  levelMax: number;
 };
 
-const XpInformation = ({ monsters }: XpInformationProps) => {
-  const encounterMultiplierService = new EncounterMultiplierService();
+const RoomRatingsForLevels = ({
+  adjustedXp,
+  playerCount,
+  levelMin,
+  levelMax,
+}: RoomRatingsProps) => {
+  const encounterRatingService = new EncounterRatingService();
 
   const {
-    data: multiplierConfigRows,
-    isLoading: isLoadingMultiplierConfigRows,
-    isError: errorLoadingMultiplierConfigRows,
+    data: encounterRatingConfigRows,
+    isLoading: encounterRatingConfigRowsLoading,
   } = useQuery({
-    queryKey: ["encounter-multiplier-config"],
-    queryFn: (): Promise<EncounterMultiplierConfigRow[]> => {
-      return encounterMultiplierService.getList();
+    queryKey: ["encounter-rating-config"],
+    queryFn: (): Promise<EncounterRatingConfigRow[]> => {
+      return encounterRatingService.getList();
     },
   });
 
-  const calculateTotalMonsterXp = (monster: MonsterWithQuantity) =>
-    monster.xp ? parseInt(monster.xp) * monster.quantity : -1;
+  const minPlayerLevel = levelMin;
+  const maxPlayerLevel = levelMax;
+  const meanPlayLevel = (levelMin + levelMax) / 2;
 
-  const calculateAdjustedTotalXp = (
-    totalXp: number,
-    roomMonsters: MonsterWithQuantity[],
-  ) => {
-    if (!multiplierConfigRows) return;
+  const roomRatingForLevel = (
+    level: number,
+    encounterXp: number,
+  ): EncounterRating => {
+    if (encounterRatingConfigRowsLoading || !encounterRatingConfigRows)
+      return "unavailable";
 
-    const monsterCount = roomMonsters.reduce((accumulator, currentMonster) => {
-      return accumulator + currentMonster.quantity;
-    }, 0);
+    const ratingForLevel = encounterRatingConfigRows.find(
+      (rating) => rating.level === level,
+    );
 
-    const getEncounterMultiplier = () =>
-      multiplierConfigRows.find(
-        (row) => monsterCount >= row.min && monsterCount <= row.max,
-      )?.multiplier ?? 1;
+    if (ratingForLevel === undefined) return "unavailable";
 
-    return totalXp * getEncounterMultiplier();
+    const { easy, medium, hard, extreme } = ratingForLevel;
+    const xpPerPlayer = encounterXp / playerCount;
+
+    if (xpPerPlayer < easy) return "trivial";
+    if (xpPerPlayer >= easy && xpPerPlayer < medium) return "easy";
+    if (xpPerPlayer >= medium && xpPerPlayer < hard) return "medium";
+    if (xpPerPlayer >= hard && xpPerPlayer < extreme) return "hard";
+    if (xpPerPlayer >= extreme) return "extreme";
+
+    return "unavailable";
   };
 
-  const monstersWithNumericalQuantity = monsters.map((monster) => ({
-    ...monster,
-    // stringify quantity
-    quantity: parseInt(monster.quantity),
-  }));
+  const ratings = [
+    {
+      field: "Min Players",
+      rating: roomRatingForLevel(minPlayerLevel, adjustedXp),
+    },
+    {
+      field: "Average Players",
+      rating: roomRatingForLevel(meanPlayLevel, adjustedXp),
+    },
+    {
+      field: "Max Players",
+      rating: roomRatingForLevel(maxPlayerLevel, adjustedXp),
+    },
+  ];
 
-  const xpPriorToAdjustment = monstersWithNumericalQuantity.reduce(
-    (accumulator, currentValue) =>
-      accumulator + calculateTotalMonsterXp(currentValue),
-    0,
-  );
+  const ratingPills = ratings.map(({ field, rating }) => (
+    <div
+      key={field}
+      className="flex flex-col justify-center items-center gap-1"
+    >
+      <Text text={field} textType="default" />
+      <EncounterRatingPill rating={rating} />
+    </div>
+  ));
 
-  return (
-    <>
-      <Text text="XP Information:" textType="default"></Text>
-      <Text
-        text={`Pre multiplier adjustment: ${xpPriorToAdjustment}xp`}
-        textType="default"
-      ></Text>
-      {isLoadingMultiplierConfigRows && (
-        <Text
-          text="Loading post multiplier adjustment XP..."
-          textType="default"
-        />
-      )}
-      {!isLoadingMultiplierConfigRows && (
-        <Text
-          text={`Post multiplier adjustment: ${calculateAdjustedTotalXp(xpPriorToAdjustment, monstersWithNumericalQuantity)}xp`}
-          textType="default"
-        ></Text>
-      )}
-    </>
-  );
+  return <div className="flex flex-row gap-8">{ratingPills}</div>;
 };
-
-// const roomRatingForLevel = (level: number, encounterXp: number): string => {
-//   const ratingForLevel = roomRatingConfig.find(
-//     (rating) => rating.level === level,
-//   );
-
-//   if (ratingForLevel === undefined) return "No rating for level";
-
-//   const { easy, medium, hard, extreme } = ratingForLevel;
-//   const xpPerPlayer = adjustedXp / playerCount;
-
-//   if (xpPerPlayer < easy) return "Trivial";
-//   if (xpPerPlayer >= easy && xpPerPlayer < medium) return "Easy";
-//   if (xpPerPlayer >= medium && xpPerPlayer < hard) return "Medium";
-//   if (xpPerPlayer >= hard && xpPerPlayer < extreme) return "Hard";
-//   if (xpPerPlayer >= extreme) return "Extreme";
-
-//   return "Error calculating rating. No matching Rating.";
-// };
