@@ -15,6 +15,7 @@ import {
 } from "@/types/configs";
 import { EncounterRatingService } from "@/services/EncounterRatingService/EncounterRatingService";
 import { Dungeon } from "@/types/dungeon";
+import { RoomDisplay } from "@/components/molecules/RoomDisplay/RoomDisplay";
 
 type Props = {
   selectedDungeon?: Dungeon;
@@ -143,16 +144,9 @@ export const RoomTab = ({ selectedDungeon }: Props) => {
         }
 
         if (stringifiedRoom.id !== selectedRoomId) {
-          const roomFields = formatRoomFields(
-            room,
-            selectedDungeon,
-            multiplierConfigRows,
-            encounterRatingConfigRows,
-          );
-
           return (
             <ListItemContainer key={room.id}>
-              <FieldTextDisplayGroup fields={roomFields} />
+              <RoomDisplay room={stringifiedRoom} dungeon={selectedDungeon} />
               <ButtonRow
                 buttons={[
                   {
