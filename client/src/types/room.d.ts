@@ -13,23 +13,27 @@ export type Room = {
   traps: TrapWithQuantity[];
 };
 
+export type StringifiedRoomMonster = {
+  id: string;
+  name: string;
+  xp: string;
+  quantity: string;
+};
+
+export type StringifiedRoomTrap = {
+  id: string;
+  name: string;
+  effect: string;
+  quantity: string;
+};
+
 export type RoomWithStringifiedFields = {
   id?: string;
   name: string;
   description: string;
   dungeon: string;
-  monsters: {
-    id: string;
-    name: string;
-    xp: string;
-    quantity: string;
-  }[];
-  traps: {
-    id: string;
-    name: string;
-    effect: string;
-    quantity: string;
-  }[];
+  monsters: StringifiedRoomMonster[];
+  traps: StringifiedRoomTrap[];
 };
 
 export type UpsertRoom = {

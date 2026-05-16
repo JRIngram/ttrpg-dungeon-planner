@@ -18,6 +18,13 @@ export const Default: Story = {
   },
 };
 
+export const subheader: Story = {
+  args: {
+    textType: "subheader",
+    text: "Hello world!",
+  },
+};
+
 export const Heading: Story = {
   args: {
     textType: "header",
