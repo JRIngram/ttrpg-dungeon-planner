@@ -15,6 +15,7 @@ import {
 } from "@/types/configs";
 import { EncounterRatingService } from "@/services/EncounterRatingService/EncounterRatingService";
 import { Dungeon } from "@/types/dungeon";
+import { RoomDisplay } from "@/components/molecules/RoomDisplay/RoomDisplay";
 
 type Props = {
   selectedDungeon?: Dungeon;
@@ -153,6 +154,7 @@ export const RoomTab = ({ selectedDungeon }: Props) => {
           return (
             <ListItemContainer key={room.id}>
               <FieldTextDisplayGroup fields={roomFields} />
+              <RoomDisplay room={stringifiedRoom} />
               <ButtonRow
                 buttons={[
                   {
