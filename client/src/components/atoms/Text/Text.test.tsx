@@ -5,7 +5,8 @@ import { Text, TextType } from "./Text";
 describe("Text", () => {
   it.each([
     { textType: "default" as TextType, expected: "text-base" },
-    { textType: "header" as TextType, expected: "text-xl" },
+    { textType: "header" as TextType, expected: "text-2xl" },
+    { textType: "subheader" as TextType, expected: "text-lg" },
   ])(
     "renders text size as $expected if textType is $textType",
     ({ expected, textType }) => {

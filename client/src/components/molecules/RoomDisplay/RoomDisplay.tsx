@@ -81,7 +81,7 @@ export const RoomDisplay = ({ dungeon, room }: RoomDisplayProps) => {
       <MonsterList monsters={room.monsters} />
       <TrapList traps={room.traps} />
       <>
-        <Text text="XP Information:" textType="default"></Text>
+        <Text text="XP Information" textType="subheader"></Text>
         <ul className="pl-4">
           <li className="list-disc">
             <Text
@@ -97,13 +97,15 @@ export const RoomDisplay = ({ dungeon, room }: RoomDisplayProps) => {
               />
             </li>
           )}
+          {!isLoadingMultiplierConfigRows && (
+            <li className="list-disc">
+              <Text
+                text={`Post multiplier adjustment: ${adjustedXp}xp`}
+                textType="default"
+              ></Text>
+            </li>
+          )}
         </ul>
-        {!isLoadingMultiplierConfigRows && (
-          <Text
-            text={`Post multiplier adjustment: ${adjustedXp}xp`}
-            textType="default"
-          ></Text>
-        )}
       </>
       <RoomRatingsForLevels
         adjustedXp={adjustedXp}
@@ -122,7 +124,7 @@ type MonsterListProps = {
 const MonsterList = ({ monsters }: MonsterListProps) => {
   return (
     <div className="flex flex-col gap-2">
-      <Text text="Contains the following monsters:" textType="default" />
+      <Text text="Monsters" textType="subheader"></Text>
       <ul className="pl-4">
         {monsters.map((monster) => {
           return (
@@ -143,7 +145,7 @@ type TrapListProps = {
 const TrapList = ({ traps }: TrapListProps) => {
   return (
     <div className="flex flex-col gap-2">
-      <Text text="Contains the following traps:" textType="default" />
+      <Text text="Traps" textType="subheader"></Text>
       <ul className="pl-4">
         {traps.map((trap) => {
           return (

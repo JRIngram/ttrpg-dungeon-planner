@@ -1,4 +1,4 @@
-export type TextType = "default" | "header";
+export type TextType = "default" | "subheader" | "header";
 
 type Props = {
   textType: TextType;
@@ -6,8 +6,12 @@ type Props = {
 };
 
 export const Text = ({ text, textType }: Props) => {
-  const fontSize = textType === "default" ? "text-base" : "text-xl";
-  const boldness = textType === "default" ? "font-normal" : "semibold";
-
-  return <p className={`${fontSize} ${boldness}`}>{text}</p>;
+  switch (textType) {
+    case "header":
+      return <p className="text-2xl bold">{text}</p>;
+    case "subheader":
+      return <p className="text-lg semibold">{text}</p>;
+    default:
+      return <p className="text-base font-normal">{text}</p>;
+  }
 };

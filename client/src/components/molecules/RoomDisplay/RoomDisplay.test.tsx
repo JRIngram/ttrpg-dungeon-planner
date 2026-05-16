@@ -185,7 +185,7 @@ describe("RoomDisplay", () => {
   it("Renders Monster information", () => {
     renderRoomDisplay();
 
-    expect(screen.getByText("Contains the following monsters:")).toBeVisible();
+    expect(screen.getByText("Monsters")).toBeVisible();
 
     mockRoom.monsters.forEach((monster) =>
       expect(
@@ -199,7 +199,7 @@ describe("RoomDisplay", () => {
   it("Renders Trap information", () => {
     renderRoomDisplay();
 
-    expect(screen.getByText("Contains the following traps:")).toBeVisible();
+    expect(screen.getByText("Traps")).toBeVisible();
 
     mockRoom.traps.forEach((trap) =>
       expect(screen.getByText(`${trap.quantity} ${trap.name}`)),
@@ -209,7 +209,7 @@ describe("RoomDisplay", () => {
   it("XpInformation", async () => {
     renderRoomDisplay();
 
-    expect(screen.getByText("XP Information:")).toBeVisible();
+    expect(screen.getByText("XP Information")).toBeVisible();
     expect(screen.getByText("Pre multiplier adjustment: 250xp")).toBeVisible();
     expect(
       screen.getByText("Loading post multiplier adjustment XP..."),
