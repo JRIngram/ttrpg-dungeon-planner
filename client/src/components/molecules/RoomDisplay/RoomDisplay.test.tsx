@@ -2,8 +2,10 @@ import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { RoomDisplay } from "./RoomDisplay";
 import { RoomWithStringifiedFields } from "@/types/room";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { beforeEach } from "node:test";
 
-export const mockRoom: RoomWithStringifiedFields = {
+const mockRoom: RoomWithStringifiedFields = {
   id: "10",
   name: "Big Boi Lair",
   description: "Big room for a big boi",
@@ -32,16 +34,32 @@ export const mockRoom: RoomWithStringifiedFields = {
   dungeon: "1",
 };
 
+// Total Room XP: 500xp
+
+// Min Level Rating: Extreme
+
+// Average Level Rating: Easy
+
+// Max Level Rating: Trivial
+const renderRoomDisplay = () => {
+  const queryClient = new QueryClient();
+  render(
+    <QueryClientProvider client={queryClient}>
+      {<RoomDisplay room={mockRoom} />}
+    </QueryClientProvider>,
+  );
+};
+
 describe("RoomDisplay", () => {
   it("Renders summary information", () => {
-    render(<RoomDisplay room={mockRoom} />);
+    renderRoomDisplay();
 
     expect(screen.getByText(mockRoom.name)).toBeVisible();
     expect(screen.getByText(mockRoom.description)).toBeVisible();
   });
 
   it("Renders Monster information", () => {
-    render(<RoomDisplay room={mockRoom} />);
+    renderRoomDisplay();
 
     expect(screen.getByText("Contains the following monsters:")).toBeVisible();
 
@@ -55,12 +73,26 @@ describe("RoomDisplay", () => {
   });
 
   it("Renders Trap information", () => {
-    render(<RoomDisplay room={mockRoom} />);
+    renderRoomDisplay();
 
     expect(screen.getByText("Contains the following traps:")).toBeVisible();
 
     mockRoom.traps.forEach((trap) =>
       expect(screen.getByText(`${trap.quantity} ${trap.name}`)),
     );
+  });
+
+  it("XpInformation", async () => {
+    renderRoomDisplay();
+
+    expect(screen.getByText("XP Information:")).toBeVisible();
+    expect(screen.getByText("Pre multiplier adjustment: 250xp")).toBeVisible();
+    expect(
+      screen.getByText("Loading post multiplier adjustment XP..."),
+    ).toBeVisible();
+
+    expect(
+      await screen.findByText("Post multiplier adjustment: 500xp"),
+    ).toBeVisible();
   });
 });
