@@ -1,8 +1,19 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import {
+  afterAll,
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
 import { RoomDisplay } from "./RoomDisplay";
 import { RoomWithStringifiedFields } from "@/types/room";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { http, HttpResponse } from "msw";
+import { setupServer } from "msw/node";
 
 const mockDungeon = {
   id: "1",
@@ -43,13 +54,101 @@ const mockRoom: RoomWithStringifiedFields = {
   dungeon: "1",
 };
 
-// Total Room XP: 500xp
+const handlers = [
+  http.get(
+    "http://127.0.0.1:8000/dungeonPlanner/encounterMultiplierConfigRow",
+    () => {
+      return HttpResponse.json([
+        {
+          id: 7,
+          min: 1,
+          max: 1,
+          multiplier: 1,
+        },
+        {
+          id: 8,
+          min: 2,
+          max: 2,
+          multiplier: 2,
+        },
+        {
+          id: 9,
+          min: 3,
+          max: 6,
+          multiplier: 2,
+        },
+        {
+          id: 10,
+          min: 7,
+          max: 10,
+          multiplier: 3,
+        },
+        {
+          id: 11,
+          min: 11,
+          max: 15,
+          multiplier: 4,
+        },
+        {
+          id: 12,
+          min: 16,
+          max: null,
+          multiplier: 5,
+        },
+      ]);
+    },
+  ),
+  http.get(
+    "http://127.0.0.1:8000/dungeonPlanner/encounterRatingConfigRow",
+    () => {
+      return HttpResponse.json([
+        {
+          id: 8,
+          level: 1,
+          easy: 50,
+          medium: 100,
+          hard: 150,
+          extreme: 200,
+        },
+        {
+          id: 9,
+          level: 2,
+          easy: 100,
+          medium: 200,
+          hard: 300,
+          extreme: 400,
+        },
+        {
+          id: 10,
+          level: 3,
+          easy: 200,
+          medium: 400,
+          hard: 600,
+          extreme: 800,
+        },
+        {
+          id: 11,
+          level: 4,
+          easy: 400,
+          medium: 800,
+          hard: 1200,
+          extreme: 1600,
+        },
+        {
+          id: 12,
+          level: 5,
+          easy: 800,
+          medium: 1600,
+          hard: 2400,
+          extreme: 3200,
+        },
+      ]);
+    },
+  ),
+];
 
-// Min Level Rating: Extreme
+const server = setupServer(...handlers);
 
-// Average Level Rating: Easy
-
-// Max Level Rating: Trivial
 const renderRoomDisplay = () => {
   const queryClient = new QueryClient();
   render(
@@ -60,6 +159,22 @@ const renderRoomDisplay = () => {
 };
 
 describe("RoomDisplay", () => {
+  beforeAll(() => {
+    server.listen();
+  });
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    vi.resetAllMocks();
+  });
+
+  afterAll(() => {
+    server.close();
+  });
+
   it("Renders summary information", () => {
     renderRoomDisplay();
 

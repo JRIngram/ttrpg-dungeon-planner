@@ -29,7 +29,6 @@ export const RoomDisplay = ({ dungeon, room }: RoomDisplayProps) => {
   const {
     data: multiplierConfigRows,
     isLoading: isLoadingMultiplierConfigRows,
-    isError: errorLoadingMultiplierConfigRows,
   } = useQuery({
     queryKey: ["encounter-multiplier-config"],
     queryFn: (): Promise<EncounterMultiplierConfigRow[]> => {
