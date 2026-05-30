@@ -8,7 +8,7 @@ Tech Stack:
 - Server: Python + Django
 - Database: PostgreSQL
 
-This project uses [semantic versioning](https://semver.org/). Our Changelog is generated from conventional commits.
+This project uses [semantic versioning](https://semver.org/). Our Changelog is generated from [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/).
 
 ## Set-up
 
