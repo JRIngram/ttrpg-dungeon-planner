@@ -13,7 +13,8 @@
     "commit": "cz",
     "commit:lint:prev": "git log -n 1 --format=%B | npx commitlint",
     "commit:lint:branch": "npx commitlint --from=$(git merge-base HEAD origin/main) --to=HEAD",
-    "release": "commit-and-tag-version"
+    "release": "commit-and-tag-version",
+    "release:dry-run": "npm run release -- --dry-run"
   },
   "license": "MIT",
   "config": {
