@@ -19,6 +19,9 @@ jobs:
       - name: Fetch main branch
         run: git fetch origin main
 
+      - name: Install root deps
+        run: npm i
+
       - name: Lint Commit
         run: npm run commit:lint:branch
 
