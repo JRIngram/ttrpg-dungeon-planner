@@ -1,4 +1,4 @@
-# dnd5e-dungeon-planner
+# ttrpg-dungeon-planner
 
 An application for planning dungeons in TTRPGs.
 
