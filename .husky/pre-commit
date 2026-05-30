@@ -4,6 +4,8 @@ CLIENT_DIR="$TOP_LEVEL/client"
 SERVER_DIR="$TOP_LEVEL/server"
 VENV_DIR="$SERVER_DIR/.venv"
 
+npm run commit:lint:branch
+
 # ── CLIENT ──────────────────────────────────────────────
 cd "$CLIENT_DIR"
 npm run lint

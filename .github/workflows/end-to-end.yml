@@ -1,29 +1,50 @@
 name: end-to-end
 
 on:
+  push:
+    branches:
+      - main
   pull_request:
     branches:
       - main
 
 jobs:
+  lint-commit:
+    runs-on: ubuntu-latest
+    environment: dev
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fetch main branch
+        run: git fetch origin main
+
+      - name: Install root deps
+        run: npm i
+
+      - name: Lint Commit
+        run: npm run commit:lint:branch
+
   server-db-unit-tests:
     runs-on: ubuntu-latest
     environment: dev
 
     env:
       POSTGRES_DB: ${{ vars.POSTGRES_DB }}
-      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }} 
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
       DB_HOST: ${{ vars.DB_HOST }}
       DB_NAME: ${{ vars.DB_NAME }}
       DB_PORT: ${{ vars.DB_PORT }}
       DB_USER: ${{ vars.DB_USER}}
       DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
 
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Create server .env file
         run: |
           cat > ./server/.env <<EOF
@@ -51,7 +72,7 @@ jobs:
         run: echo $POSTGRES_PASSWORD $DB_HOST
 
       - name: Start services
-        run:  docker compose up -d dungeon-planner-db dungeon-planner-server
+        run: docker compose up -d dungeon-planner-db dungeon-planner-server
 
       - name: Run tests
         run: docker compose run --rm dungeon-planner-server python3 manage.py test

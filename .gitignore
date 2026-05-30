@@ -1,4 +1,6 @@
 .vscode
+node_modules
+
 # Client
 client/src/app/tailwind-built.css
 
