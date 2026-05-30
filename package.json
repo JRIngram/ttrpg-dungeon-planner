@@ -3,6 +3,7 @@
   "devDependencies": {
     "@commitlint/cli": "^21.0.2",
     "@commitlint/config-conventional": "^21.0.2",
+    "commit-and-tag-version": "^12.7.3",
     "commitizen": "^4.3.1",
     "cz-conventional-changelog": "^3.3.0",
     "husky": "^9.1.7"
@@ -11,12 +12,14 @@
     "prepare": "husky",
     "commit": "cz",
     "commit:lint:prev": "git log -n 1 --format=%B | npx commitlint",
-    "commit:lint:branch": "npx commitlint --from=$(git merge-base HEAD origin/main) --to=HEAD"
+    "commit:lint:branch": "npx commitlint --from=$(git merge-base HEAD origin/main) --to=HEAD",
+    "release": "commit-and-tag-version"
   },
   "license": "MIT",
   "config": {
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
     }
-  }
+  },
+  "version": "1.0.1"
 }
