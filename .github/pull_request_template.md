@@ -39,7 +39,6 @@
 - [ ] I have updated the documentation (JSDoc / README etc.) where appropriate
 - [ ] I have added new stories to Storybook where appropriate.
 - [ ] I have commented my code.
-- [ ] I have updated the changelog.
 
 ### Checklist for reviewers
 

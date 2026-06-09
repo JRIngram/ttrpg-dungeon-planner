@@ -12,8 +12,9 @@ This project uses [semantic versioning](https://semver.org/). Our Changelog is g
 
 ## Set-up
 
-- Set up a postgreSQL database. This can be done manually or by running `docker compose up -d`. When running in Docker create a `.env` file in `server/`. Copy the fields from `.env.example` and fill out the variables for your postgreSQL instance.
+- Set up a postgreSQL database. This can be done manually or by running `docker compose up -d`. When running in Docker create a `.env` file in `server/`. Copy the fields from `.env.example` and fill out the variables for your postgreSQL instance. Likewise, ensure a `.env` file is present in `db/`.
 - Create a `.env` file in `server/`. Copy the fields from `.env.example` and fill out the variables for your postgreSQL instance. This will allow the server to connect to the database. **Note:** When running in docker, the host should be the name of the container, i.e. dungeon-planner-db.
+- Ensure a `.env` file is present in `db/`. Copy the fields from `.env.example` and fill out the variables for your postgreSQL instance.
 - Create a `.env.local` file in `client/`. Copy the fields from `.env.example` and fill out the variables to allow for a connection from the client to the server.
 - Create a `.env` file in `wizards/`. Copy the fields from `.env.example` and fill out the variables to allow for a connection from the scripts to the server.
 - Before contributing, ensure you have run `npm i` at the root so that husky hooks, commitizen (if using) and commitlint can run.
