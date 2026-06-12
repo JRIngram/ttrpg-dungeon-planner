@@ -17,6 +17,10 @@ export const metadata: Metadata = {
 
 const navBarLinks = [
   {
+    title: "Home",
+    url: "/",
+  },
+  {
     title: "Dungeons",
     url: "/dungeons",
   },
