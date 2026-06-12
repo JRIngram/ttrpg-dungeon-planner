@@ -8,12 +8,14 @@ The core focus of the TTRPG dungeon planner is the creation of dungeons, rooms w
 
 This README will walk you through the set-up and usage of the TTRPG Dungeon Planner.
 
-Tech Stack:
+The tech stack this project uses is as follows:
 
-- Client: Next.js
-- Server: Python + Django
+- Client: TypeScript & React & Next.js
+- Server: Python & Django
 - Database: PostgreSQL
-- Containerisation: Docker.
+- Containerisation: Docker
+
+Please check the `package.json` files and `requirements.txt` files for specific versioning numbers.
 
 TTRPG Dungeon Planner was created and is maintained by J Ingram. See [LICENSE.md](./LICENCE.md) for details on permitted usage.
 
