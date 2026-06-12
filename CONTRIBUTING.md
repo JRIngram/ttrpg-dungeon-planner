@@ -1,16 +1,20 @@
 # Contributing
 
-Thank for you taking an interest in contributing to this repository, your interest is greatly appreciated.
+Thank you for taking an interest in contributing to this repository, your interest is greatly appreciated.
 
 Please read the [README.md](./README.md) before continuing with this document. This include information on the tech stack and how to get the system up and running. For the licence, please see [LICENCE.md](./LICENCE.md).
 
-Contributions come in many forms and we are happy for contributions. We are happy for documentation updates, bug reports and fixes, feature suggestions and implementation, UX/UI improvements and more. The main starting point for contributing is likely to be either via raising an issue or via commenting on an issue.
+Contributions come in many forms. We are happy for documentation updates, bug reports and fixes, feature suggestions and implementation, UX/UI improvements and more. The main starting point for contributing is likely to be either via raising an issue or via commenting on an issue.
 
 The best way to get assistance is via creating an issue, and we - or a member of the community - will get back to you.
 
 ## Issues
 
 If you are coming to raise an issue then please first check if the issue already exists. If not then feel free to [raise an issue on GitHub](https://github.com/JRIngram/ttrpg-dungeon-planner/issues) and ensure you follow the issue templates provided.
+
+### Security Vulnerability Reporting
+
+Please raise any security vulnerabilities as an issue on the GitHub repository.
 
 ## AI Usage
 
@@ -26,17 +30,19 @@ First, either raise a PR or comment on the relevant issue with the contribution 
 
 Please ensure that the PR template is filled out; if it is not then the PR will be rejected.
 
-@JIngram will then review the PR and provide feedback. We cannot provide timeframes for this, but know that we will look at it as soon as we are able. A PR is deemed ready for review when the PR template is filled out and all of the CI/CD checks are passing.
+[@JRIngram](github.com/JRIngram) will then review the PR and provide feedback. We cannot provide timeframes for this, but know that we will look at it as soon as we are able. A PR is deemed ready for review when the PR template is filled out and all of the CI/CD checks are passing.
 
-Stale PRs will firstly recieve a chaser comment, requesting an update - either a merge, a code update or a timeframe for merging. If no response is recieved then the PR will be rejected. We cannot provide specific timeframes for this, but it should be expected that your PR will be rejected if it has had no activity for a year.
+Stale PRs will firstly receive a chaser comment, requesting an update - either a merge, a code update or a timeframe for merging. If no response is receive then the PR will be rejected. We cannot provide specific timeframes for this, but it should be expected that your PR will be rejected if it has had no activity for a year.
 
 Maintaining this project is voluntary work as is contributing; everyone in this process should be treated with respect. We are always happy for both an interest in this project and for contributions. Please see the [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md) for more information.
 
 ## Development Guidelines
 
+Your first port of call for getting start should be the [README.md](./README.md) file.
+
 ### Project Structure
 
-The project is pslit into four parts, currently:
+The project is split into four parts, currently:
 
 - Client: Next.js frontend.
 - Server: DjangoREST backend.
@@ -45,7 +51,7 @@ The project is pslit into four parts, currently:
 
 ### Code Style
 
-Coding style is enforce by `pylint`, `prettier` and `eslint`.
+Coding style is enforced by `pylint`, `prettier` and `eslint`.
 
 If you believe that the code style enforcement tools are wrongly enforcing a rule and you require it to be ignored then ignore it for the next line or the most limited lines of code as possible and add some documentation outlining why this ignoring of the rules is required in this case.
 
@@ -125,7 +131,7 @@ Update all dependencies.
 
 ##### Bruno
 
-Bruno is being used as a tool to test our HTTP end points. The bruno collection can be seen at `TTRPG-Planner-Bruno`.
+Bruno is being used as a tool to test our HTTP end points. The bruno collection can be seen at [TTRPG-Planner-Bruno](https://github.com/JRIngram/ttrpg-dungeon-planner/tree/main/TTRPG-Planner-Bruno).
 
 ##### Linter
 
