@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## 1.1.0 (2026-06-24)
+
+### Features
+
+* home page text and navbar ([#79](https://github.com/JRIngram/ttrpg-dungeon-planner/issues/79)) ([6f1c5e2](https://github.com/JRIngram/ttrpg-dungeon-planner/commit/6f1c5e26eab4465ffa0c62414f1898b3fd710660))
+* remove e2e dir and improve DB documentation ([#73](https://github.com/JRIngram/ttrpg-dungeon-planner/issues/73)) ([8957ddd](https://github.com/JRIngram/ttrpg-dungeon-planner/commit/8957dddaeff6e284507ff679c4a0b36c17839db7))
+
+
 ## 1.0.0 (2026-05-30)
 
 ### ⚠ BREAKING CHANGES
