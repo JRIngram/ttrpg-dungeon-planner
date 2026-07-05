@@ -229,7 +229,7 @@ const formatRoomFields = (
 
     const getEncounterMultiplier = () =>
       multiplierConfigRows.find(
-        (row) => monsterCount >= row.min && monsterCount <= row.max,
+        (row) => monsterCount >= row.min && (row.max === null || monsterCount <= row.max),
       )?.multiplier ?? 1;
 
     return totalXp * getEncounterMultiplier();

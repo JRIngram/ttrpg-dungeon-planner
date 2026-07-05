@@ -261,6 +261,15 @@ class EncounterMultiplierConfigRowSerializer(serializers.ModelSerializer):
 
         return EncounterMultiplierConfigRow.objects.create(**validated_data)
 
+    def update(self, instance, validated_data):
+        """
+        Updates a EncounterMultiplierConfig from validated data
+        """
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+        return instance
+
 
 class EncounterRatingConfigRowSerializer(serializers.ModelSerializer):
     """
@@ -284,7 +293,16 @@ class EncounterRatingConfigRowSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         """
-        Creates a EncounterMultiplierConfig from validated data
+        Creates a EncounterRatingConfig from validated data
         """
 
         return EncounterRatingConfigRow.objects.create(**validated_data)
+
+    def update(self, instance, validated_data):
+        """
+        Updates a EncounterRatingConfig from validated data
+        """
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+        return instance

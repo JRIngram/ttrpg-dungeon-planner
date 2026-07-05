@@ -132,7 +132,7 @@ class EncounterMultiplierConfigRowList(generics.ListCreateAPIView):
     lookup_field = "id"
 
 
-class EncounterMultiplierConfigRowSingle(generics.RetrieveDestroyAPIView):
+class EncounterMultiplierConfigRowSingle(generics.RetrieveUpdateDestroyAPIView):
     """
     Defines interactions on singular EncounterMultiplierConfigRow
 
@@ -157,7 +157,7 @@ class EncounterRatingConfigRowList(generics.ListCreateAPIView):
     lookup_field = "id"
 
 
-class EncounterRatingConfigRowSingle(generics.RetrieveDestroyAPIView):
+class EncounterRatingConfigRowSingle(generics.RetrieveUpdateDestroyAPIView):
     """
     Defines interactions on singular EncounterRatingConfigRow
 
