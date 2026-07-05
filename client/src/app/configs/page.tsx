@@ -9,16 +9,14 @@ import { type EncounterMultiplierConfigRow, type EncounterRatingConfigRow } from
 import { ToastList } from "@/components/organisms/ToastList/ToastList";
 import { useToasts, useToastsDispatch } from "@/context/ToastContext";
 import { ToastType } from "@/types/toast";
-import { EncounterMultiplierConfigForm } from "@/components/organisms/Forms/EncounterMultiplierConfigForm/EncounterMultiplierConfigForm";
-import { EncounterRatingConfigForm } from "@/components/organisms/Forms/EncounterRatingConfigForm/EncounterRatingConfigForm";
+import { BulkEncounterMultiplierConfigForm } from "@/components/organisms/Forms/EncounterMultiplierConfigForm/BulkEncounterMultiplierConfigForm";
+import { BulkEncounterRatingConfigForm } from "@/components/organisms/Forms/EncounterRatingConfigForm/BulkEncounterRatingConfigForm";
 import { Text } from "@/components/atoms/Text/Text";
 import { Tabs } from "@/components/molecules/Tabs/Tabs";
 
 type TabType = "multiplier" | "rating";
 
 export default function Configs() {
-  const [selectedMultiplierConfigId, setSelectedMultiplierConfigId] = useState<number>();
-  const [selectedRatingConfigId, setSelectedRatingConfigId] = useState<number>();
   const [isEditingMultiplier, setIsEditingMultiplier] = useState<boolean>(false);
   const [isEditingRating, setIsEditingRating] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<TabType>("multiplier");
@@ -62,208 +60,102 @@ export default function Configs() {
     id: `${config.id}`,
   })) ?? [];
 
-  const getSelectedMultiplierConfig = (configList: EncounterMultiplierConfigRow[], selectedId: number | undefined) =>
-    configList?.find((config) => config.id === selectedId);
-
-  const getSelectedRatingConfig = (configList: EncounterRatingConfigRow[], selectedId: number | undefined) =>
-    configList?.find((config) => config.id === selectedId);
-
   const handleTabSelect = (tabIndex: number) => {
     setActiveTab(tabIndex === 0 ? "multiplier" : "rating");
   };
 
-  const handleDeleteMultiplier = async (id: number) => {
-    const { httpCode } = await multiplierService.deleteSingle(id.toString());
-    if (!multiplierService.isSuccessfulHTTPCode(httpCode)) {
-      dispatch({
-        type: "add",
-        toast: {
-          type: ToastType.WARNING,
-          message: `Could not delete config. HTTP ${httpCode}`,
-        },
-      });
-    } else {
-      await refetchMultipliers();
-      setSelectedMultiplierConfigId(undefined);
-      dispatch({
-        type: "add",
-        toast: {
-          type: ToastType.SUCCESS,
-          message: "Successfully deleted encounter multiplier config",
-        },
-      });
-    }
-  };
-
-  const handleDeleteRating = async (id: number) => {
-    const { httpCode } = await ratingService.deleteSingle(id.toString());
-    if (!ratingService.isSuccessfulHTTPCode(httpCode)) {
-      dispatch({
-        type: "add",
-        toast: {
-          type: ToastType.WARNING,
-          message: `Could not delete config. HTTP ${httpCode}`,
-        },
-      });
-    } else {
-      await refetchRatings();
-      setSelectedRatingConfigId(undefined);
-      dispatch({
-        type: "add",
-        toast: {
-          type: ToastType.SUCCESS,
-          message: "Successfully deleted encounter rating config",
-        },
-      });
-    }
-  };
-
   const renderMultiplierTab = () => {
-    if (!selectedMultiplierConfigId) {
+    if (isLoadingMultipliers) {
+      return <p>Loading...</p>;
+    }
+
+    if (errorLoadingMultipliers) {
+      return <p>Error loading multiplier configs</p>;
+    }
+
+    if (!multiplierConfigs || multiplierConfigs.length === 0) {
+      return <p>No multiplier configs found</p>;
+    }
+
+    if (isEditingMultiplier) {
       return (
-        <EncounterMultiplierConfigForm
-          onCancelCallback={() => {
-            return;
-          }}
-          onSubmitCallback={async (config) => {
+        <BulkEncounterMultiplierConfigForm
+          configs={multiplierConfigs}
+          onSubmitCallback={async () => {
             await refetchMultipliers();
-            setSelectedMultiplierConfigId(config.id);
+            setIsEditingMultiplier(false);
           }}
+          onCancelCallback={() => setIsEditingMultiplier(false)}
         />
       );
-    } else {
-      const selectedConfig = getSelectedMultiplierConfig(multiplierConfigs ?? [], selectedMultiplierConfigId);
-
-      if (selectedConfig) {
-        if (isEditingMultiplier) {
-          return (
-            <EncounterMultiplierConfigForm
-              existingConfig={selectedConfig}
-              onSubmitCallback={async (config) => {
-                await refetchMultipliers();
-                setIsEditingMultiplier(false);
-                setSelectedMultiplierConfigId(config.id);
-              }}
-              onCancelCallback={() => setIsEditingMultiplier(false)}
-            />
-          );
-        }
-
-        return (
-          <div className="flex flex-col gap-4">
-            <EncounterMultiplierConfigDisplay config={selectedConfig} />
-            <ButtonRow
-              buttons={[
-                {
-                  text: "Edit",
-                  onClick: () => setIsEditingMultiplier(true),
-                  variant: "secondaryOutline",
-                },
-                {
-                  text: "Delete",
-                  onClick: async () => {
-                    handleDeleteMultiplier(selectedConfig.id);
-                  },
-                  variant: "tertiaryOutline",
-                },
-              ]}
-            />
-          </div>
-        );
-      }
     }
+
+    return (
+      <div className="flex flex-col gap-4">
+        <EncounterMultiplierConfigTable configs={multiplierConfigs} />
+        <ButtonRow
+          buttons={[
+            {
+              text: "Edit All",
+              onClick: () => setIsEditingMultiplier(true),
+              variant: "secondaryOutline",
+            },
+          ]}
+        />
+      </div>
+    );
   };
 
   const renderRatingTab = () => {
-    if (!selectedRatingConfigId) {
+    if (isLoadingRatings) {
+      return <p>Loading...</p>;
+    }
+
+    if (errorLoadingRatings) {
+      return <p>Error loading rating configs</p>;
+    }
+
+    if (!ratingConfigs || ratingConfigs.length === 0) {
+      return <p>No rating configs found</p>;
+    }
+
+    if (isEditingRating) {
       return (
-        <EncounterRatingConfigForm
-          onCancelCallback={() => {
-            return;
-          }}
-          onSubmitCallback={async (config) => {
+        <BulkEncounterRatingConfigForm
+          configs={ratingConfigs}
+          onSubmitCallback={async () => {
             await refetchRatings();
-            setSelectedRatingConfigId(config.id);
+            setIsEditingRating(false);
           }}
+          onCancelCallback={() => setIsEditingRating(false)}
         />
       );
-    } else {
-      const selectedConfig = getSelectedRatingConfig(ratingConfigs ?? [], selectedRatingConfigId);
-
-      if (selectedConfig) {
-        if (isEditingRating) {
-          return (
-            <EncounterRatingConfigForm
-              existingConfig={selectedConfig}
-              onSubmitCallback={async (config) => {
-                await refetchRatings();
-                setIsEditingRating(false);
-                setSelectedRatingConfigId(config.id);
-              }}
-              onCancelCallback={() => setIsEditingRating(false)}
-            />
-          );
-        }
-
-        return (
-          <div className="flex flex-col gap-4">
-            <EncounterRatingConfigDisplay config={selectedConfig} />
-            <ButtonRow
-              buttons={[
-                {
-                  text: "Edit",
-                  onClick: () => setIsEditingRating(true),
-                  variant: "secondaryOutline",
-                },
-                {
-                  text: "Delete",
-                  onClick: async () => {
-                    handleDeleteRating(selectedConfig.id);
-                  },
-                  variant: "tertiaryOutline",
-                },
-              ]}
-            />
-          </div>
-        );
-      }
     }
+
+    return (
+      <div className="flex flex-col gap-4">
+        <EncounterRatingConfigTable configs={ratingConfigs} />
+        <ButtonRow
+          buttons={[
+            {
+              text: "Edit All",
+              onClick: () => setIsEditingRating(true),
+              variant: "secondaryOutline",
+            },
+          ]}
+        />
+      </div>
+    );
   };
-
-  const defaultMultiplierNavDrawerLabel = isLoadingMultipliers
-    ? "Loading"
-    : errorLoadingMultipliers
-      ? "Error"
-      : "+ Create a new multiplier config";
-
-  const defaultRatingNavDrawerLabel = isLoadingRatings
-    ? "Loading"
-    : errorLoadingRatings
-      ? "Error"
-      : "+ Create a new rating config";
 
   return (
     <div className="flex">
       <NavDrawer
         items={activeTab === "multiplier" ? multiplierNavItems : ratingNavItems}
-        onSelect={(id) => {
-          if (activeTab === "multiplier") {
-            setSelectedMultiplierConfigId(parseInt(id));
-            setIsEditingMultiplier(false);
-          } else {
-            setSelectedRatingConfigId(parseInt(id));
-            setIsEditingRating(false);
-          }
-        }}
+        onSelect={() => {}}
         defaultItem={{
-          label: activeTab === "multiplier" ? defaultMultiplierNavDrawerLabel : defaultRatingNavDrawerLabel,
-          onDefaultSelected: () => {
-            if (activeTab === "multiplier") {
-              setSelectedMultiplierConfigId(undefined);
-            } else {
-              setSelectedRatingConfigId(undefined);
-            }
-          },
+          label: "View Configs",
+          onDefaultSelected: () => {},
         }}
       />
       <main className="mx-auto w-3/6">
@@ -284,34 +176,66 @@ export default function Configs() {
   );
 }
 
-type EncounterMultiplierConfigDisplayProps = {
-  config: EncounterMultiplierConfigRow;
+type EncounterMultiplierConfigTableProps = {
+  configs: EncounterMultiplierConfigRow[];
 };
 
-const EncounterMultiplierConfigDisplay = ({ config }: EncounterMultiplierConfigDisplayProps) => {
+const EncounterMultiplierConfigTable = ({ configs }: EncounterMultiplierConfigTableProps) => {
   return (
-    <>
-      <Text text={`Multiplier Config: Min ${config.min}, Max ${config.max || "null"}`} textType="header" />
-      <Text
-        text={`Multiplier: ${config.multiplier}`}
-        textType="default"
-      />
-    </>
+    <div className="overflow-x-auto">
+      <Text text="Encounter Multiplier Configurations" textType="subheader" />
+      <table className="min-w-full border mt-2">
+        <thead>
+          <tr className="bg-primary-50">
+            <th className="p-2 border-b text-left">Min Monsters</th>
+            <th className="p-2 border-b text-left">Max Monsters</th>
+            <th className="p-2 border-b text-left">Multiplier</th>
+          </tr>
+        </thead>
+        <tbody>
+          {configs.map((config) => (
+            <tr key={config.id} className="border-b">
+              <td className="p-2 border-r">{config.min}</td>
+              <td className="p-2 border-r">{config.max || "null"}</td>
+              <td className="p-2">{config.multiplier}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 };
 
-type EncounterRatingConfigDisplayProps = {
-  config: EncounterRatingConfigRow;
+type EncounterRatingConfigTableProps = {
+  configs: EncounterRatingConfigRow[];
 };
 
-const EncounterRatingConfigDisplay = ({ config }: EncounterRatingConfigDisplayProps) => {
+const EncounterRatingConfigTable = ({ configs }: EncounterRatingConfigTableProps) => {
   return (
-    <>
-      <Text text={`Rating Config: Level ${config.level}`} textType="header" />
-      <Text
-        text={`Easy: ${config.easy}, Medium: ${config.medium}, Hard: ${config.hard}, Extreme: ${config.extreme}`}
-        textType="default"
-      />
-    </>
+    <div className="overflow-x-auto">
+      <Text text="Encounter Rating Configurations" textType="subheader" />
+      <table className="min-w-full border mt-2">
+        <thead>
+          <tr className="bg-primary-50">
+            <th className="p-2 border-b text-left">Level</th>
+            <th className="p-2 border-b text-left">Easy</th>
+            <th className="p-2 border-b text-left">Medium</th>
+            <th className="p-2 border-b text-left">Hard</th>
+            <th className="p-2 border-b text-left">Extreme</th>
+          </tr>
+        </thead>
+        <tbody>
+          {configs.map((config) => (
+            <tr key={config.id} className="border-b">
+              <td className="p-2 border-r">{config.level}</td>
+              <td className="p-2 border-r">{config.easy}</td>
+              <td className="p-2 border-r">{config.medium}</td>
+              <td className="p-2 border-r">{config.hard}</td>
+              <td className="p-2">{config.extreme}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 };

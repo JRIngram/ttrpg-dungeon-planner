@@ -121,4 +121,24 @@ export class EncounterRatingService extends DataFetcher<EncounterRatingConfigRow
       httpCode: response.status,
     };
   };
+
+  updateBulk = async (
+    configs: AddOrEditEncounterRatingConfigRow[]
+  ): Promise<{ success: boolean; httpCode: number }> => {
+    let allSuccessful = true;
+    let lastHttpCode = 200;
+
+    for (const config of configs) {
+      const { httpCode } = await this.editSingle(config);
+      if (!this.isSuccessfulHTTPCode(httpCode)) {
+        allSuccessful = false;
+        lastHttpCode = httpCode;
+      }
+    }
+
+    return {
+      success: allSuccessful,
+      httpCode: allSuccessful ? 200 : lastHttpCode,
+    };
+  };
 }

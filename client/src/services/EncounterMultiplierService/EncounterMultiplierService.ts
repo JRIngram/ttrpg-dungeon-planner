@@ -115,4 +115,24 @@ export class EncounterMultiplierService extends DataFetcher<EncounterMultiplierC
       httpCode: response.status,
     };
   };
+
+  updateBulk = async (
+    configs: AddOrEditEncounterMultiplierConfigRow[]
+  ): Promise<{ success: boolean; httpCode: number }> => {
+    let allSuccessful = true;
+    let lastHttpCode = 200;
+
+    for (const config of configs) {
+      const { httpCode } = await this.editSingle(config);
+      if (!this.isSuccessfulHTTPCode(httpCode)) {
+        allSuccessful = false;
+        lastHttpCode = httpCode;
+      }
+    }
+
+    return {
+      success: allSuccessful,
+      httpCode: allSuccessful ? 200 : lastHttpCode,
+    };
+  };
 }
