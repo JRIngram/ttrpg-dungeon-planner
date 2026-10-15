@@ -14,7 +14,10 @@ export const Table = <T,>({ configs, headers, keyField }: TableProps<T>) => {
         <thead>
           <tr className="bg-primary-50">
             {headers.map((header) => (
-              <th key={String(header.key)} className="p-2 border-b border-primary-100 text-left">
+              <th
+                key={String(header.key)}
+                className="p-2 border-b border-primary-100 text-left"
+              >
                 {header.label}
               </th>
             ))}
@@ -26,7 +29,10 @@ export const Table = <T,>({ configs, headers, keyField }: TableProps<T>) => {
             const keyString = String(keyValue);
             const isEvenRow = rowIndex % 2 === 0;
             return (
-              <tr key={keyString} className={`border-b border-primary-100 ${isEvenRow ? 'bg-secondary-50' : ''}`}>
+              <tr
+                key={keyString}
+                className={`border-b border-primary-100 ${isEvenRow ? "bg-secondary-50" : ""}`}
+              >
                 {headers.map((header, cellIndex) => {
                   const value = config[header.key];
                   const isLastCell = cellIndex === headers.length - 1;
