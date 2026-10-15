@@ -18,7 +18,7 @@ export const Default: Story = {
   },
 };
 
-export const subheader: Story = {
+export const Subheader: Story = {
   args: {
     textType: "subheader",
     text: "Hello world!",
